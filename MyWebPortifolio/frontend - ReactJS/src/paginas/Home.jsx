@@ -11,6 +11,7 @@ import "../styles/global.css";
 import "../styles/home.css";
 import Modal from "../components/Modal";
 import ModalApresentacao from "../components/ModalApresentacao";
+import Feedback from "../components/Feedback";
 
 const Home = () => {
   const [activeModalContent, setActiveModalContent] = useState(null);
@@ -46,7 +47,7 @@ const Home = () => {
         <Sidebar />
         <main className="main-content">
           <section className="section-about" id="about" onClick={() => openModal(2)}>
-            Quem é Bruno de Fraga?
+            Quem é Bruno de Fraga? 
           </section>
           <section className="section-experience" id="experience" onClick={() => openModal(3)}>
             Experiencias
@@ -59,6 +60,9 @@ const Home = () => {
           </section>
           <section id="contact">
             <Contact />
+          </section>
+          <section id="feedback">
+            <Feedback />
           </section>
         </main>
       </div>

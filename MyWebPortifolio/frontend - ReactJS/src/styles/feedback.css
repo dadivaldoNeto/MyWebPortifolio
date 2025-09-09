@@ -1,0 +1,100 @@
+.feedback {
+  background-color: #181818;
+  padding: 20px;
+  border: 2px solid #4caf50;
+  border-radius: 10px;
+  color: #fff;
+  margin-top: 20px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  font-size: 18px;
+}
+
+.feedback:hover {
+  border: 2px solid #f50505;
+}
+
+.feedback h2 {
+  font-size: 24px;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+.feedback-stars {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.star {
+  font-size: 30px;
+  color: #585a58;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.star.filled {
+  color: #f50505;
+}
+
+.star:hover,
+.star.filled:hover {
+  color: #ff6666;
+}
+
+.feedback-comment {
+  width: 100%;
+  min-height: 100px;
+  background-color: #222;
+  color: #fff;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #4caf50;
+  font-size: 16px;
+  resize: vertical;
+  margin-bottom: 10px;
+}
+
+.feedback-comment:focus {
+  outline: none;
+  border-color: #f50505;
+}
+
+.char-count {
+  font-size: 14px;
+  color: #bbb;
+  text-align: right;
+  margin-bottom: 10px;
+}
+
+.feedback-submit {
+  background-color: #4caf50;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+}
+
+.feedback-submit:hover:not(:disabled) {
+  background-color: #f50505;
+}
+
+.feedback-submit:disabled {
+  background-color: #585a58;
+  cursor: not-allowed;
+}
+
+.feedback-submitted {
+  text-align: center;
+  padding: 20px;
+  background-color: #222;
+  border-radius: 5px;
+}
+
+.feedback-submitted p {
+  font-size: 18px;
+  color: #4caf50;
+}
