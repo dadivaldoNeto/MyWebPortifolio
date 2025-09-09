@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import "../styles/MatrixBackground.css"
+import "../styles/matrixBackground.css"
 
 
 const MatrixBackground = () => {
