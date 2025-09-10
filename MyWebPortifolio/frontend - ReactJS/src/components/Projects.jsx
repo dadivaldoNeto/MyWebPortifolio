@@ -56,6 +56,42 @@ const Projects = () => {
   return (
     <section className="projects">
       <h2>Projetos</h2>
+      <svg width="0" height="0">
+        <filter id="static-noise">
+          <feTurbulence
+            type="fractalNoise"
+            baseFrequency="0.9"
+            numOctaves="4"
+            result="noise"
+          >
+            <animate
+              attributeName="baseFrequency"
+              values="0.9;0.8;0.9;0.85;0.95"
+              dur="0.3s"
+              repeatCount="indefinite"
+            />
+          </feTurbulence>
+          <feDisplacementMap
+            in="SourceGraphic"
+            in2="noise"
+            scale="10"
+          >
+            <animate
+              attributeName="scale"
+              values="10;15;10;12;8"
+              dur="0.3s"
+              repeatCount="indefinite"
+            />
+          </feDisplacementMap>
+          <feColorMatrix
+            type="matrix"
+            values="1 0 0 0 0
+                    0 1 0 0 0
+                    0 0 1 0 0
+                    0 0 0 0.5 0"
+          />
+        </filter>
+      </svg>
       <div className="projects-grid">
         {projects.map((project) => (
           <div
@@ -70,10 +106,7 @@ const Projects = () => {
           </div>
         ))}
       </div>
-      <Modal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-      >
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
         {selectedProject && (
           <div className="modal-content">
             <h3 className="modal-title">{selectedProject.title}</h3>

@@ -13,31 +13,37 @@
 }
 
 .projects-grid {
-  margin-top: 10px;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 20px;
+  align-items: center;
 }
 
 .project-item {
   cursor: pointer;
+  position: relative;
 }
 
 .project-item img {
-  width: 100%;
+  width: 60%;
   height: auto;
   aspect-ratio: 1 / 1;
   object-fit: cover;
   border-radius: 10px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-  transition: transform 0.3s ease;
+  filter: url(#static-noise);
+  transition: filter 0.3s ease, transform 0.3s ease;
 }
+
 
 .project-item:hover img {
+  filter: none;
   transform: scale(1.05);
+  border-radius: 2px;
+  border: 2px solid #f50505;
 }
 
-/* Estilos adicionais para o conteúdo do modal (layout bonito e tecnológico) */
+/* Estilos para o conteúdo do modal */
 .modal-content {
   display: flex;
   flex-direction: column;
