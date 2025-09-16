@@ -1,11 +1,11 @@
 .skills {
   background-color: #181818;
   padding: 20px;
-  border: 2px solid #4caf50;
+ 
   border-radius: 10px;
   color: #fff;
   margin-top: 16px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+
   font-size: 20px;
   height: 300px;
   overflow: hidden;
@@ -23,11 +23,10 @@
 }
 
 .skills-divider {
-  width: 2px;
+  width: 4px;
   height: 220px;
   background-color: #585a58;
   margin-top: 10px;
-  margin-left: 30px;
   border-radius: 100px;
 }
 
@@ -40,14 +39,14 @@
 }
 
 .skills-text {
-  width: 560px;
-  height: 230px;
+  width: 300px;
+  height: 220px;
   background-color: #222;
   padding: 15px;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   font-size: 16px;
-  text-align: center;
+  text-align: justify;
   padding:  10px 50px;
   line-height: 1.5;
   overflow-y: scroll;
@@ -69,7 +68,7 @@
 .skills-img {
   display: flex;
   flex-wrap: nowrap; /* Mantém as imagens em uma linha */
-  width: 400px;
+  width: 300px;
   overflow: hidden;  
      /* Limita ao tamanho da coluna do grid */
   position: relative;

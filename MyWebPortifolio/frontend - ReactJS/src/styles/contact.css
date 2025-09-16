@@ -1,12 +1,60 @@
 .contact {
-  background-color: #181818;
-  padding: 20px;
-  border: 2px solid #4caf50;
-  border-radius: 10px;
+  background: linear-gradient(145deg, #181818, #1e1e1e);
+  padding: 30px 25px;
+  border-radius: 12px;
   color: #fff;
   margin-top: 20px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+
+  transition: all 0.3s ease;
 }
-.contact:hover{
-  border: 2px solid #f50505;
+
+.contact:hover {
+  border: 2px solid #ff0505; /* Verde do layout */
+   box-shadow: 0px 10px 20px #860303;
+  transform: translateY(-3px);
+}
+
+.contact h2 {
+  font-size: 2rem;
+  margin-bottom: 15px;
+  color: #4caf50;
+}
+
+.contact p {
+  font-size: 1rem;
+  line-height: 1.7;
+  margin-bottom: 10px;
+}
+
+/* Links de contato com efeito */
+.contact a {
+  color: #ffffff;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.3s ease;
+}
+
+.contact a:hover {
+  color: #4caf50;
+  text-decoration: underline;
+}
+
+/* Ícones de redes */
+.contact .contact-links {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.contact .contact-links a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.contact .contact-links svg {
+  width: 20px;
+  height: 20px;
+  fill: #4caf50;
 }

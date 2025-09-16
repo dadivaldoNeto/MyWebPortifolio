@@ -5,7 +5,7 @@
   border-radius: 10px;
   color: #fff;
   margin-top: 20px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  transform: translateY(-3px);
 }
 .experience:hover{
   border: 2px solid #f50505;

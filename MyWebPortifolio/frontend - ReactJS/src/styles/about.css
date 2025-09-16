@@ -2,7 +2,7 @@
   padding: 20px;
   background: linear-gradient(135deg, #1e1e1e, #2a2a2a);
   border-radius: 12px;
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+  transform: translateY(-3px);
   color: #ffffff;
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
   animation: fadeIn 0.6s ease-out forwards;
