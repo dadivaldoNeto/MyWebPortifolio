@@ -1,0 +1,196 @@
+/* Container principal da lista de feedbacks */
+.feedback-list-container {
+  background-color: #181818;
+  padding: 20px;
+  border-radius: 10px;
+  color: #fff;
+  margin: 20px auto;
+  max-width: 800px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  transform: translateY(-3px);
+  font-size: 16px;
+}
+
+/* Efeito de hover no container */
+.feedback-list-container:hover {
+  border: 2px solid #f50505;
+}
+
+/* Cabeçalho com título e botão */
+.feedback-list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+/* Título da lista */
+.feedback-list-title {
+  font-size: 24px;
+  font-weight: bold;
+  color: #fff;
+  margin: 0;
+}
+
+/* Botão de recarregar */
+.reload-button {
+  background-color: #4caf50;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+}
+
+/* Hover no botão */
+.reload-button:hover:not(:disabled) {
+  background-color: #f50505;
+}
+
+/* Botão desabilitado */
+.reload-button:disabled {
+  background-color: #585a58;
+  cursor: not-allowed;
+}
+
+/* Container da lista de feedbacks */
+.feedback-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  max-height: 500px;
+  overflow-y: auto;
+  padding-right: 10px;
+}
+
+/* Estiliza a barra de rolagem */
+.feedback-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.feedback-list::-webkit-scrollbar-track {
+  background: #222;
+  border-radius: 4px;
+}
+
+.feedback-list::-webkit-scrollbar-thumb {
+  background: #4caf50;
+  border-radius: 4px;
+}
+
+.feedback-list::-webkit-scrollbar-thumb:hover {
+  background: #f50505;
+}
+
+/* Container de cada bolha de feedback */
+.whatsapp-bubble-container {
+  display: flex;
+  justify-content: flex-end; /* Alinha à direita como no WhatsApp */
+  margin-bottom: 10px;
+}
+
+/* Bolha de feedback (estilo WhatsApp) */
+.whatsapp-bubble {
+  background-color: #1e2a2f; /* Verde escuro inspirado no WhatsApp */
+  padding: 12px;
+  border-radius: 8px;
+  max-width: 70%;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  position: relative;
+}
+
+/* Estrelas de avaliação */
+.feedback-item-rating {
+  display: flex;
+  gap: 5px;
+  margin-bottom: 8px;
+  font-size: 20px;
+  color: #585a58; /* Estrelas vazias */
+}
+
+/* Estrelas preenchidas */
+.feedback-item-rating::before {
+  content: '★'; /* Estrelas preenchidas são manipuladas no JSX */
+  color: #ffcc00; /* Amarelo para estrelas preenchidas */
+}
+
+/* Comentário do feedback */
+.feedback-item-comment {
+  font-size: 16px;
+  color: #fff;
+  margin: 0;
+  word-wrap: break-word;
+}
+
+/* Hora do feedback */
+.feedback-time {
+  font-size: 12px;
+  color: #bbb;
+  text-align: right;
+  margin-top: 8px;
+}
+
+/* Texto de carregamento */
+.loading-text {
+  font-size: 16px;
+  color: #4caf50;
+  text-align: center;
+  padding: 20px;
+  background-color: #222;
+  border-radius: 5px;
+}
+
+/* Texto de erro */
+.error-text {
+  font-size: 16px;
+  color: #f50505;
+  text-align: center;
+  padding: 20px;
+  background-color: #222;
+  border-radius: 5px;
+}
+
+/* Texto de nenhum feedback */
+.no-feedback-text {
+  font-size: 16px;
+  color: #bbb;
+  text-align: center;
+  padding: 20px;
+  background-color: #222;
+  border-radius: 5px;
+}
+
+/* Responsividade para telas menores */
+@media (max-width: 600px) {
+  .feedback-list-container {
+    padding: 15px;
+    margin: 10px;
+  }
+
+  .feedback-list-title {
+    font-size: 20px;
+  }
+
+  .reload-button {
+    padding: 8px 15px;
+    font-size: 14px;
+  }
+
+  .whatsapp-bubble {
+    max-width: 85%;
+  }
+
+  .feedback-item-rating {
+    font-size: 18px;
+  }
+
+  .feedback-item-comment {
+    font-size: 14px;
+  }
+
+  .feedback-time {
+    font-size: 11px;
+  }
+}

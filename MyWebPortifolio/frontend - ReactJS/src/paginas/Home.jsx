@@ -12,6 +12,7 @@ import "../styles/home.css";
 import Modal from "../components/Modal";
 import ModalApresentacao from "../components/ModalApresentacao";
 import Feedback from "../components/Feedback";
+import FeedbackList from "../components/FeedbackList";
 import MatrixBackground from "../components/MatrixBackground";
 
 
@@ -72,6 +73,10 @@ const Home = () => {
             <hr className="separator" />
             <section id="feedback">
               <Feedback />
+            </section>
+            <hr className="separator" />
+            <section id="feedbackList">
+              <FeedbackList />
             </section>
           </div>
         </main>
