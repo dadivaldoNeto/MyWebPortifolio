@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import '../styles/feedbackList.css';
+import '../styles/feedbacklist22.css';
 
 // --- Componente: Item de Feedback (Estilo WhatsApp) ---
 const FeedbackItem = ({ feedback }) => {
