@@ -146,7 +146,7 @@ const Feedback = () => {
         }
 
         .feedback:hover {
-          border-color: #f50505;
+          border-color: #1ee208ff;
         }
 
         .feedback h2 {
