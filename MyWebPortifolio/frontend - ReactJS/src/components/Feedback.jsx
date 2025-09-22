@@ -91,7 +91,7 @@ const Feedback = () => {
 
       try {
         // ATENÇÃO: Substitua 'http://localhost:8080' pela URL real da sua API
-        const response = await fetch('http://localhost:8080/feedback/criar-feedback', {
+        const response = await fetch('https://microservice-feedback.onrender.com/feedback/criar-feedback', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
