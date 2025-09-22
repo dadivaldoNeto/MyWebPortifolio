@@ -13,7 +13,7 @@
 
 /* Efeito de hover no container */
 .feedback-list-container:hover {
-  border: 2px solid #f50505;
+  border: 2px solid #4caf50;
 }
 
 /* Cabeçalho com título e botão */
@@ -96,9 +96,24 @@
   background-color: #1e2a2f; /* Verde escuro inspirado no WhatsApp */
   padding: 12px;
   border-radius: 8px;
-  max-width: 70%;
+  width: 100%;
+  max-width: 100%; /* Ajuste para 90% */
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
   position: relative;
+}
+.whatsapp-bubble:hover {
+  background-color: #4caf50; /* Muda para verde claro ao passar o mouse */
+  color: #000; /* Muda o texto para preto */
+}
+
+/* Bolha de feedback alternativa */
+.whatsapp-bubble.whatsapp-bubble-alt {
+  background-color: #24353c; /* Outro tom de verde */
+  justify-content: flex-end;
+}
+.whatsapp-bubble.whatsapp-bubble-alt:hover {
+  background-color: #4caf50; /* Muda para verde claro ao passar o mouse */
+  color: #000; /* Muda o texto para preto */
 }
 
 /* Estrelas de avaliação */
@@ -182,7 +197,7 @@
   }
 
   .whatsapp-bubble {
-    max-width: 85%;
+    max-width: 100%;
   }
 
   .feedback-item-rating {
