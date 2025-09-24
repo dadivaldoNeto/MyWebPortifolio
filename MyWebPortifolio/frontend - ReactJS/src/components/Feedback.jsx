@@ -186,39 +186,50 @@ const Feedback = () => {
     };
 
     const handleSubmit = async (e) => {
-        e.preventDefault();
-        if (rating > 0 && comment.trim()) {
-            setIsLoading(true);
-            setSubmissionError("");
+    e.preventDefault();
+    if (rating > 0 && comment.trim()) {
+        setIsLoading(true);
+        setSubmissionError("");
 
-            const feedbackData = {
-                userFeedback: comment,
-                userRating: rating,
-            };
+        const feedbackData = {
+            userFeedback: comment,
+            userRating: rating,
+        };
 
-            try {
-                const response = await fetch('https://processador-feedbacks.onrender.com/feedback/criar-feedback', {
-                    method: 'POST',
+        try {
+            const response = await fetch(
+                "https://processador-feedbacks.onrender.com/feedback/criar-feedback",
+                {
+                    method: "POST",
                     headers: {
-                        'Content-Type': 'application/json',
+                        "Content-Type": "application/json",
                     },
                     body: JSON.stringify(feedbackData),
-                });
-
-                if (response.ok) {
-                    setSubmitted(true);
-                } else {
-                    setSubmissionError("Servidor indisponível, tente novamente mais tarde.");
                 }
-            } catch (error) {
-                console.error("Erro de conexão:", error);
-                setSubmissionError("Servidor indisponível, tente novamente mais tarde.");
-            } finally {
-                setIsLoading(false);
-            }
-        }
-    };
+            );
 
+            const data = await response.json();
+
+            if (response.ok) {
+                // Sucesso
+                setSubmitted(true);
+            } else {
+                // Regras de negócio ou validação falharam
+                // data.message deve vir do ControllerAdvice
+                setSubmissionError(
+                    data?.message || "Ocorreu um erro ao enviar o feedback."
+                );
+            }
+        } catch (error) {
+            console.error("Erro de conexão:", error);
+            setSubmissionError(
+                "Servidor indisponível, tente novamente mais tarde."
+            );
+        } finally {
+            setIsLoading(false);
+        }
+    }
+};
     return (
         <>
             <div className="feedback-container">

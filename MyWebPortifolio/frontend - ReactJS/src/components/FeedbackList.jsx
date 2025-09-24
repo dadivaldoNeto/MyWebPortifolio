@@ -48,7 +48,7 @@ const FeedbackItem = ({ feedback, colorClass }) => {
       <div className={`whatsapp-bubble ${colorClass}`}>
         {renderRating(feedback.userRating)}
         <p className="feedback-item-comment">{feedback.userFeedback || 'Sem comentário'}</p>
-        <div className="feedback-time">{formatDateTime(feedback.time)}</div>
+        <div className="feedback-time">{formatDateTime(feedback.createdAt)}</div>
       </div>
     </div>
   );
