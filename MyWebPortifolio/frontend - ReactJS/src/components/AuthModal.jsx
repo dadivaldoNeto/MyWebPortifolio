@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "../styles/authModal.css";
+import "../styles/authmodal.css";
 
 // Definindo as URLs da API em um só lugar para fácil manutenção
 const API_URLS = {
