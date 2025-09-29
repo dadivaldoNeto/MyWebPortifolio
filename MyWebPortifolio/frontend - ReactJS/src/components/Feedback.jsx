@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "../styles/feedback.css";
 
-const Feedback = ({ isAuthenticated, openAuthModal }) => {
+const Feedback = ({ isAuthenticated, token, openAuthModal }) => {
   const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
   const [comment, setComment] = useState("");
@@ -11,7 +11,6 @@ const Feedback = ({ isAuthenticated, openAuthModal }) => {
   const [submissionError, setSubmissionError] = useState("");
 
   const badWords = {
-    // Palavras relacionadas a atos ou partes do corpo
     arrombado: "abençoado",
     boceta: "rosquinha",
     boquete: "beijinho",
@@ -56,7 +55,6 @@ const Feedback = ({ isAuthenticated, openAuthModal }) => {
     rabo: "caudinha",
     trepar: "dançar",
     xana: "borboletinha",
-    // Ofensas e xingamentos gerais
     asno: "líder",
     babaca: "herói",
     bixa: "pessoa animada",
@@ -202,6 +200,7 @@ const Feedback = ({ isAuthenticated, openAuthModal }) => {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
+              "Authorization": `Bearer ${token}`, // Inclui o token no cabeçalho
             },
             body: JSON.stringify(feedbackData),
           }

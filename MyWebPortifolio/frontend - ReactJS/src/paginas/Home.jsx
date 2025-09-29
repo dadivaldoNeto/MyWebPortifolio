@@ -19,7 +19,7 @@ import "../styles/home.css";
 const Home = () => {
   const [activeModalContent, setActiveModalContent] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [user, setUser] = useState(null);
+  const [token, setToken] = useState(null);
 
   useEffect(() => {
     setActiveModalContent(1); // Abre modal de apresentação ao carregar
@@ -33,15 +33,15 @@ const Home = () => {
     setActiveModalContent(null);
   };
 
-  const handleLogin = (userData) => {
+  const handleLogin = (data) => {
     setIsAuthenticated(true);
-    setUser(userData);
+    setToken(data.token); // Armazena o token
     closeModal();
   };
 
   const handleLogout = () => {
     setIsAuthenticated(false);
-    setUser(null);
+    setToken(null);
   };
 
   const openAuthModal = () => {
@@ -72,7 +72,7 @@ const Home = () => {
         </Modal>
         {/* Modal de Autenticação */}
         <Modal isOpen={activeModalContent === "auth"} onClose={closeModal}>
-          <AuthModal handleLogin={handleLogin} onClose={closeModal} />
+          <AuthModal handleLoginSuccess={handleLogin} onClose={closeModal} />
         </Modal>
         <Sidebar />
         <main className="main-content">
@@ -98,7 +98,7 @@ const Home = () => {
             </section>
             <hr className="separator" />
             <section id="feedback">
-              <Feedback isAuthenticated={isAuthenticated} openAuthModal={openAuthModal} />
+              <Feedback isAuthenticated={isAuthenticated} token={token} openAuthModal={openAuthModal} />
             </section>
             <hr className="separator" />
             <section id="feedbackList">

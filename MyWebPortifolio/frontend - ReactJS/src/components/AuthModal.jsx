@@ -100,7 +100,8 @@ const AuthModal = ({ handleLoginSuccess, onClose }) => {
       // Para login, espera um JSON com o token
       if (isLogin) {
         const data = await response.json();
-        handleLoginSuccess({ token: data.token }); // Passa o token para o componente pai
+        handleLoginSuccess({ token: data.token }); // Passa o token e fecha o modal
+        onClose(); // Fecha o modal após login bem-sucedido
       } 
       // Para registro, status 201 com body vazio
       else if (response.status === 201) {
