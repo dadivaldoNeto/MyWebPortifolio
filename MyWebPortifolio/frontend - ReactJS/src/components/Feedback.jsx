@@ -182,6 +182,7 @@ const Feedback = ({ isAuthenticated, token, openAuthModal }) => {
     e.preventDefault();
     if (!isAuthenticated) {
       setSubmissionError("Você precisa estar logado para enviar um feedback.");
+      openAuthModal(); // Abre o modal de autenticação se não estiver logado
       return;
     }
     if (rating > 0 && comment.trim()) {
@@ -193,33 +194,51 @@ const Feedback = ({ isAuthenticated, token, openAuthModal }) => {
         userRating: rating,
       };
 
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // Timeout de 10 segundos
+
       try {
         const response = await fetch(
-          "https://processador-feedbacks.onrender.com/feedback/criar-feedback",
+          "https://apigateway-qao8.onrender.com/api/processfeedback/createfeedback",
           {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-              "Authorization": `Bearer ${token}`, // Inclui o token no cabeçalho
+              Authorization: `Bearer ${token}`,
             },
             body: JSON.stringify(feedbackData),
+            signal: controller.signal,
           }
         );
 
+        clearTimeout(timeoutId);
         const data = await response.json();
 
         if (response.ok) {
           setSubmitted(true);
         } else {
-          setSubmissionError(
-            data?.message || "Ocorreu um erro ao enviar o feedback."
-          );
+          if (response.status === 401 || response.status === 403) {
+            setSubmissionError("Sessão expirada ou token inválido. Faça login novamente.");
+            setTimeout(() => {
+              openAuthModal(); // Abre o modal de autenticação após erro 401/403
+            }, 2000);
+          } else if (response.status >= 500) {
+            setSubmissionError("Servidor indisponível, tente novamente mais tarde.");
+          } else {
+            setSubmissionError(
+              data?.message || "Ocorreu um erro ao enviar o feedback."
+            );
+          }
         }
       } catch (error) {
-        console.error("Erro de conexão:", error);
-        setSubmissionError(
-          "Servidor indisponível, tente novamente mais tarde."
-        );
+        if (error.name === "AbortError") {
+          setSubmissionError("A requisição demorou muito. Tente novamente.");
+        } else {
+          console.error("Erro de conexão:", error);
+          setSubmissionError(
+            "Erro de conexão com o servidor. Verifique sua internet e tente novamente."
+          );
+        }
       } finally {
         setIsLoading(false);
       }
@@ -236,10 +255,7 @@ const Feedback = ({ isAuthenticated, token, openAuthModal }) => {
           {!isAuthenticated ? (
             <div className="auth-required">
               <p>Você precisa estar logado para enviar um feedback.</p>
-              <button
-                className="login-link"
-                onClick={openAuthModal}
-              >
+              <button className="login-link" onClick={openAuthModal}>
                 Fazer login ou cadastrar
               </button>
             </div>
@@ -247,7 +263,8 @@ const Feedback = ({ isAuthenticated, token, openAuthModal }) => {
             <div className="feedback-submitted animate-fadeIn">
               <p className="thank-you-message">Seu feedback foi enviado com sucesso!</p>
               <p className="submitted-rating">
-                <strong>Sua avaliação:</strong> {"★".repeat(rating)}{"☆".repeat(5 - rating)}
+                <strong>Sua avaliação:</strong> {"★".repeat(rating)}
+                {"☆".repeat(5 - rating)}
               </p>
               <p className="submitted-comment">
                 <strong>Seu comentário:</strong> {comment}
@@ -278,9 +295,7 @@ const Feedback = ({ isAuthenticated, token, openAuthModal }) => {
               />
               <p className="char-count">{comment.length}/1000</p>
               {submissionError && (
-                <div className="submission-error">
-                  {submissionError}
-                </div>
+                <div className="submission-error">{submissionError}</div>
               )}
               <button
                 type="submit"
@@ -293,11 +308,7 @@ const Feedback = ({ isAuthenticated, token, openAuthModal }) => {
           )}
         </section>
       </div>
-      {warning && (
-        <div className="feedback-warning">
-          {warning}
-        </div>
-      )}
+      {warning && <div className="feedback-warning">{warning}</div>}
     </>
   );
 };
