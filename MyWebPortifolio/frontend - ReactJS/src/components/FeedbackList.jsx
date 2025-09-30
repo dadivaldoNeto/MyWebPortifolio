@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-
+import '../styles/feedbacklist.css';
 
 // --- Componente: Item de Feedback ---
 const FeedbackItem = ({ feedback, colorClass }) => {
