@@ -37,10 +37,10 @@ const FeedbackItem = ({ feedback, colorClass }) => {
   return (
     <div className="whatsapp-bubble-container">
       <div className={`whatsapp-bubble ${colorClass}`} role="article">
-        <p className="feedback-item-username">{feedback.userName || 'Usuário Anônimo'}</p>
+        <p className="feedback-item-username">{feedback.name || 'Usuário Anônimo'}</p>
         {renderRating(feedback.userRating)}
-        <p className="feedback-item-comment">{feedback.userFeedback || 'Sem comentário'}</p>
-        <div className="feedback-time">{formatDateTime(feedback.createdAt)}</div>
+        <p className="feedback-item-comment">{feedback.feedback || 'Sem comentário'}</p>
+        <div className="feedback-time">{formatDateTime(feedback.time)}</div>
       </div>
     </div>
   );
@@ -73,10 +73,10 @@ const FeedbackList = () => {
       }
 
       const data = await response.json();
-      const sortedFeedbacks = Array.isArray(data)
-        ? data.sort((a, b) => {
-            const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
-            const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+      const sortedFeedbacks = Array.isArray(data.dados)
+        ? data.dados.sort((a, b) => {
+            const dateA = a.time ? new Date(a.time).getTime() : 0;
+            const dateB = b.time ? new Date(b.time).getTime() : 0;
             return dateB - dateA; // Mais recente primeiro
           })
         : [];
@@ -114,7 +114,7 @@ const FeedbackList = () => {
       <div className="feedback-list" role="list">
         {feedbacks.map((fb, index) => (
           <FeedbackItem
-            key={fb.createdAt + index} // Usar createdAt + index para evitar chaves duplicadas
+            key={fb.time + index} // Usar time + index para evitar chaves duplicadas
             feedback={fb}
             colorClass={index % 2 === 0 ? '' : 'whatsapp-bubble-alt'}
           />
