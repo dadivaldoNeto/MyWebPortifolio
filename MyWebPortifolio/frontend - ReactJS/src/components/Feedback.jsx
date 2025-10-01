@@ -1,6 +1,24 @@
 import React, { useState, useEffect } from "react";
 import "../styles/feedback.css";
 
+// Função utilitária para requisições com retry
+const fetchWithRetry = async (url, options, retries = 3, delay = 1000) => {
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    try {
+      const response = await fetch(url, options);
+      if (response.status >= 500 && response.status <= 502 && attempt < retries) {
+        await new Promise((resolve) => setTimeout(resolve, delay));
+        continue;
+      }
+      return response;
+    } catch (error) {
+      if (attempt === retries) throw error;
+      await new Promise((resolve) => setTimeout(resolve, delay));
+    }
+  }
+  throw new Error("Número máximo de tentativas excedido.");
+};
+
 const Feedback = ({ isAuthenticated, token, openAuthModal }) => {
   const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
@@ -182,7 +200,7 @@ const Feedback = ({ isAuthenticated, token, openAuthModal }) => {
     e.preventDefault();
     if (!isAuthenticated) {
       setSubmissionError("Você precisa estar logado para enviar um feedback.");
-      openAuthModal(); // Abre o modal de autenticação se não estiver logado
+      openAuthModal();
       return;
     }
     if (rating > 0 && comment.trim()) {
@@ -195,10 +213,10 @@ const Feedback = ({ isAuthenticated, token, openAuthModal }) => {
       };
 
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000); // Timeout de 10 segundos
+      const timeoutId = setTimeout(() => controller.abort(), 10000);
 
       try {
-        const response = await fetch(
+        const response = await fetchWithRetry(
           "https://apigateway-qao8.onrender.com/api/processfeedback/createfeedback",
           {
             method: "POST",
@@ -220,10 +238,10 @@ const Feedback = ({ isAuthenticated, token, openAuthModal }) => {
           if (response.status === 401 || response.status === 403) {
             setSubmissionError("Sessão expirada ou token inválido. Faça login novamente.");
             setTimeout(() => {
-              openAuthModal(); // Abre o modal de autenticação após erro 401/403
+              openAuthModal();
             }, 2000);
           } else if (response.status >= 500) {
-            setSubmissionError("Servidor indisponível, tente novamente mais tarde.");
+            setSubmissionError("Servidor indisponível após várias tentativas.");
           } else {
             setSubmissionError(
               data?.message || "Ocorreu um erro ao enviar o feedback."
@@ -251,7 +269,7 @@ const Feedback = ({ isAuthenticated, token, openAuthModal }) => {
         <section className="feedback">
           <h2>Deixe seu Feedback</h2>
           <h3>(Isso me ajuda a evoluir)</h3>
-
+          {isLoading && <div className="loading-bar" />}
           {!isAuthenticated ? (
             <div className="auth-required">
               <p>Você precisa estar logado para enviar um feedback.</p>
@@ -267,7 +285,7 @@ const Feedback = ({ isAuthenticated, token, openAuthModal }) => {
                 {"☆".repeat(5 - rating)}
               </p>
               <p className="submitted-comment">
-                <strong>Seu comentário:</strong> {comment}
+                <strong>Sua comentário:</strong> {comment}
               </p>
             </div>
           ) : (

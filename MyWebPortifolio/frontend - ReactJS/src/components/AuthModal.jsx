@@ -7,6 +7,24 @@ const API_URLS = {
   register: "https://apigateway-qao8.onrender.com/api/users/register",
 };
 
+// Função utilitária para requisições com retry
+const fetchWithRetry = async (url, options, retries = 3, delay = 1000) => {
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    try {
+      const response = await fetch(url, options);
+      if (response.status >= 500 && response.status <= 502 && attempt < retries) {
+        await new Promise((resolve) => setTimeout(resolve, delay));
+        continue;
+      }
+      return response;
+    } catch (error) {
+      if (attempt === retries) throw error;
+      await new Promise((resolve) => setTimeout(resolve, delay));
+    }
+  }
+  throw new Error("Número máximo de tentativas excedido.");
+};
+
 const AuthModal = ({ handleLoginSuccess, onClose }) => {
   const [activeTab, setActiveTab] = useState("login");
   const [formData, setFormData] = useState({
@@ -88,7 +106,7 @@ const AuthModal = ({ handleLoginSuccess, onClose }) => {
             email: formData.email,
           };
 
-      const response = await fetch(url, {
+      const response = await fetchWithRetry(url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -101,7 +119,7 @@ const AuthModal = ({ handleLoginSuccess, onClose }) => {
           data.status === false && data.erro?.message
             ? data.erro.message
             : response.status >= 500
-            ? "Servidor indisponível, tente novamente mais tarde."
+            ? "Servidor indisponível após várias tentativas."
             : response.status === 401 || response.status === 403
             ? "Credenciais inválidas, tente novamente."
             : "Ocorreu um erro desconhecido."
@@ -171,7 +189,7 @@ const AuthModal = ({ handleLoginSuccess, onClose }) => {
 
         <form onSubmit={handleSubmit} className="auth-form">
           <h2>{activeTab === "login" ? "Entrar" : "Criar Conta"}</h2>
-
+          {isLoading && <div className="loading-bar" />}
           {activeTab === "register" && (
             <div className="form-group">
               <label htmlFor="name">Nome</label>

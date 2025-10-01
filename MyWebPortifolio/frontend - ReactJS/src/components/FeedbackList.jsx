@@ -1,6 +1,24 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import '../styles/feedbacklist.css';
 
+// Função utilitária para requisições com retry
+const fetchWithRetry = async (url, options, retries = 3, delay = 1000) => {
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    try {
+      const response = await fetch(url, options);
+      if (response.status >= 500 && response.status <= 502 && attempt < retries) {
+        await new Promise((resolve) => setTimeout(resolve, delay));
+        continue;
+      }
+      return response;
+    } catch (error) {
+      if (attempt === retries) throw error;
+      await new Promise((resolve) => setTimeout(resolve, delay));
+    }
+  }
+  throw new Error("Número máximo de tentativas excedido.");
+};
+
 // --- Componente: Item de Feedback ---
 const FeedbackItem = ({ feedback, colorClass }) => {
   // Formata a data para exibição
@@ -59,7 +77,7 @@ const FeedbackList = () => {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await fetch(API_URL, {
+      const response = await fetchWithRetry(API_URL, {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
       });
@@ -68,6 +86,8 @@ const FeedbackList = () => {
         throw new Error(
           response.status === 404
             ? 'Endpoint não encontrado. Verifique a URL da API.'
+            : response.status >= 500
+            ? 'Servidor indisponível após várias tentativas.'
             : `Erro ao buscar feedbacks: ${response.status} ${response.statusText}`
         );
       }
@@ -98,7 +118,12 @@ const FeedbackList = () => {
   // Renderiza conteúdo condicional
   const renderContent = () => {
     if (isLoading) {
-      return <p className="loading-text" aria-live="polite">Carregando feedbacks...</p>;
+      return (
+        <>
+          <div className="loading-bar" />
+          <p className="loading-text" aria-live="polite">Carregando feedbacks...</p>
+        </>
+      );
     }
     if (error) {
       return <p className="error-text" aria-live="assertive">{error}</p>;
@@ -114,7 +139,7 @@ const FeedbackList = () => {
       <div className="feedback-list" role="list">
         {feedbacks.map((fb, index) => (
           <FeedbackItem
-            key={fb.time + index} // Usar time + index para evitar chaves duplicadas
+            key={fb.time + index}
             feedback={fb}
             colorClass={index % 2 === 0 ? '' : 'whatsapp-bubble-alt'}
           />
