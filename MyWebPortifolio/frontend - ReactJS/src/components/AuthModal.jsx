@@ -19,10 +19,15 @@ const AuthModal = ({ handleLoginSuccess, onClose }) => {
   const [successMessage, setSuccessMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
+  // Valida o campo de nome em tempo real
+  const isNameValid = formData.name && /^[a-zA-Z\s\-\']+$/.test(formData.name);
+  const isUserNameValid = formData.userName.length > 0;
+  const isPasswordValid = formData.password.length >= 5 && formData.password.length <= 20;
+
   // Atualiza os campos do formulário
   const handleChange = (e) => {
     const { name, value } = e.target;
-    if (name === "name" && !/^[a-zA-Z\s\-\']*$/.test(value)) {
+    if (name === "name" && value && !/^[a-zA-Z\s\-\']*$/.test(value)) {
       setError("O nome deve conter apenas letras, espaços, hífens ou apóstrofos.");
       return;
     }
@@ -126,92 +131,135 @@ const AuthModal = ({ handleLoginSuccess, onClose }) => {
   };
 
   return (
-    <div className="auth-modal">
-      <button
-        className="close-button"
-        onClick={onClose}
-        aria-label="Fechar modal"
-      >
-        ✕
-      </button>
-      <div className="tabs">
+    <div className="modal-overlay">
+      <div className="container-modal">
         <button
-          className={`tab ${activeTab === "login" ? "active" : ""}`}
-          onClick={() => handleTabChange("login")}
+          className="close-button"
+          onClick={onClose}
+          aria-label="Fechar modal"
         >
-          Login
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            width="24"
+            height="24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
         </button>
-        <button
-          className={`tab ${activeTab === "register" ? "active" : ""}`}
-          onClick={() => handleTabChange("register")}
-        >
-          Cadastre-se
-        </button>
+        <div className="tabs">
+          <button
+            className={`tab ${activeTab === "login" ? "active" : ""}`}
+            onClick={() => handleTabChange("login")}
+          >
+            Login
+          </button>
+          <button
+            className={`tab ${activeTab === "register" ? "active" : ""}`}
+            onClick={() => handleTabChange("register")}
+          >
+            Cadastre-se
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="auth-form">
+          <h2>{activeTab === "login" ? "Entrar" : "Criar Conta"}</h2>
+
+          {activeTab === "register" && (
+            <div className="form-group">
+              <label htmlFor="name">Nome</label>
+              <div className="input-wrapper">
+                <input
+                  type="text"
+                  id="name"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  required
+                  aria-label="Nome completo"
+                  aria-invalid={error && formData.name ? "true" : "false"}
+                  className={isNameValid ? "valid" : ""}
+                />
+              </div>
+            </div>
+          )}
+
+          <div className="form-group">
+            <label htmlFor="userName">Nome de Usuário</label>
+            <div className="input-wrapper">
+              <input
+                type="text"
+                id="userName"
+                name="userName"
+                value={formData.userName}
+                onChange={handleChange}
+                required
+                aria-label="Nome de usuário"
+                aria-invalid={error && formData.userName ? "true" : "false"}
+                className={isUserNameValid ? "valid" : ""}
+              />
+            </div>
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="password">Senha</label>
+            <div className="input-wrapper">
+              <input
+                type="password"
+                id="password"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                required
+                minLength={5}
+                maxLength={20}
+                aria-label="Senha"
+                aria-invalid={error && formData.password ? "true" : "false"}
+                className={isPasswordValid ? "valid" : ""}
+              />
+            </div>
+          </div>
+
+          {activeTab === "register" && (
+            <div className="form-group">
+              <label htmlFor="email">Email (opcional)</label>
+              <div className="input-wrapper">
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  aria-label="Endereço de email"
+                />
+              </div>
+            </div>
+          )}
+
+          {error && <div className="error-message">{error}</div>}
+          {successMessage && <div className="success-message">{successMessage}</div>}
+
+          <button type="submit" className="submit-button" disabled={isLoading}>
+            {isLoading ? (
+              <>
+                <span className="spinner"></span>
+                Enviando...
+              </>
+            ) : activeTab === "login" ? (
+              "Entrar"
+            ) : (
+              "Cadastrar"
+            )}
+          </button>
+        </form>
       </div>
-
-      <form onSubmit={handleSubmit} className="auth-form">
-        <h2>{activeTab === "login" ? "Login" : "Cadastre-se"}</h2>
-
-        {activeTab === "register" && (
-          <div className="form-group">
-            <label htmlFor="name">Nome</label>
-            <input
-              type="text"
-              id="name"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              required
-            />
-          </div>
-        )}
-
-        <div className="form-group">
-          <label htmlFor="userName">Nome de Usuário</label>
-          <input
-            type="text"
-            id="userName"
-            name="userName"
-            value={formData.userName}
-            onChange={handleChange}
-            required
-          />
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="password">Senha</label>
-          <input
-            type="password"
-            id="password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-            required
-            minLength={5}
-            maxLength={20}
-          />
-        </div>
-
-        {activeTab === "register" && (
-          <div className="form-group">
-            <label htmlFor="email">Email (opcional)</label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-            />
-          </div>
-        )}
-
-        {error && <div className="error-message">{error}</div>}
-        {successMessage && <div className="success-message">{successMessage}</div>}
-
-        <button type="submit" className="submit-button" disabled={isLoading}>
-          {isLoading ? "Enviando..." : activeTab === "login" ? "Entrar" : "Cadastrar"}
-        </button>
-      </form>
     </div>
   );
 };
