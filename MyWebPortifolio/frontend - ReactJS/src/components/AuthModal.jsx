@@ -37,16 +37,35 @@ const AuthModal = ({ handleLoginSuccess, onClose }) => {
   const [successMessage, setSuccessMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  // Valida o campo de nome em tempo real
-  const isNameValid = formData.name && /^[a-zA-Z\s\-\']+$/.test(formData.name);
-  const isUserNameValid = formData.userName.length > 0;
-  const isPasswordValid = formData.password.length >= 5 && formData.password.length <= 20;
+  // Validações em tempo real
+  const isNameValid = formData.name &&
+    formData.name.length >= 5 &&
+    formData.name.length <= 100 &&
+    /^[A-Za-zÀ-ú\s'-]+$/.test(formData.name);
+
+  const isUserNameValid = formData.userName &&
+    formData.userName.length >= 5 &&
+    formData.userName.length <= 20 &&
+    /^\S+$/.test(formData.userName);
+
+  const isPasswordValid = formData.password &&
+    formData.password.length >= 8 &&
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(formData.password);
+
+  const isEmailValid = !formData.email || (
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email) &&
+    /^\S+$/.test(formData.email)
+  );
 
   // Atualiza os campos do formulário
   const handleChange = (e) => {
     const { name, value } = e.target;
-    if (name === "name" && value && !/^[a-zA-Z\s\-\']*$/.test(value)) {
+    if (name === "name" && value && !/^[A-Za-zÀ-ú\s'-]*$/.test(value)) {
       setError("O nome deve conter apenas letras, espaços, hífens ou apóstrofos.");
+      return;
+    }
+    if (name === "userName" && value && !/^\S*$/.test(value)) {
+      setError("O nome de usuário não pode conter espaços em branco.");
       return;
     }
     setFormData({ ...formData, [name]: value });
@@ -63,20 +82,48 @@ const AuthModal = ({ handleLoginSuccess, onClose }) => {
 
   // Valida os dados do formulário
   const validateForm = (isLogin) => {
-    if (!formData.userName || !formData.password) {
-      setError("Nome de usuário e senha são obrigatórios.");
+    if (!formData.userName) {
+      setError("O nome de usuário não pode estar em branco.");
       return false;
     }
-    if (formData.password.length < 5 || formData.password.length > 20) {
-      setError("A senha deve ter entre 5 e 20 caracteres.");
+    if (formData.userName.length < 5 || formData.userName.length > 20) {
+      setError("O nome de usuário deve ter entre 5 e 20 caracteres.");
+      return false;
+    }
+    if (!/^\S+$/.test(formData.userName)) {
+      setError("O nome de usuário não pode conter espaços em branco.");
+      return false;
+    }
+    if (!formData.password) {
+      setError("A senha não pode estar em branco.");
       return false;
     }
     if (!isLogin && !formData.name) {
-      setError("O nome é obrigatório para o cadastro.");
+      setError("O nome não pode estar em branco.");
       return false;
     }
-    if (!isLogin && !/^[a-zA-Z\s\-\']+$/.test(formData.name)) {
+    if (!isLogin && (formData.name.length < 5 || formData.name.length > 100)) {
+      setError("O nome deve ter entre 5 e 100 caracteres.");
+      return false;
+    }
+    if (!isLogin && !/^[A-Za-zÀ-ú\s'-]+$/.test(formData.name)) {
       setError("O nome deve conter apenas letras, espaços, hífens ou apóstrofos.");
+      return false;
+    }
+    if (formData.password.length < 8) {
+      setError("A senha deve ter no mínimo 8 caracteres.");
+      return false;
+    }
+    if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(formData.password)) {
+      setError("A senha deve conter pelo menos uma letra maiúscula, uma minúscula, um número e um caractere especial (@$!%*?&).");
+      return false;
+    }
+    if (!isLogin && formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      setError("O formato do e-mail é inválido.");
+      return false;
+    }
+    if (!isLogin && formData.email && !/^\S+$/.test(formData.email)) {
+      setError("O e-mail não pode conter espaços em branco.");
       return false;
     }
     return true;
@@ -98,12 +145,12 @@ const AuthModal = ({ handleLoginSuccess, onClose }) => {
     try {
       const url = isLogin ? API_URLS.login : API_URLS.register;
       const payload = isLogin
-        ? { userName: formData.userName, password: formData.password }
+        ? { userName: formData.userName.toUpperCase(), password: formData.password }
         : {
             name: formData.name,
-            userName: formData.userName,
+            userName: formData.userName.toUpperCase(),
             password: formData.password,
-            email: formData.email,
+            email: formData.email ? formData.email.toUpperCase() : "",
           };
 
       const response = await fetchWithRetry(url, {
@@ -202,10 +249,15 @@ const AuthModal = ({ handleLoginSuccess, onClose }) => {
                   onChange={handleChange}
                   required
                   aria-label="Nome completo"
-                  aria-invalid={error && formData.name ? "true" : "false"}
-                  className={isNameValid ? "valid" : ""}
+                  aria-invalid={formData.name && !isNameValid ? "true" : "false"}
+                  className={formData.name && isNameValid ? "valid" : ""}
                 />
               </div>
+              {activeTab === "register" && (
+                <div className="instruction-message">
+                  Nome deve ter 5-100 caracteres, apenas letras, espaços, hífens ou apóstrofos.
+                </div>
+              )}
             </div>
           )}
 
@@ -220,10 +272,15 @@ const AuthModal = ({ handleLoginSuccess, onClose }) => {
                 onChange={handleChange}
                 required
                 aria-label="Nome de usuário"
-                aria-invalid={error && formData.userName ? "true" : "false"}
-                className={isUserNameValid ? "valid" : ""}
+                aria-invalid={formData.userName && !isUserNameValid ? "true" : "false"}
+                className={formData.userName && isUserNameValid ? "valid" : ""}
               />
             </div>
+            {activeTab === "register" && (
+              <div className="instruction-message">
+                Nome de usuário deve ter 5-20 caracteres, sem espaços.
+              </div>
+            )}
           </div>
 
           <div className="form-group">
@@ -236,13 +293,16 @@ const AuthModal = ({ handleLoginSuccess, onClose }) => {
                 value={formData.password}
                 onChange={handleChange}
                 required
-                minLength={5}
-                maxLength={20}
                 aria-label="Senha"
-                aria-invalid={error && formData.password ? "true" : "false"}
-                className={isPasswordValid ? "valid" : ""}
+                aria-invalid={formData.password && !isPasswordValid ? "true" : "false"}
+                className={formData.password && isPasswordValid ? "valid" : ""}
               />
             </div>
+            {activeTab === "register" && (
+              <div className="instruction-message">
+                Senha deve ter no mínimo 8 caracteres, com uma letra maiúscula, uma minúscula, um número e um caractere especial (@$!%*?&).
+              </div>
+            )}
           </div>
 
           {activeTab === "register" && (
@@ -256,7 +316,12 @@ const AuthModal = ({ handleLoginSuccess, onClose }) => {
                   value={formData.email}
                   onChange={handleChange}
                   aria-label="Endereço de email"
+                  aria-invalid={formData.email && !isEmailValid ? "true" : "false"}
+                  className={formData.email && isEmailValid ? "valid" : ""}
                 />
+              </div>
+              <div className="instruction-message">
+                Email deve ser válido e sem espaços (opcional).
               </div>
             </div>
           )}

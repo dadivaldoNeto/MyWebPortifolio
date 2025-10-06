@@ -160,6 +160,15 @@
   font-size: 1.1rem;
 }
 
+/* ===== MENSAGENS DE INSTRUÇÃO ===== */
+.instruction-message {
+  font-size: 0.9rem;
+  color: #9ca3af;
+  margin-top: 8px;
+  padding-left: 12px;
+  line-height: 1.4;
+}
+
 /* ===== MENSAGENS DE FEEDBACK ===== */
 .error-message,
 .success-message {
@@ -267,6 +276,10 @@
   .form-group input[aria-invalid="true"]::after,
   .form-group input.valid::after {
     font-size: 1rem;
+  }
+
+  .instruction-message {
+    font-size: 0.85rem;
   }
 }
 
