@@ -20,7 +20,7 @@ const fetchWithRetry = async (url, options, retries = 3, delay = 1000) => {
 };
 
 // --- Componente: Item de Feedback ---
-const FeedbackItem = ({ feedback, colorClass }) => {
+const FeedbackItem = ({ feedback, colorClass, isAdmin, token, handleDelete }) => {
   // Formata a data para exibição
   const formatDateTime = useCallback((dateString) => {
     if (!dateString) return 'Data não disponível';
@@ -59,25 +59,35 @@ const FeedbackItem = ({ feedback, colorClass }) => {
         {renderRating(feedback.userRating)}
         <p className="feedback-item-comment">{feedback.feedback || 'Sem comentário'}</p>
         <div className="feedback-time">{formatDateTime(feedback.time)}</div>
+        {isAdmin && (
+          <button
+            className="delete-button"
+            onClick={() => handleDelete(feedback.id)}
+            aria-label="Deletar feedback"
+          >
+            delete
+          </button>
+        )}
       </div>
     </div>
   );
 };
 
 // --- Componente: Lista de Feedbacks ---
-const FeedbackList = () => {
+const FeedbackList = ({ userRole, token }) => {
   const [feedbacks, setFeedbacks] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const API_URL = 'https://microservice-feedback.onrender.com/feedbackservice/getallfeedbacks';
+  const API_BASE = 'https://apigateway-kgvz.onrender.com/api/feedback';
+  const isAdmin = userRole === "ADMIN";
 
   // Função para buscar feedbacks
   const fetchFeedbacks = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await fetchWithRetry(API_URL, {
+      const response = await fetchWithRetry(`${API_BASE}/getallfeedbacks`, {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
       });
@@ -109,6 +119,37 @@ const FeedbackList = () => {
       setIsLoading(false);
     }
   }, []);
+
+  // Função para deletar feedback
+  const handleDelete = async (id) => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const response = await fetchWithRetry(`${API_BASE}/deletefeedback/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(
+          response.status === 401 || response.status === 403
+            ? 'Não autorizado para deletar.'
+            : `Erro ao deletar feedback: ${response.status} ${response.statusText}`
+        );
+      }
+
+      // Refetch após delete bem-sucedido
+      fetchFeedbacks();
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Erro ao deletar feedback';
+      setError(message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   // Carrega feedbacks na montagem inicial
   useEffect(() => {
@@ -142,6 +183,9 @@ const FeedbackList = () => {
             key={fb.time + index}
             feedback={fb}
             colorClass={index % 2 === 0 ? '' : 'whatsapp-bubble-alt'}
+            isAdmin={isAdmin}
+            token={token}
+            handleDelete={handleDelete}
           />
         ))}
       </div>

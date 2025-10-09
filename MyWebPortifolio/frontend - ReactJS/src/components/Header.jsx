@@ -37,11 +37,11 @@ const Header = ({ isAuthenticated, handleLogin, handleLogout, openAuthModal }) =
     }
 
     const endpoints = [
-      "https://apigateway-qao8.onrender.com/api/auth/login",
-      "https://user-service-tj9w.onrender.com/api/users/register",
-      "https://authservice-5f3d.onrender.com/api/auth/login",
-      "https://processador-feedbacks.onrender.com/api/processfeedback/createfeedback",
-      "https://mailservice-6m9a.onrender.com/health"
+      "https://apigateway-kgvz.onrender.com/api/auth/login",
+      "https://user-service-9qaj.onrender.com/api/users/register",
+      "https://authservice-kbrd.onrender.com/api/auth/login",
+      "https://processador-feedbacks-72fc.onrender.com/api/processfeedback/createfeedback",
+      "https://mailservice-sgte.onrender.com/health"
     ];
 
     try {

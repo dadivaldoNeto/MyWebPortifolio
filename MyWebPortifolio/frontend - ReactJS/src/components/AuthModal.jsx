@@ -1,10 +1,11 @@
+// auth.js
 import React, { useState } from "react";
 import "../styles/authmodal.css";
 
 // URLs da API centralizadas
 const API_URLS = {
-  login: "https://apigateway-qao8.onrender.com/api/auth/login",
-  register: "https://apigateway-qao8.onrender.com/api/users/register",
+  login: "https://apigateway-kgvz.onrender.com/api/auth/login",
+  register: "https://apigateway-kgvz.onrender.com/api/users/register",
 };
 
 // Função utilitária para requisições com retry
@@ -39,18 +40,18 @@ const AuthModal = ({ handleLoginSuccess, onClose }) => {
 
   const isLogin = activeTab === "login";
 
-  // Validações em tempo real (simplificadas para login)
+  // Validações (sem alterações)
   const isNameValid = !isLogin && formData.name &&
     formData.name.length >= 5 &&
     formData.name.length <= 100 &&
     /^[A-Za-zÀ-ú\s'-]+$/.test(formData.name);
 
   const isUserNameValid = formData.userName &&
-    (!isLogin ? true : formData.userName.length >= 5) && // Para login: só não vazio; para register: regras completas
+    (!isLogin ? true : formData.userName.length >= 5) && 
     (isLogin || (formData.userName.length <= 20 && /^\S+$/.test(formData.userName)));
 
   const isPasswordValid = formData.password &&
-    (!isLogin ? true : formData.password.length >= 8) && // Para login: só não vazio; para register: regras completas
+    (!isLogin ? true : formData.password.length >= 8) &&
     (isLogin || /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(formData.password));
 
   const isEmailValid = !isLogin || !formData.email || (
@@ -58,10 +59,9 @@ const AuthModal = ({ handleLoginSuccess, onClose }) => {
     /^\S+$/.test(formData.email)
   );
 
-  // Atualiza os campos do formulário
   const handleChange = (e) => {
     const { name, value } = e.target;
-    if (!isLogin) { // Só aplica validações complexas no register
+    if (!isLogin) {
       if (name === "name" && value && !/^[A-Za-zÀ-ú\s'-]*$/.test(value)) {
         setError("O nome deve conter apenas letras, espaços, hífens ou apóstrofos.");
         return;
@@ -75,7 +75,6 @@ const AuthModal = ({ handleLoginSuccess, onClose }) => {
     setError("");
   };
 
-  // Muda entre abas (login/cadastro) e limpa o estado
   const handleTabChange = (tab) => {
     setActiveTab(tab);
     setFormData({ name: "", userName: "", password: "", email: "" });
@@ -83,59 +82,55 @@ const AuthModal = ({ handleLoginSuccess, onClose }) => {
     setSuccessMessage("");
   };
 
-  // Valida os dados do formulário (simplificado para login)
   const validateForm = () => {
+    // Validação (sem alterações)
     if (!formData.userName || !formData.password) {
       setError("Nome de usuário e senha são obrigatórios.");
       return false;
     }
-
     if (isLogin) {
-      // Para login: só checa se não vazios (sem mais validações)
       return true;
     } else {
-      // Para register: validações completas
-      if (!formData.name) {
-        setError("O nome não pode estar em branco.");
-        return false;
-      }
-      if (formData.name.length < 5 || formData.name.length > 100) {
-        setError("O nome deve ter entre 5 e 100 caracteres.");
-        return false;
-      }
-      if (!/^[A-Za-zÀ-ú\s'-]+$/.test(formData.name)) {
-        setError("O nome deve conter apenas letras, espaços, hífens ou apóstrofos.");
-        return false;
-      }
-      if (formData.userName.length < 5 || formData.userName.length > 20) {
-        setError("O nome de usuário deve ter entre 5 e 20 caracteres.");
-        return false;
-      }
-      if (!/^\S+$/.test(formData.userName)) {
-        setError("O nome de usuário não pode conter espaços em branco.");
-        return false;
-      }
-      if (formData.password.length < 8) {
-        setError("A senha deve ter no mínimo 8 caracteres.");
-        return false;
-      }
-      if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(formData.password)) {
-        setError("A senha deve conter pelo menos uma letra maiúscula, uma minúscula, um número e um caractere especial (@$!%*?&).");
-        return false;
-      }
-      if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-        setError("O formato do e-mail é inválido.");
-        return false;
-      }
-      if (formData.email && !/^\S+$/.test(formData.email)) {
-        setError("O e-mail não pode conter espaços em branco.");
-        return false;
-      }
-      return true;
+        if (!formData.name) {
+            setError("O nome não pode estar em branco.");
+            return false;
+          }
+          if (formData.name.length < 5 || formData.name.length > 100) {
+            setError("O nome deve ter entre 5 e 100 caracteres.");
+            return false;
+          }
+          if (!/^[A-Za-zÀ-ú\s'-]+$/.test(formData.name)) {
+            setError("O nome deve conter apenas letras, espaços, hífens ou apóstrofos.");
+            return false;
+          }
+          if (formData.userName.length < 5 || formData.userName.length > 20) {
+            setError("O nome de usuário deve ter entre 5 e 20 caracteres.");
+            return false;
+          }
+          if (!/^\S+$/.test(formData.userName)) {
+            setError("O nome de usuário não pode conter espaços em branco.");
+            return false;
+          }
+          if (formData.password.length < 8) {
+            setError("A senha deve ter no mínimo 8 caracteres.");
+            return false;
+          }
+          if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(formData.password)) {
+            setError("A senha deve conter pelo menos uma letra maiúscula, uma minúscula, um número e um caractere especial (@$!%*?&).");
+            return false;
+          }
+          if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+            setError("O formato do e-mail é inválido.");
+            return false;
+          }
+          if (formData.email && !/^\S+$/.test(formData.email)) {
+            setError("O e-mail não pode conter espaços em branco.");
+            return false;
+          }
+          return true;
     }
   };
 
-  // Envia o formulário (login ou cadastro)
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -150,7 +145,7 @@ const AuthModal = ({ handleLoginSuccess, onClose }) => {
     try {
       const url = isLogin ? API_URLS.login : API_URLS.register;
       const payload = isLogin
-        ? { userName: formData.userName, password: formData.password } // Sem uppercase para login
+        ? { userName: formData.userName, password: formData.password }
         : {
             name: formData.name,
             userName: formData.userName.toUpperCase(),
@@ -165,8 +160,19 @@ const AuthModal = ({ handleLoginSuccess, onClose }) => {
       });
 
       const data = await response.json();
+      // Log adicionado para depurar a resposta completa da API
+      console.log('Resposta completa da API:', data);
 
       if (!response.ok) {
+        // Log de erro no console para depuração
+        console.error('Erro na resposta da API:', {
+          status: response.status,
+          statusText: response.statusText,
+          url: url,
+          payload: payload,
+          data: data
+        });
+
         setError(
           data.status === false && data.erro?.message
             ? data.erro.message
@@ -182,7 +188,16 @@ const AuthModal = ({ handleLoginSuccess, onClose }) => {
 
       if (data.status === true) {
         if (isLogin) {
-          handleLoginSuccess({ token: data.dados?.token || data.token });
+          // Log adicionado para depurar os dados antes de passar para handleLoginSuccess
+          console.log('Dados para login success:', data.dados);
+
+          // Remapeamento para corrigir a estrutura (userResponseDTO -> user)
+          const loginData = {
+            token: data.dados.token,
+            user: data.dados.userResponseDTO || {}, // Evita undefined se não existir
+          };
+
+          handleLoginSuccess(loginData);
           onClose();
         } else {
           setSuccessMessage(
@@ -194,12 +209,21 @@ const AuthModal = ({ handleLoginSuccess, onClose }) => {
         setError("Resposta inesperada do servidor.");
       }
     } catch (error) {
+      // Log de erro no console para depuração
+      console.error('Erro de conexão ou execução na API:', {
+        message: error.message,
+        stack: error.stack,
+        url: isLogin ? API_URLS.login : API_URLS.register,
+        payload: isLogin ? { userName: formData.userName, password: formData.password } : { ...formData }
+      });
+
       setError("Erro de conexão com o servidor. Verifique sua internet e tente novamente.");
     } finally {
       setIsLoading(false);
     }
   };
 
+  // O restante do JSX permanece o mesmo
   return (
     <div className="modal-overlay">
       <div className="container-modal">

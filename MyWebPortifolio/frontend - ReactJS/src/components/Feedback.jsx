@@ -231,7 +231,7 @@ const Feedback = ({ isAuthenticated, token, openAuthModal }) => {
 
     try {
       const response = await fetchWithRetry(
-        "https://apigateway-qao8.onrender.com/api/processfeedback/createfeedback",
+        "https://apigateway-kgvz.onrender.com/api/processfeedback/createfeedback",
         {
           method: "POST",
           headers: {

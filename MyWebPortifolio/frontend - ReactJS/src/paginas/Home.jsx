@@ -20,6 +20,7 @@ const Home = () => {
   const [activeModalContent, setActiveModalContent] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [token, setToken] = useState(null);
+  const [userRole, setUserRole] = useState(null);
 
   useEffect(() => {
     setActiveModalContent(1); // Abre modal de apresentação ao carregar
@@ -35,13 +36,15 @@ const Home = () => {
 
   const handleLogin = (data) => {
     setIsAuthenticated(true);
-    setToken(data.token); // Armazena o token
+    setToken(data.token);
+    setUserRole(data.user.role);
     closeModal();
   };
 
   const handleLogout = () => {
     setIsAuthenticated(false);
     setToken(null);
+    setUserRole(null);
   };
 
   const openAuthModal = () => {
@@ -102,7 +105,7 @@ const Home = () => {
             </section>
             <hr className="separator" />
             <section id="feedbackList">
-              <FeedbackList />
+              <FeedbackList userRole={userRole} token={token} />
             </section>
           </div>
         </main>
