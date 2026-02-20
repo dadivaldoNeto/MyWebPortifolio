@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import '../styles/feedbacklist.css';
 
-// Função utilitária para requisições com retry
+// --- Função utilitária para requisições com retry ---
 const fetchWithRetry = async (url, options, retries = 3, delay = 1000) => {
   for (let attempt = 1; attempt <= retries; attempt++) {
     try {
@@ -19,7 +19,7 @@ const fetchWithRetry = async (url, options, retries = 3, delay = 1000) => {
   throw new Error("Número máximo de tentativas excedido.");
 };
 
-// --- Componente: Item de Feedback ---
+// --- Componente: Item de Feedback (AGORA COM FOTO) ---
 const FeedbackItem = ({ feedback, colorClass, isAdmin, token, handleDelete }) => {
   // Formata a data para exibição
   const formatDateTime = useCallback((dateString) => {
@@ -52,13 +52,34 @@ const FeedbackItem = ({ feedback, colorClass, isAdmin, token, handleDelete }) =>
     );
   }, []);
 
+  // IMAGEM FAKE PADRÃO (Silhueta)
+  const defaultAvatar = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png";
+  
+  // Tenta pegar a foto da API (quando você criar no Java), se não existir, usa a Fake
+  const userPhoto = feedback.fotoperfil || defaultAvatar;
+
   return (
     <div className="whatsapp-bubble-container">
       <div className={`whatsapp-bubble ${colorClass}`} role="article">
-        <p className="feedback-item-username">{feedback.criadoPor || 'Usuário Anônimo'}</p>
-        {renderRating(feedback.notaAvaliacao)}
+        
+        {/* CABEÇALHO DO FEEDBACK: Foto + Nome + Estrelas */}
+        <div className="feedback-header">
+          <img 
+            src={userPhoto} 
+            alt={`Foto de ${feedback.criadoPor || 'Usuário'}`} 
+            className="feedback-avatar" 
+          />
+          <div className="feedback-user-info">
+            <p className="feedback-item-username">{feedback.criadoPor || 'Usuário Anônimo'}</p>
+            {renderRating(feedback.notaAvaliacao)}
+          </div>
+        </div>
+
+        {/* CORPO DO FEEDBACK: Comentário e Data */}
         <p className="feedback-item-comment">{feedback.comentario || 'Sem comentário'}</p>
         <div className="feedback-time">{formatDateTime(feedback.dataDeCriacao)}</div>
+        
+        {/* BOTÃO DE DELETAR (Apenas para ADMIN) */}
         {isAdmin && (
           <button
             className="delete-button"
@@ -73,14 +94,14 @@ const FeedbackItem = ({ feedback, colorClass, isAdmin, token, handleDelete }) =>
   );
 };
 
-// --- Componente: Lista de Feedbacks ---
+// --- Componente: Lista de Feedbacks Principal ---
 const FeedbackList = ({ userRole, token }) => {
   const [feedbacks, setFeedbacks] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
   const API_BASE = 'https://api-java-brunof-dkaqbfaheabebcbh.eastus-01.azurewebsites.net/feedback';
-  const isAdmin = userRole === "ADMIN";
+  const isAdmin = userRole === "ADMIN" || userRole === "ADMIN1"; // Ajuste caso você use as roles do seu backend
 
   // Função para buscar feedbacks
   const fetchFeedbacks = useCallback(async () => {
@@ -105,8 +126,8 @@ const FeedbackList = ({ userRole, token }) => {
       const data = await response.json();
       const sortedFeedbacks = Array.isArray(data.dados)
         ? data.dados.sort((a, b) => {
-            const dateA = a.time ? new Date(a.time).getTime() : 0;
-            const dateB = b.time ? new Date(b.time).getTime() : 0;
+            const dateA = a.dataDeCriacao ? new Date(a.dataDeCriacao).getTime() : 0;
+            const dateB = b.dataDeCriacao ? new Date(b.dataDeCriacao).getTime() : 0;
             return dateB - dateA; // Mais recente primeiro
           })
         : [];
@@ -141,7 +162,7 @@ const FeedbackList = ({ userRole, token }) => {
         );
       }
 
-      // Refetch após delete bem-sucedido
+      // Refetch após delete bem-sucedido para atualizar a tela
       fetchFeedbacks();
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Erro ao deletar feedback';
@@ -156,7 +177,7 @@ const FeedbackList = ({ userRole, token }) => {
     fetchFeedbacks();
   }, [fetchFeedbacks]);
 
-  // Renderiza conteúdo condicional
+  // Renderiza conteúdo condicional (Loading, Erro ou a Lista)
   const renderContent = () => {
     if (isLoading) {
       return (
@@ -180,7 +201,7 @@ const FeedbackList = ({ userRole, token }) => {
       <div className="feedback-list" role="list">
         {feedbacks.map((fb, index) => (
           <FeedbackItem
-            key={fb.time + index}
+            key={fb.id || index} // Usa o ID real do banco como chave, mais seguro que o tempo
             feedback={fb}
             colorClass={index % 2 === 0 ? '' : 'whatsapp-bubble-alt'}
             isAdmin={isAdmin}

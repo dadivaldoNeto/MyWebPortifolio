@@ -13,6 +13,7 @@ import ModalApresentacao from "../components/ModalApresentacao";
 import Feedback from "../components/Feedback";
 import FeedbackList from "../components/FeedbackList";
 import MatrixBackground from "../components/MatrixBackground";
+import EditProfile from "../components/EditProfile";
 import "../styles/global.css";
 import "../styles/home.css";
 
@@ -22,73 +23,64 @@ const Home = () => {
   const [token, setToken] = useState(null);
   const [userRole, setUserRole] = useState(null);
   const [userName, setUserName] = useState(null);
+  
+  // NOVO: Gerenciador de Telas Universal
+  const [currentView, setCurrentView] = useState("home"); 
 
   useEffect(() => {
     setActiveModalContent(1); // Abre modal de apresentação ao carregar
   }, []);
 
-  const openModal = (index) => {
-    setActiveModalContent(index);
-  };
+  const closeModal = () => setActiveModalContent(null);
+  const openAuthModal = () => setActiveModalContent("auth");
 
-  const closeModal = () => {
-    setActiveModalContent(null);
+  const handleLogin = (data) => {
+    setIsAuthenticated(true);
+    setToken(data.token);
+    setUserRole(data.user.role);
+    setUserName(data.user.userName);
+    closeModal();
   };
-
-const handleLogin = (data) => {
-  setIsAuthenticated(true);
-  setToken(data.token);
-  setUserRole(data.user.role);
-  setUserName(data.user.userName);
-  closeModal();
-};
 
   const handleLogout = () => {
-  setIsAuthenticated(false);
-  setToken(null);
-  setUserRole(null);
-  setUserName(null);
-};
-
-  const openAuthModal = () => {
-    setActiveModalContent("auth");
+    setIsAuthenticated(false);
+    setToken(null);
+    setUserRole(null);
+    setUserName(null);
+    goHome(); // Garante que volte pro início ao sair
   };
 
-  return (
-    <div className="container">
-      <MatrixBackground />
-      <Header
-        isAuthenticated={isAuthenticated}
-        userName={userName}
-        handleLogin={handleLogin}
-        handleLogout={handleLogout}
-        openAuthModal={openAuthModal}
+  // ==========================================
+  // NOVO: NAVEGAÇÃO ENTRE TELAS E SCROLL
+  // ==========================================
+  const openEditProfile = () => {
+    setCurrentView("editProfile");
+    window.scrollTo({ top: 0, behavior: "smooth" }); // Rola pro topo suavemente
+  };
 
-      />
-      <div className="content">
-        {/* Modal de Apresentação */}
-        <Modal isOpen={activeModalContent === 1} onClose={closeModal}>
-          <ModalApresentacao onClose={closeModal} />
-        </Modal>
-        {/* Modal de Sobre */}
-        <Modal isOpen={activeModalContent === 2} onClose={closeModal}>
-          <About />
-        </Modal>
-        {/* Modal de Experiência */}
-        <Modal isOpen={activeModalContent === 3} onClose={closeModal}>
-          <Experience />
-        </Modal>
-        {/* Modal de Autenticação */}
-        <Modal isOpen={activeModalContent === "auth"} onClose={closeModal}>
-          <AuthModal handleLoginSuccess={handleLogin} onClose={closeModal} />
-        </Modal>
-        <Sidebar />
-        <main className="main-content">
-          <div className="main-container">
+  const goHome = () => {
+    setCurrentView("home");
+    window.scrollTo({ top: 0, behavior: "smooth" }); // Rola pro topo suavemente
+  };
+
+  // ==========================================
+  // RENDERIZADOR DO PAINEL PRINCIPAL
+  // ==========================================
+  const renderMainContent = () => {
+    switch (currentView) {
+      case "editProfile":
+        return <EditProfile onClose={goHome} userName={userName} />;
+      
+      // No futuro, você pode adicionar: 
+      // case "configuracoes": return <Config />
+      
+      case "home":
+      default:
+        return (
+          <>
             <section className="section-about" id="about">
               <About />
             </section>
-            
             <hr className="separator" />
             <section id="skills">
               <Skills />
@@ -109,6 +101,45 @@ const handleLogin = (data) => {
             <section id="feedbackList">
               <FeedbackList userRole={userRole} token={token} />
             </section>
+          </>
+        );
+    }
+  };
+
+  return (
+    <div className="container">
+      <MatrixBackground />
+      <Header
+        isAuthenticated={isAuthenticated}
+        userName={userName}
+        handleLogin={handleLogin}
+        handleLogout={handleLogout}
+        openAuthModal={openAuthModal}
+        openEditProfile={openEditProfile}
+        goHome={goHome} // O Header agora usa a função que sobe a tela!
+      />
+      
+      <div className="content">
+        {/* Modais */}
+        <Modal isOpen={activeModalContent === 1} onClose={closeModal}>
+          <ModalApresentacao onClose={closeModal} />
+        </Modal>
+        <Modal isOpen={activeModalContent === 2} onClose={closeModal}>
+          <About />
+        </Modal>
+        <Modal isOpen={activeModalContent === 3} onClose={closeModal}>
+          <Experience />
+        </Modal>
+        <Modal isOpen={activeModalContent === "auth"} onClose={closeModal}>
+          <AuthModal handleLoginSuccess={handleLogin} onClose={closeModal} />
+        </Modal>
+
+        <Sidebar />
+        
+        <main className="main-content">
+          <div className="main-container">
+            {/* O gerenciador de telas faz a troca dos componentes aqui */}
+            {renderMainContent()}
           </div>
         </main>
       </div>

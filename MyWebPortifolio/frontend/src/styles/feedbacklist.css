@@ -24,6 +24,7 @@
   max-width: 800px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
   font-size: var(--font-size-base);
+  transition: border 0.3s ease;
 }
 
 .feedback-list-container:hover {
@@ -124,11 +125,12 @@
 .whatsapp-bubble {
   position: relative;
   background-color: var(--bubble-bg);
-  padding: 12px;
-  border-radius: 8px;
+  padding: 16px; /* Aumentei o padding para respirar mais */
+  border-radius: 12px;
   width: 100%;
   max-width: 90%;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .whatsapp-bubble:hover {
@@ -145,21 +147,57 @@
   color: #000;
 }
 
-/* Nome do usuário */
+/* =========================================
+   NOVO: CABEÇALHO DO FEEDBACK (FOTO + NOME)
+   ========================================= */
+.feedback-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 10px;
+}
+
+/* A foto redonda (Avatar) */
+.feedback-avatar {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--highlight-color);
+  background-color: #222;
+}
+
+/* Container que empilha o nome e as estrelas */
+.feedback-user-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Ajuste no nome para alinhar com as estrelas */
 .feedback-item-username {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: bold;
   color: var(--highlight-color);
-  margin: 0 0 8px 0;
+  margin: 0 0 2px 0;
   word-wrap: break-word;
 }
+
+/* Quando passa o mouse na bolha, o nome tem que ficar preto pra dar leitura */
+.whatsapp-bubble:hover .feedback-item-username {
+  color: #000; 
+}
+
+/* ========================================= */
 
 /* Estrelas de avaliação */
 .feedback-item-rating {
   display: flex;
-  gap: 5px;
-  margin-bottom: 8px;
-  font-size: 20px;
+  gap: 2px;
+  font-size: 16px; /* Reduzi um pouco a estrela pra caber bonitinho debaixo do nome */
+  margin: 0;
 }
 
 .feedback-item-rating .full-stars {
@@ -173,8 +211,9 @@
 /* Comentário */
 .feedback-item-comment {
   font-size: var(--font-size-base);
-  color: var(--text-primary);
+  color: inherit; /* Herda a cor para funcionar bem no hover */
   margin: 0;
+  line-height: 1.5;
   word-wrap: break-word;
 }
 
@@ -183,7 +222,13 @@
   font-size: var(--font-size-small);
   color: var(--text-secondary);
   text-align: right;
-  margin-top: 8px;
+  margin-top: 10px;
+}
+
+/* O texto da hora tem que escurecer quando a bolha fica verde */
+.whatsapp-bubble:hover .feedback-time,
+.whatsapp-bubble:hover .feedback-item-rating .empty-stars {
+  color: #333; 
 }
 
 /* Botão de delete */
@@ -192,7 +237,7 @@
   bottom: 10px;
   right: 10px;
   background-color: var(--error-color);
-  color: var(--text-primary);
+  color: #fff;
   border: none;
   padding: 5px 10px;
   border-radius: 5px;
@@ -246,14 +291,20 @@
 
   .whatsapp-bubble {
     max-width: 100%;
+    padding: 12px;
+  }
+
+  .feedback-avatar {
+    width: 38px;
+    height: 38px;
   }
 
   .feedback-item-username {
-    font-size: 13px;
+    font-size: 14px;
   }
 
   .feedback-item-rating {
-    font-size: 18px;
+    font-size: 14px;
   }
 
   .feedback-item-comment {

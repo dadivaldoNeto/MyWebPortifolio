@@ -34,6 +34,54 @@
   margin: 0 auto;
 }
 
+/* ===== NOVO: AVATAR NO HEADER ===== */
+.header-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #48bb78; /* Bordinha verde combinando com o tema */
+  background-color: #222;
+  box-shadow: 0 0 8px rgba(72, 187, 120, 0.4);
+  transition: transform 0.3s ease;
+}
+
+/* Dá um efeito legal de leve crescimento na foto quando passa o mouse no botão */
+.user-menu-button:hover .header-avatar {
+  transform: scale(1.1);
+  box-shadow: 0 0 12px rgba(72, 187, 120, 0.6);
+
+}
+/* ===== ESTILO PARA O BOTÃO HOME (Igualando aos Links) ===== */
+.nav-link.btn-home {
+  background: transparent; /* Remove o fundo nativo do botão */
+  border: none; /* Remove a borda padrão */
+  font-family: inherit; /* Usa a mesma fonte do menu */
+  cursor: pointer;
+  display: inline-block;
+}
+
+/* Garante que o sublinhado verde e o hover funcionem igual aos outros links */
+.nav-link.btn-home::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #48bb78;
+  transition: width 0.3s ease;
+}
+
+.nav-link.btn-home:hover::after {
+  width: 70%;
+}
+
+.nav-link.btn-home:hover {
+  color: #ffffff;
+  background: rgba(72, 187, 120, 0.1);
+}
 /* ===== NAVEGAÇÃO ===== */
 .nav {
   display: flex;
@@ -227,6 +275,87 @@
 .auth-button:hover:not(:disabled) {
   background: #38a169;
   transform: translateY(-2px);
+}
+/* ===== NOVO: MENU DO USUÁRIO (DROPDOWN) ===== */
+.user-menu-container {
+  position: relative;
+  display: inline-block;
+}
+
+.user-menu-button {
+  background: rgba(72, 187, 120, 0.1); /* Fundo verde translúcido */
+  color: #e0e0e0;
+  border: 1px solid rgba(72, 187, 120, 0.3);
+  border-radius: 8px;
+  padding: 10px 18px;
+  font-size: 1rem;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+}
+
+.user-menu-button:hover {
+  background: rgba(72, 187, 120, 0.2);
+  color: #fff;
+  border-color: #48bb78;
+}
+
+.user-menu-button strong {
+  color: #48bb78; /* Deixa o seu nome em destaque verde */
+}
+
+/* A caixa suspensa com as opções */
+.user-dropdown {
+  position: absolute;
+  top: calc(100% + 10px); /* Fica logo abaixo do botão */
+  right: 0;
+  background: #1a1a1a;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-width: 160px;
+  z-index: 1005;
+  animation: fadeInDropdown 0.2s ease-in-out;
+}
+
+/* Os botões dentro da caixa */
+.dropdown-item {
+  background: none;
+  border: none;
+  color: #e0e0e0;
+  padding: 14px 16px;
+  text-align: left;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+  font-family: 'Inter', sans-serif;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.dropdown-item:last-child {
+  border-bottom: none;
+}
+
+.dropdown-item:hover {
+  background: rgba(72, 187, 120, 0.15);
+  color: #48bb78;
+}
+
+/* Botão de sair com cor avermelhada no hover para indicar perigo/saída */
+.dropdown-item.logout:hover {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+}
+
+@keyframes fadeInDropdown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 /* ===== ESTILOS MOBILE ===== */
