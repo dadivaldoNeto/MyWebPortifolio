@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "../styles/editProfile.css"; 
+import "../styles/editprofile.css"; 
 
 const EditProfile = ({ onClose, userName }) => {
   // Estado inicial com a imagem neutra (silhueta)
