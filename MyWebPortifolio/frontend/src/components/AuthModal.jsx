@@ -1,9 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "../styles/authmodal.css";
 
 const API_URLS = {
   login: "https://api-java-brunof-dkaqbfaheabebcbh.eastus-01.azurewebsites.net/auth/login",
   register: "https://api-java-brunof-dkaqbfaheabebcbh.eastus-01.azurewebsites.net/usuario/cadastro",
+  verify: "https://api-java-brunof-dkaqbfaheabebcbh.eastus-01.azurewebsites.net/usuario/verificar",
+  resend: "https://api-java-brunof-dkaqbfaheabebcbh.eastus-01.azurewebsites.net/usuario/reenviar-codigo",
 };
 
 const fetchWithRetry = async (url, options, retries = 3, delay = 1000) => {
@@ -24,22 +26,29 @@ const fetchWithRetry = async (url, options, retries = 3, delay = 1000) => {
 };
 
 const AuthModal = ({ handleLoginSuccess, onClose }) => {
-  const [activeTab, setActiveTab] = useState("login");
+  const [activeTab, setActiveTab] = useState("login"); // login, register, verify
   const [formData, setFormData] = useState({
-    name: "",
-    userName: "",
-    password: "",
-    email: "",
+    name: "", userName: "", password: "", email: "", code: ""
   });
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [resendTimer, setResendTimer] = useState(0);
+  const [tempUser, setTempUser] = useState(null);
+
+  useEffect(() => {
+    let interval;
+    if (resendTimer > 0) {
+      interval = setInterval(() => setResendTimer((prev) => prev - 1), 1000);
+    }
+    return () => clearInterval(interval);
+  }, [resendTimer]);
 
   const isLogin = activeTab === "login";
 
-  const isNameValid = !isLogin && formData.name &&
-    formData.name.length >= 5 &&
-    formData.name.length <= 100 &&
+  // VALIDAÇÕES VISUAIS
+  const isNameValid = !isLogin && activeTab !== "verify" && formData.name &&
+    formData.name.length >= 5 && formData.name.length <= 100 &&
     /^[A-Za-zÀ-ú\s'-]+$/.test(formData.name);
 
   const isUserNameValid = formData.userName &&
@@ -50,14 +59,13 @@ const AuthModal = ({ handleLoginSuccess, onClose }) => {
     (!isLogin ? true : formData.password.length >= 8) &&
     (isLogin || /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(formData.password));
 
-  const isEmailValid = !isLogin || !formData.email || (
-    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email) &&
-    /^\S+$/.test(formData.email)
+  const isEmailValid = (!isLogin && activeTab !== "verify") || !formData.email || (
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email) && /^\S+$/.test(formData.email)
   );
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    if (!isLogin) {
+    if (activeTab === "register") {
       if (name === "name" && value && !/^[A-Za-zÀ-ú\s'-]*$/.test(value)) {
         setError("O nome deve conter apenas letras, espaços, hífens ou apóstrofos.");
         return;
@@ -73,57 +81,48 @@ const AuthModal = ({ handleLoginSuccess, onClose }) => {
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);
-    setFormData({ name: "", userName: "", password: "", email: "" });
+    setFormData({ name: "", userName: "", password: "", email: "", code: "" });
     setError("");
     setSuccessMessage("");
   };
 
+  const handleResendCode = async () => {
+    if (resendTimer > 0 || isLoading) return;
+    setIsLoading(true);
+    try {
+      await fetchWithRetry(API_URLS.resend, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: formData.email }),
+      });
+      setResendTimer(60);
+      setSuccessMessage("Novo código enviado com sucesso!");
+    } catch (err) {
+      setError("Erro ao reenviar código.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const validateForm = () => {
+    if (activeTab === "verify") return formData.code.length === 6;
     if (!formData.userName || !formData.password) {
       setError("Nome de usuário e senha são obrigatórios.");
       return false;
     }
-    if (isLogin) {
-      return true;
-    } else {
-        if (!formData.name) {
-            setError("O nome não pode estar em branco.");
-            return false;
-          }
-          if (formData.name.length < 5 || formData.name.length > 100) {
-            setError("O nome deve ter entre 5 e 100 caracteres.");
-            return false;
-          }
-          if (!/^[A-Za-zÀ-ú\s'-]+$/.test(formData.name)) {
-            setError("O nome deve conter apenas letras, espaços, hífens ou apóstrofos.");
-            return false;
-          }
-          if (formData.userName.length < 5 || formData.userName.length > 20) {
-            setError("O nome de usuário deve ter entre 5 e 20 caracteres.");
-            return false;
-          }
-          if (!/^\S+$/.test(formData.userName)) {
-            setError("O nome de usuário não pode conter espaços em branco.");
-            return false;
-          }
-          if (formData.password.length < 8) {
-            setError("A senha deve ter no mínimo 8 caracteres.");
-            return false;
-          }
-          if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(formData.password)) {
-            setError("A senha deve conter pelo menos uma letra maiúscula, uma minúscula, um número e um caractere especial (@$!%*?&).");
-            return false;
-          }
-          if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-            setError("O formato do e-mail é inválido.");
-            return false;
-          }
-          if (formData.email && !/^\S+$/.test(formData.email)) {
-            setError("O e-mail não pode conter espaços em branco.");
-            return false;
-          }
-          return true;
+    if (isLogin) return true;
+
+    if (!formData.name) { setError("O nome não pode estar em branco."); return false; }
+    if (formData.name.length < 5 || formData.name.length > 100) { setError("O nome deve ter entre 5 e 100 caracteres."); return false; }
+    if (!/^[A-Za-zÀ-ú\s'-]+$/.test(formData.name)) { setError("O nome deve conter apenas letras, espaços, hífens ou apóstrofos."); return false; }
+    if (formData.userName.length < 5 || formData.userName.length > 20) { setError("O nome de usuário deve ter entre 5 e 20 caracteres."); return false; }
+    if (!/^\S+$/.test(formData.userName)) { setError("O nome de usuário não pode conter espaços em branco."); return false; }
+    if (formData.password.length < 8) { setError("A senha deve ter no mínimo 8 caracteres."); return false; }
+    if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(formData.password)) {
+      setError("A senha não atende aos requisitos de segurança.");
+      return false;
     }
+    return true;
   };
 
   const handleSubmit = async (e) => {
@@ -138,72 +137,60 @@ const AuthModal = ({ handleLoginSuccess, onClose }) => {
     }
 
     try {
-      const url = isLogin ? API_URLS.login : API_URLS.register;
-      const payload = isLogin
-        ? { cpf: formData.userName, senha: formData.password }
-        : {
-            nome: formData.name,
-            email: formData.email || "",
-            userName: formData.userName,
-            senha: formData.password,
-          };
+      let url = API_URLS[activeTab];
+      let payload;
+
+      if (activeTab === "verify") {
+        payload = { email: formData.email, codigo: formData.code };
+      } else {
+        payload = isLogin
+          ? { cpf: formData.userName, senha: formData.password }
+          : { nome: formData.name, email: formData.email || "", userName: formData.userName, senha: formData.password };
+      }
 
       const response = await fetchWithRetry(url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
+
+      // --- LOG ESTRATÉGICO AQUI ---
       const data = await response.json();
-      console.log('Resposta completa da API:', data);
+      console.log('🔍 DEBUG API - Resposta completa:', data);
 
       if (!response.ok) {
-        console.error('Erro na resposta da API:', {
-          status: response.status,
-          statusText: response.statusText,
-          url: url,
-          payload: payload,
-          data: data
-        });
-
-        setError(
-          data.status === false && data.erro?.message
-            ? data.erro.message
-            : response.status >= 500
-            ? "Servidor indisponível após várias tentativas."
-            : response.status === 401 || response.status === 403
-            ? "Credenciais inválidas, tente novamente."
-            : "Ocorreu um erro desconhecido."
-        );
+        setError(data.erro?.message || "Erro na resposta da API.");
         setIsLoading(false);
         return;
       }
 
       if (data.status === true) {
-        if (isLogin) {
-          console.log('Dados para login success:', data.dados);
-          const loginData = {
-            token: data.dados.token,
-            user: data.dados.clienteDTO || {},
-          };
-          handleLoginSuccess(loginData);
+        if (activeTab === "login") {
+          const user = data.dados.clienteDTO || {};
+          
+          if (user.contaAtiva === false) {
+            setTempUser(data.dados); 
+            setFormData({ ...formData, email: user.email });
+            setActiveTab("verify");
+            setSuccessMessage("Sua conta ainda não está ativa. Verifique seu e-mail.");
+          } else {
+            handleLoginSuccess({ token: data.dados.token, user });
+            onClose();
+          }
+        } else if (activeTab === "register") {
+          setFormData({ ...formData, email: data.dados.email });
+          setActiveTab("verify");
+        } else if (activeTab === "verify") {
+          handleLoginSuccess({ 
+            token: tempUser?.token || data.dados.token, 
+            user: data.dados.clienteDTO || data.dados 
+          });
           onClose();
-        } else {
-          setSuccessMessage(
-            `Cadastro realizado com sucesso, ${data.dados.nome || "usuário"}! Bem-vindo(a)!`
-          );
-          setTimeout(() => handleTabChange("login"), 3000);
         }
-      } else {
-        setError("Resposta inesperada do servidor.");
       }
     } catch (error) {
-      console.error('Erro de conexão ou execução na API:', {
-        message: error.message,
-        stack: error.stack,
-        url: isLogin ? API_URLS.login : API_URLS.register,
-        payload: isLogin ? { userName: formData.userName, password: formData.password } : { ...formData }
-      });
-      setError("Erro de conexão com o servidor. Verifique sua internet e tente novamente.");
+      console.error('❌ Erro na execução:', error);
+      setError("Erro de conexão com o servidor.");
     } finally {
       setIsLoading(false);
     }
@@ -212,146 +199,69 @@ const AuthModal = ({ handleLoginSuccess, onClose }) => {
   return (
     <div className="modal-overlay">
       <div className="auth-modal">
-        <button
-          className="close-button"
-          onClick={onClose}
-          aria-label="Fechar modal"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            width="24"
-            height="24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M6 18L18 6M6 6l12 12"
-            />
+        <button className="close-button" onClick={onClose}>
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" viewBox="0 0 24 24" width="24" height="24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
-        <div className="tabs">
-          <button
-            className={`tab ${activeTab === "login" ? "active" : ""}`}
-            onClick={() => handleTabChange("login")}
-          >
-            Login
-          </button>
-          <button
-            className={`tab ${activeTab === "register" ? "active" : ""}`}
-            onClick={() => handleTabChange("register")}
-          >
-            Cadastre-se
-          </button>
-        </div>
+
+        {activeTab !== "verify" && (
+          <div className="tabs">
+            <button className={`tab ${isLogin ? "active" : ""}`} onClick={() => handleTabChange("login")}>Login</button>
+            <button className={`tab ${activeTab === "register" ? "active" : ""}`} onClick={() => handleTabChange("register")}>Cadastre-se</button>
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="auth-form">
-          <h2>{activeTab === "login" ? "Entrar" : "Criar Conta"}</h2>
+          <h2>{activeTab === "verify" ? "Validar E-mail" : isLogin ? "Entrar" : "Criar Conta"}</h2>
           {isLoading && <div className="loading-bar" />}
-          {activeTab === "register" && (
-            <div className="form-group">
-              <label htmlFor="name">Nome</label>
-              <div className="input-wrapper">
-                <input
-                  type="text"
-                  id="name"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  required
-                  aria-label="Nome completo"
-                  aria-invalid={formData.name && !isNameValid ? "true" : "false"}
-                  className={formData.name && isNameValid ? "valid" : ""}
-                />
-              </div>
-              <div className="instruction-message">
-                Nome deve ter 5-100 caracteres, apenas letras, espaços, hífens ou apóstrofos.
-              </div>
-            </div>
-          )}
 
-          <div className="form-group">
-            <label htmlFor="userName">Usuário</label>
-            <div className="input-wrapper">
-              <input
-                type="text"
-                id="userName"
-                name="userName"
-                value={formData.userName}
-                onChange={handleChange}
-                required
-                aria-label="Nome de usuário"
-                aria-invalid={formData.userName && !isUserNameValid ? "true" : "false"}
-                className={formData.userName && isUserNameValid ? "valid" : ""}
-              />
+          {activeTab === "verify" ? (
+            <div className="verify-view">
+              <p className="instruction-message">Enviamos um código para <strong>{formData.email}</strong></p>
+              <p className="expiry-warning">O código expira em 15 minutos.</p>
+              <div className="form-group">
+                <label>Código de 6 dígitos</label>
+                <input type="text" name="code" value={formData.code} onChange={handleChange} placeholder="000000" maxLength="6" required className="code-input" />
+              </div>
+              <button type="button" className="resend-button" disabled={resendTimer > 0} onClick={handleResendCode}>
+                {resendTimer > 0 ? `Reenviar em ${resendTimer}s` : "Reenviar Código"}
+              </button>
             </div>
-            {activeTab === "register" && (
-              <div className="instruction-message">
-                Nome de usuário deve ter 5-20 caracteres, sem espaços.
+          ) : (
+            <>
+              {activeTab === "register" && (
+                <div className="form-group">
+                  <label>Nome</label>
+                  <input type="text" name="name" value={formData.name} onChange={handleChange} required className={formData.name && isNameValid ? "valid" : ""} />
+                  <div className="instruction-message">Nome deve ter 5-100 caracteres, apenas letras, espaços, hífens ou apóstrofos.</div>
+                </div>
+              )}
+              <div className="form-group">
+                <label>Usuário</label>
+                <input type="text" name="userName" value={formData.userName} onChange={handleChange} required className={formData.userName && isUserNameValid ? "valid" : ""} />
+                {activeTab === "register" && <div className="instruction-message">Nome de usuário deve ter 5-20 caracteres, sem espaços.</div>}
               </div>
-            )}
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="password">Senha</label>
-            <div className="input-wrapper">
-              <input
-                type="password"
-                id="password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                required
-                aria-label="Senha"
-                aria-invalid={formData.password && !isPasswordValid ? "true" : "false"}
-                className={formData.password && isPasswordValid ? "valid" : ""}
-              />
-            </div>
-            {activeTab === "register" && (
-              <div className="instruction-message">
-                Senha deve ter no mínimo 8 caracteres, com uma letra maiúscula, uma minúscula, um número e um caractere especial (@$!%*?&).
+              <div className="form-group">
+                <label>Senha</label>
+                <input type="password" name="password" value={formData.password} onChange={handleChange} required className={formData.password && isPasswordValid ? "valid" : ""} />
+                {activeTab === "register" && <div className="instruction-message">Senha deve ter no mínimo 8 caracteres, com Maiúscula, Minúscula, Número e Especial.</div>}
               </div>
-            )}
-          </div>
-
-          {activeTab === "register" && (
-            <div className="form-group">
-              <label htmlFor="email">Email</label>
-              <div className="input-wrapper">
-                <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  aria-label="Endereço de email"
-                  aria-invalid={formData.email && !isEmailValid ? "true" : "false"}
-                  className={formData.email && isEmailValid ? "valid" : ""}
-                />
-              </div>
-              <div className="instruction-message">
-                Email deve ser válido e sem espaços (opcional).
-              </div>
-            </div>
+              {activeTab === "register" && (
+                <div className="form-group">
+                  <label>Email</label>
+                  <input type="email" name="email" value={formData.email} onChange={handleChange} className={formData.email && isEmailValid ? "valid" : ""} />
+                  <div className="instruction-message">Email deve ser válido e sem espaços (opcional).</div>
+                </div>
+              )}
+            </>
           )}
 
           {error && <div className="error-message">{error}</div>}
           {successMessage && <div className="success-message">{successMessage}</div>}
 
           <button type="submit" className="submit-button" disabled={isLoading}>
-            {isLoading ? (
-              <>
-                <span className="spinner"></span>
-                Enviando...
-              </>
-            ) : activeTab === "login" ? (
-              "Entrar"
-            ) : (
-              "Cadastrar"
-            )}
+            {isLoading ? "Processando..." : activeTab === "verify" ? "Confirmar" : isLogin ? "Entrar" : "Cadastrar"}
           </button>
         </form>
       </div>
