@@ -1,26 +1,37 @@
 import React, { useState, useEffect } from "react";
 import "../styles/header.css";
 
-const Header = ({ isAuthenticated, userName, handleLogout, openAuthModal, openEditProfile, goHome }) => {
+const Header = ({ 
+  isAuthenticated, 
+  userName, 
+  userPhoto, // Nova prop para a URL da imagem
+  handleLogout, 
+  openAuthModal, 
+  openEditProfile, 
+  goHome 
+}) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
 
-  // Detecta rolagem da página
+  // Detecta rolagem da página para mudar o estilo do header
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 50);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // IMAGEM FAKE PADRÃO (Silhueta)
+  // IMAGEM PADRÃO caso o usuário não tenha foto
   const defaultAvatar = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png";
+
+  // Lógica de exibição: prioriza a foto da API (userPhoto), senão usa a padrão
+  const avatarImage = userPhoto || defaultAvatar;
 
   return (
     <header className={`header ${isScrolled ? "scrolled" : ""}`}>
       <div className="header-container">
 
-        {/* BOTÃO MENU (ESQUERDA NO MOBILE) */}
+        {/* BOTÃO MENU (MOBILE) */}
         <button
           className="menu-toggle"
           onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -29,7 +40,7 @@ const Header = ({ isAuthenticated, userName, handleLogout, openAuthModal, openEd
           ☰
         </button>
 
-        {/* NAVEGAÇÃO */}
+        {/* NAVEGAÇÃO LATERAL (MOBILE) / LINKS (DESKTOP) */}
         <nav className={`nav ${isMenuOpen ? "open" : ""}`}>
           <div className="nav-header">
             <span className="nav-title">Bruno Dev</span>
@@ -57,9 +68,9 @@ const Header = ({ isAuthenticated, userName, handleLogout, openAuthModal, openEd
           <div className="nav-footer">
             {isAuthenticated && userName ? (
               <>
-                {/* AQUI ESTÁ A FOTO E NOME DENTRO DO MENU MOBILE */}
                 <div className="mobile-user-profile">
-                  <img src={defaultAvatar} alt="Perfil" className="header-avatar" />
+                  {/* FOTO NO MENU MOBILE */}
+                  <img src={avatarImage} alt="Perfil" className="header-avatar" />
                   <span>Olá, <strong>{userName}</strong></span>
                 </div>
                 
@@ -79,13 +90,13 @@ const Header = ({ isAuthenticated, userName, handleLogout, openAuthModal, openEd
           </div>
         </nav>
 
-        {/* DIREITA (COM O NOVO DROPDOWN E AVATAR) */}
-        {/* Adicionamos a classe 'hide-on-mobile' que é ativada quando o menu abre */}
+        {/* SEÇÃO DIREITA (DESKTOP: DROPDOWN E AVATAR) */}
         <div className={`right-section ${isMenuOpen ? "hide-on-mobile" : ""}`}>
           {isAuthenticated && userName ? (
             <div className="user-menu-container">
               <button className="user-menu-button" onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}>
-                <img src={defaultAvatar} alt="Perfil" className="header-avatar" />
+                {/* FOTO NO HEADER DESKTOP */}
+                <img src={avatarImage} alt="Perfil" className="header-avatar" />
                 <span className="user-menu-name">Olá, <strong>{userName}</strong> ▼</span>
               </button>
 

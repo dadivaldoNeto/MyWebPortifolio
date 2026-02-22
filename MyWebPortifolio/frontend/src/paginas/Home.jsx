@@ -23,12 +23,12 @@ const Home = () => {
   const [token, setToken] = useState(null);
   const [userRole, setUserRole] = useState(null);
   const [userName, setUserName] = useState(null);
-  
-  // NOVO: Gerenciador de Telas Universal
+  const [userPhoto, setUserPhoto] = useState(null); // AJUSTE: Novo estado para a foto
+
   const [currentView, setCurrentView] = useState("home"); 
 
   useEffect(() => {
-    setActiveModalContent(1); // Abre modal de apresentação ao carregar
+    setActiveModalContent(1); 
   }, []);
 
   const closeModal = () => setActiveModalContent(null);
@@ -39,6 +39,7 @@ const Home = () => {
     setToken(data.token);
     setUserRole(data.user.role);
     setUserName(data.user.userName);
+    setUserPhoto(data.user.fotoPerfil); // AJUSTE: Salva a foto que vem do login
     closeModal();
   };
 
@@ -47,52 +48,48 @@ const Home = () => {
     setToken(null);
     setUserRole(null);
     setUserName(null);
-    goHome(); // Garante que volte pro início ao sair
+    setUserPhoto(null); // AJUSTE: Limpa a foto ao sair
+    goHome(); 
   };
 
-  // ==========================================
-  // NOVO: NAVEGAÇÃO ENTRE TELAS E SCROLL
-  // ==========================================
+  // AJUSTE: Função para atualizar a foto no Header após editar o perfil
+  const handleUpdateUserPhoto = (newPhotoUrl) => {
+    setUserPhoto(newPhotoUrl);
+  };
+
   const openEditProfile = () => {
     setCurrentView("editProfile");
-    window.scrollTo({ top: 0, behavior: "smooth" }); // Rola pro topo suavemente
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const goHome = () => {
     setCurrentView("home");
-    window.scrollTo({ top: 0, behavior: "smooth" }); // Rola pro topo suavemente
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  // ==========================================
-  // RENDERIZADOR DO PAINEL PRINCIPAL
-  // ==========================================
   const renderMainContent = () => {
     switch (currentView) {
       case "editProfile":
-        return <EditProfile onClose={goHome} userName={userName} />;
-      
-      // No futuro, você pode adicionar: 
-      // case "configuracoes": return <Config />
+        return (
+          <EditProfile 
+            onClose={goHome} 
+            userName={userName} 
+            token={token} 
+            onUpdateSuccess={handleUpdateUserPhoto} // Passamos a função de atualização
+          />
+        );
       
       case "home":
       default:
         return (
           <>
-            <section className="section-about" id="about">
-              <About />
-            </section>
+            <section className="section-about" id="about"><About /></section>
             <hr className="separator" />
-            <section id="skills">
-              <Skills />
-            </section>
+            <section id="skills"><Skills /></section>
             <hr className="separator" />
-            <section id="projects">
-              <Projects />
-            </section>
+            <section id="projects"><Projects /></section>
             <hr className="separator" />
-            <section id="contact">
-              <Contact />
-            </section>
+            <section id="contact"><Contact /></section>
             <hr className="separator" />
             <section id="feedback">
               <Feedback isAuthenticated={isAuthenticated} token={token} openAuthModal={openAuthModal} />
@@ -112,23 +109,17 @@ const Home = () => {
       <Header
         isAuthenticated={isAuthenticated}
         userName={userName}
+        userPhoto={userPhoto} // AJUSTE: Agora usa o estado correto
         handleLogin={handleLogin}
         handleLogout={handleLogout}
         openAuthModal={openAuthModal}
         openEditProfile={openEditProfile}
-        goHome={goHome} // O Header agora usa a função que sobe a tela!
+        goHome={goHome}
       />
       
       <div className="content">
-        {/* Modais */}
         <Modal isOpen={activeModalContent === 1} onClose={closeModal}>
           <ModalApresentacao onClose={closeModal} />
-        </Modal>
-        <Modal isOpen={activeModalContent === 2} onClose={closeModal}>
-          <About />
-        </Modal>
-        <Modal isOpen={activeModalContent === 3} onClose={closeModal}>
-          <Experience />
         </Modal>
         <Modal isOpen={activeModalContent === "auth"} onClose={closeModal}>
           <AuthModal handleLoginSuccess={handleLogin} onClose={closeModal} />
@@ -138,7 +129,6 @@ const Home = () => {
         
         <main className="main-content">
           <div className="main-container">
-            {/* O gerenciador de telas faz a troca dos componentes aqui */}
             {renderMainContent()}
           </div>
         </main>
