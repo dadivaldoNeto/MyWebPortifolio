@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import "../styles/editprofile.css";
 
 // Configurações constantes
-const API_BASE_URL = "https://api-java-brunof-dkaqbfaheabebcbh.eastus-01.azurewebsites.net/usuario";
+const API_BASE_URL =  import.meta.env.VITE_API_URL + "/usuario";
 const CLOUDINARY_URL = "https://api.cloudinary.com/v1_1/dbfrjuodw/image/upload";
 const UPLOAD_PRESET = "perfil_usuarios"; 
 

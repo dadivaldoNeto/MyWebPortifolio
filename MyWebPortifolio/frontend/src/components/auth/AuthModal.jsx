@@ -7,15 +7,17 @@ import ForgotPasswordForm from "./ForgotPasswordForm";
 import VerifyRecoveryForm from "./VerifyRecoveryForm";
 import ResetPasswordForm from "./ResetPasswordForm";
 
+const BASE_URL = import.meta.env.VITE_API_URL || "https://api-java-brunof-dkaqbfaheabebcbh.eastus-01.azurewebsites.net";
+
 const API_URLS = {
-  login: "https://api-java-brunof-dkaqbfaheabebcbh.eastus-01.azurewebsites.net/auth/login",
-  register: "https://api-java-brunof-dkaqbfaheabebcbh.eastus-01.azurewebsites.net/usuario/cadastro",
-  verify: "https://api-java-brunof-dkaqbfaheabebcbh.eastus-01.azurewebsites.net/usuario/ativar-conta",
-  resend: "https://api-java-brunof-dkaqbfaheabebcbh.eastus-01.azurewebsites.net/usuario/reenviar-codigo",
+  login: `${BASE_URL}/auth/login`,
+  register: `${BASE_URL}/usuario/cadastro`,
+  verify: `${BASE_URL}/usuario/ativar-conta`,
+  resend: `${BASE_URL}/usuario/reenviar-codigo`,
   
-  forgotPassword: "https://api-java-brunof-dkaqbfaheabebcbh.eastus-01.azurewebsites.net/usuario/senha/recuperacao",
-  verifyRecovery: "https://api-java-brunof-dkaqbfaheabebcbh.eastus-01.azurewebsites.net/usuario/senha/recuperacao/validar-codigo",
-  resetPassword: "https://api-java-brunof-dkaqbfaheabebcbh.eastus-01.azurewebsites.net/usuario/senha/recuperacao/alterar-senha",
+  forgotPassword: `${BASE_URL}/usuario/senha/recuperacao`,
+  verifyRecovery: `${BASE_URL}/usuario/senha/recuperacao/validar-codigo`,
+  resetPassword: `${BASE_URL}/usuario/senha/recuperacao/alterar-senha`,
 };
 
 const fetchWithRetry = async (url, options, retries = 3, delay = 1000) => {

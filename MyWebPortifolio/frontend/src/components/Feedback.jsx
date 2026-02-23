@@ -229,20 +229,19 @@ const Feedback = ({ isAuthenticated, token, openAuthModal }) => {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 10000);
 
-    try {
-      const response = await fetchWithRetry(
-       "https://api-java-brunof-dkaqbfaheabebcbh.eastus-01.azurewebsites.net/feedback/criar",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify(feedbackData),
-          signal: controller.signal,
-        }
-      );
-
+   try {
+  const response = await fetchWithRetry(
+    `${import.meta.env.VITE_API_URL}/feedback/criar`, 
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(feedbackData),
+      signal: controller.signal,
+    }
+  );
       clearTimeout(timeoutId);
       const data = await response.json();
 
