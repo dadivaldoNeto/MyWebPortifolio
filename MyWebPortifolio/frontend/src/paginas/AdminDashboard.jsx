@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import MatrixBackground from "../components/MatrixBackground";
-import "../styles/adminDashboard.css";
+import ManageProjects from "../components/paineladm/ManageProjects"; // 👈 IMPORTAMOS O MOTOR AQUI!
+import "../styles/admindashboard.css";
 
-// 👇 Removemos as props que vinham vazias
 const AdminDashboard = () => {
   const [activeModule, setActiveModule] = useState("projetos");
   const navigate = useNavigate();
@@ -47,17 +47,7 @@ const AdminDashboard = () => {
       <MatrixBackground />
       
       {/* Reaproveitamos o seu Header para o painel não perder a identidade */}
-      <Header
-        isAuthenticated={isAuthenticated}
-        userName={userName}
-        userPhoto={userPhoto}
-        userRole={userRole}
-        handleLogout={() => {
-          handleLogout();
-          goHome(); // Desloga e expulsa da sala admin
-        }}
-        goHome={goHome}
-      />
+      
 
       <div className="admin-layout">
         {/* MENU LATERAL DO PAINEL */}
@@ -85,8 +75,10 @@ const AdminDashboard = () => {
             <div className="admin-module">
               <h1>Meus Projetos</h1>
               <p>Aqui você poderá adicionar, editar e excluir os projetos do portfólio.</p>
-              {/* No futuro: <ManageProjects /> */}
-              <div className="placeholder-box">Área do Formulário de Projetos (Em breve)</div>
+              
+              {/* 👇 AQUI ESTÁ ELE RENDERIZANDO DE VERDADE */}
+              <ManageProjects />
+              
             </div>
           )}
 

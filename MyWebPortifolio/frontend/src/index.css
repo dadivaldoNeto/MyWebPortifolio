@@ -24,12 +24,13 @@ a:hover {
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
+  padding: 0;
+  width: 100%;
   min-width: 320px;
   min-height: 100vh;
+  /* 👇 APAGAMOS O DISPLAY: FLEX E PLACE-ITEMS: CENTER */
+  display: block; 
 }
-
 h1 {
   font-size: 3.2em;
   line-height: 1.1;

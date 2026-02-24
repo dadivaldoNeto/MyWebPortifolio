@@ -181,9 +181,11 @@ const AuthModal = ({ handleLoginSuccess, onClose }) => {
         payload = { userName: formData.userName, senha: formData.password };
       } else if (activeTab === "register") {
         url = API_URLS.register;
+        // Envia os dados normais de cadastro
         payload = { nome: formData.name, email: formData.email || "", userName: formData.userName, senha: formData.password };
       } else if (activeTab === "verify") {
         url = API_URLS.verify;
+        // O Endpoint agora espera o DTO AutenticarUsuarioDTO (userName e codigo)
         payload = { userName: formData.userName, codigo: formData.code };
       } else if (activeTab === "forgot-password") {
         url = API_URLS.forgotPassword;
@@ -203,7 +205,6 @@ const AuthModal = ({ handleLoginSuccess, onClose }) => {
       const response = await fetchWithRetry(url, { method: "POST", headers, body });
 
       let data = {};
-      // Só tenta ler o JSON se a resposta não for 204 No Content
       if (response.status !== 204) {
         try { data = await response.json(); } catch (err) { }
       }
@@ -214,56 +215,54 @@ const AuthModal = ({ handleLoginSuccess, onClose }) => {
         return;
       }
 
-      // TRATAMENTO DE SUCESSO POR ABA
+      // =========================================================
+      // TRATAMENTO DE SUCESSO POR ABA (MÁGICA ACONTECE AQUI)
+      // =========================================================
+      
       if (activeTab === "forgot-password") {
-        // Salva o e-mail retornado pela API para mostrar na próxima tela
         if (data.dados && data.dados.email) setMaskedEmail(data.dados.email);
         setActiveTab("verify-recovery");
         setSuccessMessage("Código de recuperação enviado!");
-      }
+      } 
       else if (activeTab === "verify-recovery") {
         setActiveTab("reset-password");
         setSuccessMessage("Código validado! Escolha sua nova senha.");
-      }
+      } 
       else if (activeTab === "reset-password") {
         setFormData({ name: "", userName: "", password: "", email: "", code: "" });
         setActiveTab("login");
         setSuccessMessage("Senha alterada com sucesso! Faça login.");
-      }
-      else if (activeTab === "verify") {
-        setSuccessMessage("Conta ativada com sucesso! Bem-vindo(a)!");
-        setTimeout(() => {
-          handleLoginSuccess({ token: tempUser?.token || data.dados?.token, user: data.dados.clienteDTO || data.dados });
-          onClose();
-        }, 1500);
-      }
-      else if (activeTab === "login") {
-        const user = data.dados.clienteDTO || data.dados.usuarioDTO || data.dados;
-        if (user.contaAtiva === false) {
-          setTempUser(data.dados);
-          setActiveTab("verify");
-          setSuccessMessage("Sua conta não está ativa. Verifique seu e-mail.");
-        } else {
-          handleLoginSuccess({ token: data.dados.token, user });
-          onClose();
-        }
-      }
+      } 
+      // 👇 O BLOCO DE CADASTRO FICOU LIMPO E DIRETO:
       else if (activeTab === "register") {
-        try {
-          // AQUI ESTÁ O ERRO:
-          const loginPayload = { userName: formData.userName, senha: formData.password };
-
-          const loginRes = await fetchWithRetry(API_URLS.login, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(loginPayload), // <--- Enviando 'cpf' de novo!
-          });
-          const loginData = await loginRes.json();
-          if (loginRes.ok) { setTempUser(loginData.dados); }
-        } catch (err) { }
         setFormData((prev) => ({ ...prev, email: data.dados?.email || prev.email }));
         setActiveTab("verify");
         setSuccessMessage("Cadastro realizado! Enviamos um código para seu e-mail.");
+      } 
+      // 👇 O BLOCO DE VERIFICAÇÃO AGORA RECEBE O TOKEN DO JAVA:
+      else if (activeTab === "verify") {
+        setSuccessMessage("Conta ativada com sucesso! Bem-vindo(a)!");
+        setTimeout(() => {
+          // Extrai o usuário, buscando a chave certa do seu UsuarioLoginResponseDTO
+          const userObj = data.dados.clienteDTO || data.dados.usuarioDTO || data.dados.usuario || data.dados;
+          
+          handleLoginSuccess({ 
+            token: data.dados.token, // Puxa o token zerinho que o Java mandou
+            user: userObj 
+          });
+          onClose(); // Fecha o modal e entra no site
+        }, 1500);
+      } 
+      // 👇 O BLOCO DE LOGIN CONTINUA O MESMO
+      else if (activeTab === "login") {
+        const userObj = data.dados.clienteDTO || data.dados.usuarioDTO || data.dados.usuario || data.dados;
+        if (userObj.contaAtiva === false) {
+          setActiveTab("verify");
+          setSuccessMessage("Sua conta não está ativa. Enviamos um novo código para o seu e-mail.");
+        } else {
+          handleLoginSuccess({ token: data.dados.token, user: userObj });
+          onClose();
+        }
       }
 
     } catch (error) {

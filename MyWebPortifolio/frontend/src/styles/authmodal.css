@@ -13,13 +13,13 @@
   justify-content: center;
   align-items: center;
   z-index: 1000;
-  padding: 16px;
 }
 
 .auth-modal {
   position: relative;
   width: 100%;
-  max-width: 500px;
+  max-width: 700px;
+  justify-items: center;
   background-color: #1a1a1a;
   border-radius: 12px;
   padding: 32px 24px;
@@ -55,6 +55,7 @@
   display: flex;
   justify-content: center;
   margin-bottom: 24px;
+  width: 100%;
   border-bottom: 1px solid rgba(72, 187, 120, 0.2);
 }
 
@@ -67,7 +68,7 @@
   font-weight: 500;
   cursor: pointer;
   transition: all 0.3s ease;
-  width: 50%;
+  width: 100%;
   text-align: center;
 }
 
@@ -81,19 +82,6 @@
   background: rgba(72, 187, 120, 0.05);
 }
 
-/* ==========================================================================
-   3. ESTRUTURA DOS FORMULÁRIOS
-   ========================================================================== */
-.auth-form * {
-  box-sizing: border-box;
-}
-
-.auth-form {
-  display: flex;
-  flex-direction: column;
-  gap: 24px; 
-  width: 100%; 
-}
 
 .auth-form h2 {
   font-size: 1.75rem;
@@ -103,41 +91,29 @@
   font-weight: 600;
 }
 
-/* A Fundação Correta */
+/* A Fundação Correta - Trava Anti-Sanfona aplicada */
 .form-group {
   display: flex;
   flex-direction: column;
   width: 100%;
-  flex-shrink: 0; 
+  flex: 0 0 auto; 
+  height: max-content;
+  margin-bottom: 20px; 
 }
-
 .form-group label {
   font-size: 0.95rem;
   color: #fdfcfc;
   font-weight: 500;
   text-align: left;
-  /* ALINHAMENTO NA RÉGUA: 0 na esquerda */
-  /* DESGRUDANDO O INPUT: 10px de margem forçada em baixo da label */
-  margin: 0 0 10px 0; 
+  margin: 0 0 8px 0; 
 }
 
-/* Wrapper para segurar o ícone de ✓ ou ✕ dentro do input */
+/* Wrapper para inputs com validação */
 .input-wrapper {
   position: relative;
   width: 100%;
   display: block; 
-  /* A MÁGICA AQUI: O Wrapper empurra qualquer legenda para baixo com força */
-  margin-bottom: 12px;
-}
-
-/* Regra de segurança: Se o input NÃO tiver wrapper (como no VerifyForm) */
-.form-group > input {
-  margin-bottom: 12px;
-}
-
-/* Se ele TIVER wrapper, tira a margem do input para não somar 2 vezes */
-.input-wrapper > input {
-  margin-bottom: 0;
+  margin-bottom: 6px;
 }
 
 .form-group input {
@@ -176,11 +152,14 @@
   content: "✓";
   position: absolute;
   right: 16px;
-  top: 50%;
+  top:50%;
   transform: translateY(-50%);
   color: #48bb78;
   font-weight: bold;
 }
+
+
+
 
 /* ==========================================================================
    4. TEXTOS DE AJUDA E AVISOS (O SEGREDO DA UI LIMPA)
@@ -189,20 +168,18 @@
 .input-helper-text {
   font-size: 0.85rem;
   color: #9ca3af;
-  line-height: 1.6; /* Aumenta o espaço entre as linhas se o texto for muito longo */
+  line-height: 1.6; 
   text-align: left;
-  /* ALINHAMENTO NA RÉGUA: Margens laterais zeradas para alinhar com a borda do input */
   margin: 0; 
-  padding: 0;
+  padding: 10px;
 }
 
-/* Garante que os parágrafos (<p>) dentro dos helpers tenham espaço entre si */
 .input-helper-text p {
   margin: 0 0 6px 0;
 }
 
 .input-helper-text p:last-child {
-  margin-bottom: 0; /* O último parágrafo não empurra nada */
+  margin-bottom: 0; 
 }
 
 .expiry-warning,
@@ -211,9 +188,9 @@
   font-weight: 500;
   font-size: 0.85rem;
   text-align: left;
-  /* Desgruda o aviso amarelo do texto cinza que estiver acima dele */
   margin: 4px 0 0 0; 
 }
+
 /* ==========================================================================
    5. BOTÕES E AÇÕES
    ========================================================================== */
@@ -270,7 +247,6 @@
   color: #ffffff;
 }
 
-/* Links secundários (Esqueci a senha, Reenviar código) */
 .forgot-password-container {
   text-align: center;
   margin-top: -12px;
@@ -327,7 +303,7 @@
 
 .error-message,
 .success-message {
-  padding: 12px 16px 12px 40px; /* Espaço para o ícone */
+  padding: 12px 16px 12px 40px; 
   border-radius: 8px;
   font-size: 0.95rem;
   font-weight: 500;
