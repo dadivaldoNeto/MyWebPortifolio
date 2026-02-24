@@ -15,7 +15,6 @@ const ManageProjects = () => {
   const dragItem = useRef();
   const dragOverItem = useRef();
 
-  // 1. ESTADO ALINHADO COM O COMPONENTE Projects.jsx
   const initialFormState = {
     title: "",
     video: "",
@@ -23,18 +22,15 @@ const ManageProjects = () => {
     status: "Concluído",
     dataProjeto: "",
     papel: "",
-    techs: { // Objeto alinhado com o Front
-      linguagem: "",
-      paradigma: "",
-      framework: "",
-      bibliotecas: "",
-      infraestrutura: ""
+    repositorioUrl: "", 
+    liveUrl: "",        
+    techs: { 
+      linguagem: "", paradigma: "", framework: "", bibliotecas: "", infraestrutura: ""
     },
-    setup: { // Objeto alinhado com o Front
-      obs: "",
-      steps: [] // Começa vazio, adicionaremos os passos dinamicamente
+    setup: { 
+      obs: "", steps: [] 
     },
-    links: [], // Para os links do Github, etc.
+    links: [], 
     imagens: []
   };
 
@@ -44,12 +40,15 @@ const ManageProjects = () => {
 
   const fetchProjetos = async () => {
     try {
-      const response = await fetch(`${BASE_URL}/projetos`);
+      const token = localStorage.getItem("token");
+      const response = await fetch(`${BASE_URL}/paineladm/projetos`, {
+        headers: { "Authorization": `Bearer ${token}` }
+      });
       if (response.ok) {
         const data = await response.json();
         setProjetos(data.dados || data || []);
       }
-    } catch (error) { console.error("Erro:", error); }
+    } catch (error) { console.error("Erro ao carregar projetos:", error); }
   };
 
   const showMessage = (type, text) => {
@@ -57,7 +56,6 @@ const ManageProjects = () => {
     setTimeout(() => setMessage({ type: "", text: "" }), 5000);
   };
 
-  // 2. HANDLERS PARA DADOS ANINHADOS (Nested Objects)
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -76,7 +74,6 @@ const ManageProjects = () => {
     });
   };
 
-  // 3. GERENCIAMENTO DINÂMICO DE PASSOS (STEPS)
   const addStep = () => {
     const newStep = { num: formData.setup.steps.length + 1, text: "", cmd: "" };
     setFormData({
@@ -95,12 +92,10 @@ const ManageProjects = () => {
 
   const removeStep = (index) => {
     const updatedSteps = formData.setup.steps.filter((_, i) => i !== index);
-    // Re-numerar os passos após remoção
     const renumberedSteps = updatedSteps.map((step, i) => ({ ...step, num: i + 1 }));
     setFormData({ ...formData, setup: { ...formData.setup, steps: renumberedSteps } });
   };
 
-  // 4. LÓGICA DE IMAGENS MANTIDA IGUAL
   const handleFileUpload = (e) => {
     const files = Array.from(e.target.files);
     if (!files.length) return;
@@ -135,16 +130,15 @@ const ManageProjects = () => {
     setFormData({ ...formData, imagens: novasImagens });
   };
 
-  // 5. SALVAMENTO E MONTAGEM DO PAYLOAD (ALINHADO COM O JAVA/FRONT)
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (formData.imagens.length === 0) {
-      showMessage("error", "Adicione pelo menos uma imagem.");
+      showMessage("error", "⚠️ Adicione pelo menos uma imagem.");
       return;
     }
 
     setLoading(true);
-    showMessage("success", "⏳ Iniciando upload das imagens para a nuvem...");
+    showMessage("success", "⏳ Iniciando processamento...");
 
     try {
       const imagensProcessadas = await Promise.all(
@@ -154,31 +148,27 @@ const ManageProjects = () => {
           formUpload.append("file", img.file);
           formUpload.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
           const res = await fetch(CLOUDINARY_URL, { method: "POST", body: formUpload });
+          if (!res.ok) throw new Error("Falha no upload das imagens.");
           const data = await res.json();
-          if (!data.secure_url) throw new Error("Falha ao subir imagem. Verifique as chaves do Cloudinary.");
           return data.secure_url;
         })
       );
-
-      showMessage("success", "✅ Upload concluído! Salvando no banco de dados...");
 
       const galeriaComOrdem = imagensProcessadas.map((url, index) => ({
         urlImagem: url, ordemExibicao: index, isCapa: index === 0
       }));
 
-      // O Payload agora envia objetos completos e listas (O Java precisa receber isso como JSON embutido ou tabelas filhas)
       const payload = {
         ...formData,
         galeria: galeriaComOrdem,
-        // Criamos o array de links que o componente publico espera receber
         links: [
           { text: "Repositório GitHub", url: formData.repositorioUrl },
           { text: "Site Online (Live)", url: formData.liveUrl }
-        ].filter(link => link.url) // Remove links vazios
+        ].filter(link => link.url) 
       };
+
       const token = localStorage.getItem("token");
       const method = isEditing ? "PUT" : "POST";
-      // AJUSTADO: Agora batendo na rota protegida /paineladm/
       const endpoint = isEditing ? `${BASE_URL}/paineladm/projetos/${editId}` : `${BASE_URL}/paineladm/projetos`;
 
       const response = await fetch(endpoint, {
@@ -187,13 +177,24 @@ const ManageProjects = () => {
         body: JSON.stringify(payload)
       });
 
+      let apiData;
+      try { apiData = await response.json(); } catch (e) { apiData = null; }
+
       if (response.ok) {
-        showMessage("success", "🎉 Projeto salvo com sucesso!");
+        showMessage("success", apiData?.message || "🎉 Projeto salvo com sucesso!");
         resetForm();
-        fetchProjetos();
+        fetchProjetos(); // Atualiza a lista lá embaixo automaticamente
+      } else {
+        const errorMsg = apiData?.message || "Erro desconhecido ao salvar.";
+        if (response.status === 401 || response.status === 403) {
+          showMessage("error", "🚫 Sessão expirada. Faça login novamente.");
+        } else {
+          showMessage("error", `❌ ${errorMsg}`);
+        }
       }
     } catch (error) {
-      showMessage("error", "❌ Erro: " + error.message);
+      console.error(error);
+      showMessage("error", "🌐 Erro de conexão: " + error.message);
     } finally {
       setLoading(false);
     }
@@ -217,11 +218,14 @@ const ManageProjects = () => {
     setFormData({
       title: projeto.title || "", video: projeto.video || "", description: projeto.description || "",
       status: projeto.status || "Concluído", papel: projeto.papel || "", dataProjeto: projeto.dataProjeto || "",
-      techs: projeto.techs || initialFormState.techs, // Preenche com os dados que vieram do BD
+      repositorioUrl: projeto.repositorioUrl || "", 
+      liveUrl: projeto.liveUrl || "",               
+      techs: projeto.techs || initialFormState.techs,
       setup: projeto.setup || initialFormState.setup,
       links: projeto.links || [],
       imagens: imagensFormatadas
     });
+    // Rola a tela suavemente de volta para o topo (pro formulário)
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -229,25 +233,30 @@ const ManageProjects = () => {
     if (!window.confirm("Tem certeza que deseja excluir este projeto?")) return;
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch(`${BASE_URL}/projetos/${id}`, { method: "DELETE", headers: { "Authorization": `Bearer ${token}` } });
-      if (response.ok) { showMessage("success", "Projeto excluído!"); fetchProjetos(); }
-      else { showMessage("error", "Erro ao excluir."); }
+      const response = await fetch(`${BASE_URL}/paineladm/projetos/${id}`, { method: "DELETE", headers: { "Authorization": `Bearer ${token}` } });
+      if (response.ok) { 
+        showMessage("success", "Projeto excluído!"); 
+        fetchProjetos(); 
+      } else { 
+        showMessage("error", "Erro ao excluir."); 
+      }
     } catch (error) { showMessage("error", "Erro de conexão."); }
   };
 
   return (
     <div className="manage-projects-container">
+      {/* =========================================================
+          SESSÃO SUPERIOR: FORMULÁRIO (INTACTO)
+          ========================================================= */}
       <div className="admin-form-section">
         <div className="section-header">
           <h2>{isEditing ? "✏️ Editar Projeto" : "🚀 Adicionar Novo Projeto"}</h2>
-          {isEditing && <button className="btn-cancel-small" onClick={resetForm}>Cancelar</button>}
+          {isEditing && <button className="btn-cancel-small" onClick={resetForm}>Cancelar Edição</button>}
         </div>
 
         {message.text && <div className={`admin-message ${message.type}`}>{message.text}</div>}
 
         <form onSubmit={handleSubmit} className="admin-form">
-
-          {/* BLOCO 1: INFORMAÇÕES GERAIS */}
           <div className="form-card">
             <h3>📝 Informações Gerais</h3>
             <div className="form-row">
@@ -275,7 +284,6 @@ const ManageProjects = () => {
             </div>
           </div>
 
-          {/* BLOCO 2: FICHA TÉCNICA (Objeto techs) */}
           <div className="form-card">
             <h3>⚙️ Ficha Técnica</h3>
             <div className="form-row">
@@ -304,7 +312,6 @@ const ManageProjects = () => {
             </div>
           </div>
 
-          {/* BLOCO 3: SETUP E PASSOS (Array Dinâmico) */}
           <div className="form-card">
             <h3>🛠️ Como Rodar e Testar (Setup)</h3>
             <div className="form-group">
@@ -335,26 +342,17 @@ const ManageProjects = () => {
             </div>
           </div>
 
-          {/* MÍDIA E GALERIA */}
           <div className="form-card media-card">
             <h3>🖼️ Galeria de Imagens (Capa)</h3>
             <div className="upload-zone">
               <input type="file" multiple accept="image/*" id="file-upload" onChange={handleFileUpload} />
-              <label htmlFor="file-upload" className="upload-label">☁️ Clique ou Arraste imagens aqui</label>
+              <label htmlFor="file-upload">☁️ Clique ou Arraste imagens aqui</label>
             </div>
 
             {formData.imagens.length > 0 && (
               <div className="image-manager-grid">
                 {formData.imagens.map((imgObj, index) => (
-                  <div
-                    key={index}
-                    className={`image-thumbnail-box ${index === 0 ? "is-cover" : ""}`}
-                    draggable
-                    onDragStart={(e) => dragStart(e, index)}
-                    onDragEnter={(e) => dragEnter(e, index)}
-                    onDragEnd={drop}
-                    onDragOver={(e) => e.preventDefault()}
-                  >
+                  <div key={index} className={`image-thumbnail-box ${index === 0 ? "is-cover" : ""}`} draggable onDragStart={(e) => dragStart(e, index)} onDragEnter={(e) => dragOverItem.current = index} onDragEnd={drop} onDragOver={(e) => e.preventDefault()}>
                     {index === 0 && <span className="cover-badge">★ CAPA</span>}
                     <img src={imgObj.url} alt={`Preview ${index}`} className="thumbnail-img" />
                     <div className="thumbnail-actions">
@@ -365,30 +363,17 @@ const ManageProjects = () => {
                 ))}
               </div>
             )}
-            {/* BLOCO 4: LINKS EXTERNOS */}
-            <div className="form-card">
+
+            <div className="form-card" style={{marginTop: '20px'}}>
               <h3>🔗 Links de Acesso</h3>
               <div className="form-row">
                 <div className="form-group">
                   <label>URL do Repositório (GitHub) *</label>
-                  <input
-                    type="url"
-                    name="repositorioUrl"
-                    value={formData.repositorioUrl || ""}
-                    onChange={handleChange}
-                    placeholder="https://github.com/..."
-                    required
-                  />
+                  <input type="url" name="repositorioUrl" value={formData.repositorioUrl} onChange={handleChange} placeholder="https://github.com/..." required />
                 </div>
                 <div className="form-group">
                   <label>URL do Projeto Online (Live Preview)</label>
-                  <input
-                    type="url"
-                    name="liveUrl"
-                    value={formData.liveUrl || ""}
-                    onChange={handleChange}
-                    placeholder="https://meuprojeto.com"
-                  />
+                  <input type="url" name="liveUrl" value={formData.liveUrl} onChange={handleChange} placeholder="https://meuprojeto.com" />
                 </div>
               </div>
             </div>
@@ -400,9 +385,74 @@ const ManageProjects = () => {
         </form>
       </div>
 
-      <div className="admin-list-section">
-        {/* Listagem Simplificada */}
+      {/* =========================================================
+          SESSÃO INFERIOR: LISTAGEM E EDIÇÃO (NOVIDADE)
+          ========================================================= */}
+      <div className="admin-list-section" style={{ marginTop: '50px' }}>
+        <div className="section-header" style={{ borderBottom: '1px solid rgba(72, 187, 120, 0.3)', paddingBottom: '15px' }}>
+          <h2 style={{ color: '#48bb78', margin: 0, fontSize: '1.5rem' }}>🗂️ Projetos Cadastrados</h2>
+        </div>
+
+        {projetos.length === 0 ? (
+          <p style={{ color: '#a0aec0', marginTop: '20px' }}>Nenhum projeto cadastrado no banco de dados.</p>
+        ) : (
+          <div style={{ 
+            display: 'grid', 
+            gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', 
+            gap: '20px', 
+            marginTop: '20px' 
+          }}>
+            {projetos.map((projeto) => {
+              // Pega a capa para mostrar no card
+              const capaObj = projeto.galeria?.find(img => img.isCapa) || projeto.galeria?.[0];
+              const capaUrl = capaObj ? capaObj.urlImagem : "https://via.placeholder.com/300x200?text=Sem+Imagem";
+
+              return (
+                <div key={projeto.id} style={{ 
+                  background: '#1a1a1a', 
+                  borderRadius: '8px', 
+                  overflow: 'hidden', 
+                  border: '1px solid #333',
+                  display: 'flex',
+                  flexDirection: 'column'
+                }}>
+                  <img src={capaUrl} alt={projeto.title} style={{ width: '100%', height: '160px', objectFit: 'cover' }} />
+                  
+                  <div style={{ padding: '15px', flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+                    <h4 style={{ margin: '0 0 10px 0', color: '#fff', fontSize: '1.1rem' }}>{projeto.title}</h4>
+                    
+                    <p style={{ margin: '0 0 15px 0', color: '#a0aec0', fontSize: '0.9rem', flexGrow: 1 }}>
+                      Status: <strong style={{ color: projeto.status === 'Concluído' ? '#48bb78' : '#eab308' }}>{projeto.status}</strong>
+                    </p>
+                    
+                    <div style={{ display: 'flex', gap: '10px' }}>
+                      <button 
+                        type="button" 
+                        onClick={() => handleEditClick(projeto)} 
+                        style={{ flex: 1, padding: '10px', background: 'transparent', color: '#48bb78', border: '1px solid #48bb78', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', transition: '0.2s' }}
+                        onMouseOver={(e) => { e.target.style.background = '#48bb78'; e.target.style.color = '#fff'; }}
+                        onMouseOut={(e) => { e.target.style.background = 'transparent'; e.target.style.color = '#48bb78'; }}
+                      >
+                        ✏️ Editar
+                      </button>
+                      <button 
+                        type="button" 
+                        onClick={() => handleDelete(projeto.id)} 
+                        style={{ padding: '10px 15px', background: '#ef4444', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', transition: '0.2s' }}
+                        onMouseOver={(e) => { e.target.style.background = '#dc2626'; }}
+                        onMouseOut={(e) => { e.target.style.background = '#ef4444'; }}
+                      >
+                        🗑️
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        )}
       </div>
+
     </div>
   );
 };

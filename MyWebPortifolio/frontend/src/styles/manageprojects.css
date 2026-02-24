@@ -346,6 +346,15 @@
   color: #ef4444; 
   border: 1px solid #ef4444; 
 }
+.admin-message.error {
+  background-color: #721c24;
+  color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-weight: bold;
+}
 
 
 /* =========================================================
