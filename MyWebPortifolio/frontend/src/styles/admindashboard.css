@@ -10,7 +10,7 @@
 }
 
 .admin-layout {
-  display: grid; /* 👈 TROCAMOS FLEX POR GRID */
+  display: flex; /* 👈 TROCAMOS FLEX POR GRID */
   grid-template-columns: 280px 1fr; /* Sidebar fixa, Workspace pega o RESTO */
   max-width: 1400px;
   width: 100%;

@@ -38,9 +38,9 @@
    ========================================================= */
 
 /* Tag <form> principal */
-.admin-form {
-  display: flex;
-  width: 100% !important; 
+/* Tag <form> principal BLINDADA contra vazamentos de CSS */
+.admin-form {/* Mata o flexbox problemático */    /* Força a preencher o espaço */
+  max-width: 100%;    /* 👈 A Bala de Prata: Destrói muros invisíveis */
 }
 
 /* O Card que segura os inputs. Block força ele a encostar nas laterais. */
