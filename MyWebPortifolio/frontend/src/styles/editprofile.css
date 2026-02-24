@@ -1,8 +1,15 @@
 .edit-profile-container {
+  display: block;
   animation: fadeIn 0.4s ease-out;
   color: #fff;
-  width: 100%; /* Força o formulário a usar todo o espaço do container pai */
-  padding: 10px; /* Margem interna sutil */
+  padding: 20px 40px 40px;
+}
+.edit-profile-container .edit-form {
+  display: block;
+  width: 100%;
+  max-width: 100%; /* Quebra qualquer limite invisível herdado */
+  margin: 0;
+  padding: 0;
 }
 
 .edit-header {

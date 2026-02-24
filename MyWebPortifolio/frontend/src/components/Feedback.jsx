@@ -314,7 +314,7 @@ const Feedback = ({ isAuthenticated, token, openAuthModal }) => {
               </p>
             </div>
           ) : (
-            <form onSubmit={handleSubmit}>
+            <form className="feedback-form"onSubmit={handleSubmit}>
               <div className="feedback-stars">
                 {[1, 2, 3, 4, 5].map((star) => (
                   <span
