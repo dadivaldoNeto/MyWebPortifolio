@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import "../../styles/manageprojects.css";
+// 🚨 NOVA IMPORTAÇÃO AQUI
+import ReactMarkdown from "react-markdown";
 
 const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
 const CLOUDINARY_URL = "https://api.cloudinary.com/v1_1/dbfrjuodw/image/upload";
@@ -96,9 +98,6 @@ const ManageProjects = () => {
     setFormData({ ...formData, setup: { ...formData.setup, steps: renumberedSteps } });
   };
 
-  // =========================================
-  // AJUSTES NA GESTÃO DE IMAGENS E LEGENDAS
-  // =========================================
   const handleFileUpload = (e) => {
     const files = Array.from(e.target.files);
     if (!files.length) return;
@@ -106,12 +105,11 @@ const ManageProjects = () => {
       file: file, 
       url: URL.createObjectURL(file), 
       isNova: true,
-      legenda: "" // 👈 AQUI: Imagem nova nasce com legenda vazia
+      legenda: "" 
     }));
     setFormData((prev) => ({ ...prev, imagens: [...prev.imagens, ...novasImagens] }));
   };
 
-  // 👈 AQUI: Função para atualizar o texto da legenda de uma imagem específica
   const handleLegendChange = (index, text) => {
     const updatedImages = formData.imagens.map((img, i) => {
       if (i === index) return { ...img, legenda: text };
@@ -169,12 +167,11 @@ const ManageProjects = () => {
         })
       );
 
-      // 👈 AQUI: Agora montamos o galeriaComOrdem enviando a legenda pro Java!
       const galeriaComOrdem = imagensProcessadas.map((url, index) => ({
         urlImagem: url, 
         ordemExibicao: index, 
         isCapa: index === 0,
-        legenda: formData.imagens[index].legenda || "" // Pega a legenda que o usuário digitou
+        legenda: formData.imagens[index].legenda || ""
       }));
 
       const payload = {
@@ -235,7 +232,7 @@ const ManageProjects = () => {
         .map(img => ({ 
           url: img.urlImagem, 
           isNova: false, 
-          legenda: img.legenda || "" // 👈 AQUI: Puxa a legenda do banco na hora de editar
+          legenda: img.legenda || ""
         }));
     }
     setFormData({
@@ -292,12 +289,62 @@ const ManageProjects = () => {
               </div>
             </div>
 
+            {/* 🚨 NOVA SESSÃO: EDITOR MARKDOWN DIVIDIDO */}
             <div className="form-group">
-              <label>Descrição Principal *</label>
-              <textarea name="description" value={formData.description} onChange={handleChange} rows="3" required></textarea>
+              <label style={{ display: "flex", justifyContent: "space-between" }}>
+                <span>Descrição Principal (Suporta Markdown) *</span>
+                <span style={{ fontSize: "0.8rem", color: "#48bb78" }}>Pré-visualização ao lado 👉</span>
+              </label>
+              
+              <div style={{ display: "flex", gap: "20px", alignItems: "stretch", minHeight: "250px" }}>
+                
+                {/* Lado Esquerdo: Área de Digitação */}
+                <textarea 
+                  name="description" 
+                  value={formData.description} 
+                  onChange={handleChange} 
+                  required
+                  placeholder="Descreva o projeto...\nUse **negrito**, ## Títulos ou * Listas."
+                  style={{
+                    flex: 1,
+                    padding: "15px",
+                    borderRadius: "8px",
+                    border: "1px solid rgba(72, 187, 120, 0.3)",
+                    background: "#222222",
+                    color: "#fff",
+                    fontFamily: "monospace",
+                    fontSize: "0.95rem",
+                    resize: "vertical"
+                  }}
+                ></textarea>
+
+            {/* Lado Direito: Área de Pré-visualização em Tempo Real */}
+                <div 
+                  className="markdown-body" 
+                  style={{
+                    flex: 1,
+                    padding: "15px",
+                    borderRadius: "8px",
+                    border: "1px solid #333",
+                    background: "#111111",
+                    color: "#e0e0e0",
+                    overflowY: "auto",
+                    maxHeight: "400px" 
+                  }}
+                >
+                  {/* 🚨 CORREÇÃO AQUI: Garantindo que o Markdown receba uma string limpa */}
+                  {formData.description ? (
+                    <ReactMarkdown>
+                      {String(formData.description)}
+                    </ReactMarkdown>
+                  ) : (
+                    <p style={{ color: "#6b7280", fontStyle: "italic", marginTop: 0 }}>A pré-visualização aparecerá aqui...</p>
+                  )}
+                </div>
+              </div>
             </div>
 
-            <div className="form-group">
+            <div className="form-group" style={{ marginTop: "20px" }}>
               <label>Link do Vídeo (YouTube Embed)</label>
               <input type="url" name="video" value={formData.video} onChange={handleChange} placeholder="Ex: https://www.youtube.com/embed/..." />
             </div>
@@ -379,7 +426,7 @@ const ManageProjects = () => {
                     onDragEnter={(e) => dragOverItem.current = index} 
                     onDragEnd={drop} 
                     onDragOver={(e) => e.preventDefault()}
-                    style={{ display: 'flex', flexDirection: 'column', height: 'auto', minHeight: '220px' }} // Ajuste pro grid caber o input
+                    style={{ display: 'flex', flexDirection: 'column', height: 'auto', minHeight: '220px' }} 
                   >
                     {index === 0 && <span className="cover-badge">★ CAPA</span>}
                     <div style={{ position: 'relative', width: '100%', height: '150px' }}>
@@ -389,7 +436,6 @@ const ManageProjects = () => {
                         <button type="button" className="btn-trash" onClick={() => removeImage(index)}>🗑️</button>
                       </div>
                     </div>
-                    {/* 👇 O NOVO INPUT DE LEGENDA AQUI 👇 */}
                     <input 
                       type="text" 
                       placeholder="Adicione uma legenda..." 
