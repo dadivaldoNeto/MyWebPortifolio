@@ -107,7 +107,7 @@ const Header = ({
                 className="nav-link admin-nav-btn" 
                 onClick={handleAdminNavigation}
               >
-                ⚙️ Painel Admin
+                Painel Admin
               </button>
             )}
           {isAuthenticated && userName ? (
