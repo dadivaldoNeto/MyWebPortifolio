@@ -161,7 +161,8 @@ const Projects = ({ token, userName, userRole }) => {
         setAvaliacao(5);
         fetchFeedbacks();
       } else {
-        setFeedbackMsg("❌ Erro: " + (data.message || "Não foi possível enviar o feedback."));
+        const mensagemErro = data.erro?.message || data.message || "Não foi possível enviar o feedback.";
+        setFeedbackMsg("❌ " + mensagemErro);
       }
     } catch (err) {
       setFeedbackMsg("❌ Erro de conexão com o servidor ao enviar feedback.");

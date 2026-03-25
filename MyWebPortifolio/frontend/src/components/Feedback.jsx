@@ -346,14 +346,14 @@ const Feedback = ({ isAuthenticated, token, openAuthModal }) => {
               </div>
               <textarea
                 className="feedback-comment"
-                placeholder="Escreva seu comentário (mínimo 15 caracteres, máximo 1000)"
+                placeholder="Escreva seu comentário (mínimo 10 caracteres, máximo 500)"
                 value={comment}
                 onChange={handleCommentChange}
                 maxLength={1000}
                 required
               />
               <div className="instruction-message">
-                O comentário deve ter no mínimo 15 caracteres.
+                O comentário deve ter no mínimo 10 caracteres.
               </div>
               <p className="char-count">{comment.length}/1000</p>
               {submissionError && (
