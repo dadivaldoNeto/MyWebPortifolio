@@ -144,75 +144,6 @@ const LineHeight = Extension.create({
   },
 });
 
-// ─── ColorPreservingMarks Extension ──────────────────────────────────────────
-/**
- * FIX #1 — Preservar cor ao aplicar/remover negrito, itálico e sublinhado.
- *
- * O problema: quando o TipTap aplica toggleBold (ou italic/underline) sobre
- * um trecho que já tem `textStyle` com `color`, ele pode dividir o span e
- * perder o atributo de cor ao recriar os marks.
- *
- * A solução: sobrescrevemos os comandos toggleBold/toggleItalic/toggleUnderline
- * para (1) capturar a cor ativa ANTES do toggle e (2) re-aplicar a cor DEPOIS,
- * garantindo que o textStyle com color seja sempre restaurado na seleção.
- */
-const ColorPreservingMarks = Extension.create({
-  name: "colorPreservingMarks",
-
-  addCommands() {
-    return {
-      // Negrito que preserva cor
-      toggleBoldKeepColor: () => ({ editor, commands }) => {
-        const color = editor.getAttributes("textStyle").color ?? null;
-        commands.toggleBold();
-        if (color) {
-          // Re-aplica a cor após o toggle para garantir que o span de cor
-          // não seja removido pela operação de formatação
-          requestAnimationFrame(() => {
-            editor.chain().focus().setColor(color).run();
-          });
-        }
-        return true;
-      },
-
-      // Itálico que preserva cor
-      toggleItalicKeepColor: () => ({ editor, commands }) => {
-        const color = editor.getAttributes("textStyle").color ?? null;
-        commands.toggleItalic();
-        if (color) {
-          requestAnimationFrame(() => {
-            editor.chain().focus().setColor(color).run();
-          });
-        }
-        return true;
-      },
-
-      // Sublinhado que preserva cor
-      toggleUnderlineKeepColor: () => ({ editor, commands }) => {
-        const color = editor.getAttributes("textStyle").color ?? null;
-        commands.toggleUnderline();
-        if (color) {
-          requestAnimationFrame(() => {
-            editor.chain().focus().setColor(color).run();
-          });
-        }
-        return true;
-      },
-
-      // Tachado que preserva cor
-      toggleStrikeKeepColor: () => ({ editor, commands }) => {
-        const color = editor.getAttributes("textStyle").color ?? null;
-        commands.toggleStrike();
-        if (color) {
-          requestAnimationFrame(() => {
-            editor.chain().focus().setColor(color).run();
-          });
-        }
-        return true;
-      },
-    };
-  },
-});
 
 // ─── FigureView ───────────────────────────────────────────────────────────────
 
@@ -413,14 +344,10 @@ export function useArticleEditor({
     extensions: [
       StarterKit.configure({ codeBlock: false }),
       Underline,
-      // FIX #1: TextStyle configurado para mesclar estilos aninhados,
-      // evitando que spans de cor sejam descartados ao aplicar marks
-      TextStyle.configure({ mergeNestedSpanStyles: true }),
+      TextStyle.configure({ mergeNestedSpanStyles: true }), // Mantenha isso!
       Color,
       FontFamily,
       LineHeight,
-      // FIX #1: extensão que envolve os toggles de formatação para preservar cor
-      ColorPreservingMarks,
       FigureExtension,
       TextAlign.configure({
         types:            ["heading", "paragraph"],

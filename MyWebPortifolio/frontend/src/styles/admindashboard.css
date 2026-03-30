@@ -12,7 +12,7 @@
 .admin-layout {
   display: flex; /* 👈 TROCAMOS FLEX POR GRID */
   grid-template-columns: 280px 1fr; /* Sidebar fixa, Workspace pega o RESTO */
-  max-width: 1400px;
+  max-width: 1800px;
   width: 100%;
   margin: 20px auto 0 auto;
   padding: 0 24px 24px 24px;

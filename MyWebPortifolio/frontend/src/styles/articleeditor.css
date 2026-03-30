@@ -1031,10 +1031,10 @@
 }
 
 /* Inline */
-.editorial-content strong { color: var(--t-primary); font-weight: 700; }
-.editorial-content em     { font-style: italic; color: #c0c0c0; }
-.editorial-content u      { text-decoration: underline; text-underline-offset: 4px; text-decoration-color: var(--b-green-strong); text-decoration-thickness: 1px; }
-.editorial-content s      { text-decoration: line-through; color: var(--t-muted); }
+.editorial-content strong { color: inherit; font-weight: 700; }
+.editorial-content em     { color: inherit; font-style: italic; }
+.editorial-content u      { color: inherit; text-decoration: underline; text-underline-offset: 4px; text-decoration-color: var(--b-green-strong); text-decoration-thickness: 1px; }
+.editorial-content s      { color: inherit; text-decoration: line-through; }
 .editorial-content a      { color: var(--g-text); text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--b-green); transition: color var(--t); }
 .editorial-content a:hover { color: var(--g-200); }
 

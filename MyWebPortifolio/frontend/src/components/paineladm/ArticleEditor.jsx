@@ -429,16 +429,16 @@ const Toolbar = React.memo(({
               onClick={() => editor.chain().focus().toggleHeading({ level: 4 }).run()}><Icons.H4 /></ToolBtn>
           </div>
 
-          {/* FIX #1: Formatação inline — usa comandos *KeepColor para preservar cor */}
+          {/* Formatação inline nativa */}
           <div className="ae-toolbar__group">
             <ToolBtn active={s.bold} label="Negrito"
-              onClick={() => editor.chain().focus().toggleBoldKeepColor().run()}><Icons.Bold /></ToolBtn>
+              onClick={() => editor.chain().focus().toggleBold().run()}><Icons.Bold /></ToolBtn>
             <ToolBtn active={s.italic} label="Itálico"
-              onClick={() => editor.chain().focus().toggleItalicKeepColor().run()}><Icons.Italic /></ToolBtn>
+              onClick={() => editor.chain().focus().toggleItalic().run()}><Icons.Italic /></ToolBtn>
             <ToolBtn active={s.underline} label="Sublinhado"
-              onClick={() => editor.chain().focus().toggleUnderlineKeepColor().run()}><Icons.Underline /></ToolBtn>
+              onClick={() => editor.chain().focus().toggleUnderline().run()}><Icons.Underline /></ToolBtn>
             <ToolBtn active={s.strike} label="Tachado"
-              onClick={() => editor.chain().focus().toggleStrikeKeepColor().run()}><Icons.Strike /></ToolBtn>
+              onClick={() => editor.chain().focus().toggleStrike().run()}><Icons.Strike /></ToolBtn>
             <ToolBtn active={s.code} label="Código inline"
               onClick={() => editor.chain().focus().toggleCode().run()}><Icons.Code /></ToolBtn>
           </div>
