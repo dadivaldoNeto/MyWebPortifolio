@@ -13,10 +13,10 @@ import Modal from "../components/Modal";
 import ModalApresentacao from "../components/ModalApresentacao";
 import Feedback from "../components/Feedback";
 import FeedbackList from "../components/FeedbackList";
-import MatrixBackground from "../components/MatrixBackground";
 import EditProfile from "../components/EditProfile";
 import "../styles/global.css";
 import "../styles/home.css";
+import ArticleCarousel from "../components/ArticleCarousel";
 
 // ==========================================
 // UTILS: Validação de Expiração do JWT
@@ -155,8 +155,13 @@ const Home = () => {
 
     return (
       <>
+       <section className="section-articles" id="articles">
+          <ArticleCarousel />
+        </section>
+
         <section className="section-about" id="about"><About /></section>
         <hr className="separator" />
+        
         
         <section className="section-skills" id="skills"><Skills /></section>
         <hr className="separator" />

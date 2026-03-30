@@ -10,7 +10,6 @@ const API_ROUTES = {
   ATUALIZAR:    (id) => `${BASE_URL}/paineladm/artigos/atualizar/${id}`,
   EXCLUIR:      (id) => `${BASE_URL}/paineladm/artigos/excluir/${id}`
 };
-// ==========================================
 
 const ManageArticles = () => {
   const [articles, setArticles] = useState([]);
@@ -18,6 +17,7 @@ const ManageArticles = () => {
   const [message, setMessage] = useState({ type: "", text: "" });
   const [editData, setEditData] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     fetchArticles();
@@ -44,18 +44,13 @@ const ManageArticles = () => {
   };
 
   const handlePublish = async (payload) => {
-    console.log("Enviando payload para o Java...", payload);
     setLoading(true);
     showMessage("success", "⏳ Enviando artigo para o servidor...");
 
     try {
       const token = localStorage.getItem("token");
       const method = isEditing ? "PUT" : "POST";
-      
-      // Usa a rota centralizada no topo
-      const endpoint = isEditing 
-        ? API_ROUTES.ATUALIZAR(editData.id) 
-        : API_ROUTES.CRIAR;
+      const endpoint = isEditing ? API_ROUTES.ATUALIZAR(editData.id) : API_ROUTES.CRIAR;
 
       const response = await fetch(endpoint, {
         method: method,
@@ -117,6 +112,26 @@ const ManageArticles = () => {
     }
   };
 
+  // 👉 NOVO: Formatador de Data elegante
+  const formatarData = (isoDate) => {
+    if (!isoDate) return "Data desconhecida";
+    const data = new Date(isoDate);
+    return data.toLocaleDateString("pt-BR", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric"
+    });
+  };
+
+  const filteredArticles = articles.filter((art) => {
+    const term = searchTerm.toLowerCase();
+    const titleMatch = art.title?.toLowerCase().includes(term);
+    const subMatch = art.subtitle?.toLowerCase().includes(term);
+    const tagMatch = art.tags?.some((tag) => tag.toLowerCase().includes(term));
+
+    return titleMatch || subMatch || tagMatch;
+  });
+
   return (
     <div className="manage-projects-container">
       <div className="admin-form-section">
@@ -141,30 +156,110 @@ const ManageArticles = () => {
         />
       </div>
 
-      {/* LISTAGEM DE ARTIGOS SALVOS */}
       <div className="admin-list-section" style={{ marginTop: "50px" }}>
-        <div className="section-header">
-          <h2 style={{ color: "#48bb78" }}>📚 Seus Artigos</h2>
+        <div className="section-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '15px' }}>
+          <h2 style={{ color: "#48bb78", margin: 0 }}>📚 Seus Artigos</h2>
+          
+          <input
+            type="text"
+            placeholder="🔍 Buscar por título, descrição ou tag..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            style={{
+              padding: "10px 15px",
+              borderRadius: "8px",
+              border: "1px solid #333",
+              backgroundColor: "#1e1e1e",
+              color: "#fff",
+              width: "100%",
+              maxWidth: "400px",
+              fontSize: "0.9rem"
+            }}
+          />
         </div>
 
         <div className="image-manager-grid" style={{ marginTop: "20px" }}>
-          {articles.map((art) => (
-            <div key={art.id} className="image-thumbnail-box" style={{ minHeight: "200px" }}>
-              <img 
-                src={art.coverImage || "https://via.placeholder.com/150"} 
-                alt={art.title} 
-                className="thumbnail-img" 
-              />
-              <div style={{ padding: "10px" }}>
-                <h4 style={{ color: "#fff", fontSize: "0.9rem" }}>{art.title}</h4>
-                <p style={{ color: "#666", fontSize: "0.7rem" }}>/{art.slug}</p>
-                <div className="thumbnail-actions" style={{ position: "static", marginTop: "10px" }}>
-                  <button onClick={() => handleEditClick(art)}>✏️</button>
-                  <button className="btn-trash" onClick={() => handleDelete(art.id)}>🗑️</button>
+          {filteredArticles.length > 0 ? (
+            filteredArticles.map((art) => (
+              <div 
+                key={art.id} 
+                className="image-thumbnail-box" 
+                style={{ minHeight: "280px", cursor: "pointer", display: "flex", flexDirection: "column", position: "relative" }}
+                onClick={() => handleEditClick(art)}
+              >
+                {/* Imagem de Capa com Badge de Status */}
+                <div style={{ position: "relative", width: "100%", height: "140px" }}>
+                  <img 
+                    src={art.coverImage || "https://via.placeholder.com/300x150"} 
+                    alt={art.title} 
+                    style={{ width: "100%", height: "100%", objectFit: "cover", borderTopLeftRadius: "8px", borderTopRightRadius: "8px" }} 
+                  />
+                  {/* Badge de Status flutuante */}
+                  <span style={{
+                    position: "absolute",
+                    top: "10px",
+                    right: "10px",
+                    backgroundColor: art.status === "PUBLICADO" ? "#48bb78" : "#d69e2e",
+                    color: "#fff",
+                    padding: "4px 8px",
+                    borderRadius: "4px",
+                    fontSize: "0.7rem",
+                    fontWeight: "bold",
+                    textTransform: "uppercase",
+                    boxShadow: "0 2px 4px rgba(0,0,0,0.4)"
+                  }}>
+                    {art.status}
+                  </span>
+                </div>
+
+                <div style={{ padding: "12px", display: "flex", flexDirection: "column", flexGrow: 1 }}>
+                  {/* Título e Metadados (Data / Autor) */}
+                  <h4 style={{ color: "#fff", fontSize: "1.1rem", marginBottom: "5px", lineHeight: "1.2" }}>{art.title}</h4>
+                  
+                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.7rem", color: "#a0aec0", marginBottom: "10px", borderBottom: "1px solid #333", paddingBottom: "5px" }}>
+                    <span>📅 {formatarData(art.dataCriacao)}</span>
+                    <span>✍️ {art.criadoPor || "Autor"}</span>
+                  </div>
+
+                  {/* Subtítulo */}
+                  <p style={{ color: "#cbd5e0", fontSize: "0.8rem", marginBottom: "10px", flexGrow: 1, lineHeight: "1.4" }}>
+                    {art.subtitle?.length > 80 ? art.subtitle.substring(0, 80) + "..." : art.subtitle}
+                  </p>
+                  
+                  {/* Tags */}
+                  <div style={{ display: "flex", gap: "5px", flexWrap: "wrap", marginBottom: "15px" }}>
+                    {art.tags?.map((tag, idx) => (
+                      <span key={idx} style={{ backgroundColor: "rgba(72, 187, 120, 0.2)", color: "#48bb78", border: "1px solid #48bb78", padding: "2px 6px", borderRadius: "12px", fontSize: "0.65rem", fontWeight: "bold" }}>
+                        #{tag}
+                      </span>
+                    ))}
+                  </div>
+
+                  {/* Botões de Ação */}
+                  <div className="thumbnail-actions" style={{ position: "static", marginTop: "auto", display: 'flex', gap: '8px' }}>
+                    <button 
+                      className="btn-edit" 
+                      onClick={(e) => { e.stopPropagation(); handleEditClick(art); }} 
+                      style={{ flex: 1, backgroundColor: "#2d3748", color: "#fff", padding: "8px", borderRadius: "5px", border: "none", cursor: "pointer", transition: "0.2s" }}
+                    >
+                      ✏️ Editar
+                    </button>
+                    <button 
+                      className="btn-trash" 
+                      onClick={(e) => { e.stopPropagation(); handleDelete(art.id); }}
+                      style={{ padding: "8px 12px", backgroundColor: "#e53e3e", color: "#fff", borderRadius: "5px", border: "none", cursor: "pointer" }}
+                    >
+                      🗑️
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))
+          ) : (
+            <p style={{ color: "#888", textAlign: "center", gridColumn: "1 / -1", padding: "20px" }}>
+              Nenhum artigo encontrado com o termo "{searchTerm}".
+            </p>
+          )}
         </div>
       </div>
     </div>
