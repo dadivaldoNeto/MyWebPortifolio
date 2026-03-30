@@ -27,9 +27,11 @@ import TaskItem          from "@tiptap/extension-task-item";
 import Placeholder       from "@tiptap/extension-placeholder";
 import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
 
+
 import { TextStyle }  from "@tiptap/extension-text-style";
 import { Color }      from "@tiptap/extension-color";
 import { FontFamily } from "@tiptap/extension-font-family";
+import { Plugin, PluginKey } from "@tiptap/pm/state";
 
 import { common, createLowlight } from "lowlight";
 
@@ -308,6 +310,69 @@ const FigureExtension = Node.create({
       setFigureAlign: (align) => ({ commands }) =>
         commands.updateAttributes(this.name, { align }),
     };
+  },
+  addProseMirrorPlugins() {
+    return [
+      new Plugin({
+        key: new PluginKey("eventHandler"),
+        props: {
+          // 1. O VIGIA DO COLAR (Ctrl + V)
+          handlePaste: (view, event) => {
+            const items = Array.from(event.clipboardData?.items || []);
+            const hasImage = items.some(item => item.type.startsWith("image/"));
+
+            if (hasImage) {
+              event.preventDefault(); // Impede que o texto sujo cole junto
+              
+              items.forEach(item => {
+                if (item.type.startsWith("image/")) {
+                  const file = item.getAsFile();
+                  if (file) {
+                    const objectUrl = URL.createObjectURL(file); // Gera o blob: local
+                    const node = view.state.schema.nodes.figure.create({
+                      src: objectUrl,
+                      alt: "Imagem colada",
+                      width: 100,
+                      align: "center",
+                      caption: ""
+                    });
+                    const transaction = view.state.tr.replaceSelectionWith(node);
+                    view.dispatch(transaction);
+                  }
+                }
+              });
+              return true; // Avisa o TipTap que nós resolvemos o Ctrl+V
+            }
+            return false;
+          },
+handleDrop: (view, event, slice, moved) => {
+            if (!moved && event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files.length > 0) {
+              const files = Array.from(event.dataTransfer.files).filter(f => f.type.startsWith("image/"));
+              if (files.length === 0) return false;
+
+              event.preventDefault();
+              const coordinates = view.posAtCoords({ left: event.clientX, top: event.clientY });
+              if (!coordinates) return false;
+
+              files.forEach(file => {
+                const objectUrl = URL.createObjectURL(file);
+                const node = view.state.schema.nodes.figure.create({
+                  src: objectUrl,
+                  alt: "Imagem arrastada",
+                  width: 100,
+                  align: "center",
+                  caption: ""
+                });
+                const transaction = view.state.tr.insert(coordinates.pos, node);
+                view.dispatch(transaction);
+              });
+              return true;
+            }
+            return false;
+          }
+        },
+      }),
+    ];
   },
 });
 
