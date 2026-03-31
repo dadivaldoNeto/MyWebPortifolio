@@ -1,12 +1,18 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
 import "../styles/editprofile.css";
+import Sidebar from "./Sidebar";
 
 // Configurações constantes
-const API_BASE_URL =  import.meta.env.VITE_API_URL + "/usuario";
+const API_BASE_URL = import.meta.env.VITE_API_URL + "/usuario";
 const CLOUDINARY_URL = "https://api.cloudinary.com/v1_1/dbfrjuodw/image/upload";
-const UPLOAD_PRESET = "perfil_usuarios"; 
+const UPLOAD_PRESET = "perfil_usuarios";
 
-const EditProfile = ({ onClose, token }) => {
+const EditProfile = () => {
+  const { token, handleUpdateUserPhoto } = useAuth();
+  const navigate = useNavigate();
+
   const defaultImage = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png";
 
   // Estados de Controle
@@ -23,7 +29,7 @@ const EditProfile = ({ onClose, token }) => {
 
   // Estados dos Campos
   const [formData, setFormData] = useState({
-    nomePublico: "", 
+    nomePublico: "",
     telefone: "",
     pais: "",
     cidade: "",
@@ -32,7 +38,7 @@ const EditProfile = ({ onClose, token }) => {
     linkedin: "",
     bio: "",
   });
- //teste
+  //teste
   // Busca inicial dos dados
   useEffect(() => {
     const carregarPerfil = async () => {
@@ -47,13 +53,13 @@ const EditProfile = ({ onClose, token }) => {
 
           setUserData(user);
           setFotoUrl(user.fotoPerfil || defaultImage);
-          
+
           // Lendo o booleano diretamente do banco de dados
           setIsAnonimo(user.isAnonimo || false);
 
           // Preenche o formulário com o que já existe no banco
           setFormData({
-            nomePublico: user.nomePublico || "", 
+            nomePublico: user.nomePublico || "",
             telefone: user.telefone || "",
             pais: user.pais || "",
             cidade: user.cidade || "",
@@ -113,7 +119,7 @@ const EditProfile = ({ onClose, token }) => {
 
       // Prepara o Payload (Agora enviamos o nome e o booleano separadamente, igual ao seu DTO)
       const payload = {
-        nomePublico: formData.nomePublico || null, 
+        nomePublico: formData.nomePublico || null,
         isAnonimo: isAnonimo, // 👈 Enviando o booleano pro Java
         profissao: formData.profissao || null,
         telefone: formData.telefone || null,
@@ -137,7 +143,8 @@ const EditProfile = ({ onClose, token }) => {
 
       if (response.ok) {
         alert("Perfil atualizado com sucesso! ✨");
-        onClose();
+        if (urlImagemFinal) handleUpdateUserPhoto(urlImagemFinal); // Atualiza a foto no Header na mesma hora!
+        navigate("/"); // 👈 VOLTA PRA HOME EM VEZ DE onClose()
       } else {
         const error = await response.json();
         // Caso o Spring Boot retorne os erros de validação (ex: telefone inválido)
@@ -158,101 +165,130 @@ const EditProfile = ({ onClose, token }) => {
     );
   }
 
+ if (isLoading) {
+    return (
+      <div className="content">
+        <div className="sidebar-wrapper"><Sidebar /></div>
+        <main className="main-content">
+          <div className="main-container"><h2>Sincronizando dados...</h2></div>
+        </main>
+      </div>
+    );
+  }
+
   return (
-    <div className="edit-profile-container animate-fadeIn">
-      <div className="edit-header">
-        <h2>Editar Perfil</h2>
-        <button className="btn-close" onClick={onClose} disabled={isSaving}>✕</button>
+    // 👉 1. RESTAURADO: A Casca que coloca lado a lado
+    <div className="content"> 
+      
+      {/* 👉 2. RESTAURADO: A Sidebar no lugar dela */}
+      <div className="sidebar-wrapper">
+        <Sidebar />
       </div>
 
-      <form onSubmit={handleSubmit} className="edit-form">
-        {/* SEÇÃO DA FOTO */}
-        <div className="foto-upload-section">
-          <div className="foto-preview">
-            <img src={fotoUrl} alt="Avatar" />
-            <label className="foto-overlay">
-              <span>📷 Alterar</span>
-              <input type="file" accept="image/*" onChange={handleFotoChange} hidden />
-            </label>
-          </div>
-        </div>
-
-        <div className="form-grid">
-          <div className="input-group disabled">
-            <label>Username</label>
-            <input type="text" value={userData?.userName || ""} disabled />
-          </div>
-          <div className="input-group disabled">
-            <label>E-mail</label>
-            <input type="text" value={userData?.email || ""} disabled />
-          </div>
-
-          {/* Campo Nome Público + Checkbox Anônimo */}
-          <div className="input-group">
-            <label>Nome Público</label>
-            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-              <input 
-                type="text" 
-                name="nomePublico" 
-                value={formData.nomePublico} 
-                onChange={handleChange} 
-                placeholder="Como quer ser chamado?" 
-                style={{ flex: 1 }}
-              />
-              
+      {/* 👉 3. RESTAURADO: O bloco da direita */}
+      <main className="main-content">
+        <div className="main-container"> 
+          
+          {/* 👉 O seu formulário entra AQUI dentro, com o fundo Glassmorphism já aplicado! */}
+          <div className="edit-profile-container animate-fadeIn">
+            
+            <div className="edit-header">
+              <h2>Editar Perfil</h2>
+              {/* O botão fechar agora usa o navigate para voltar suavemente pra Home */}
+              <button className="btn-close" onClick={() => navigate("/")} disabled={isSaving}>✕</button>
             </div>
-            <label style={{margin: "10px 0 0 0", display: "flex", alignItems: "center", gap: "6px", cursor: "pointer", color: isAnonimo ? "#4caf50" : "#a0aec0", whiteSpace: "nowrap", fontWeight: isAnonimo ? "bold" : "normal" , textTransform: "none"}}>
-                <input 
-                  type="checkbox" 
-                  checked={isAnonimo} 
-                  onChange={(e) => setIsAnonimo(e.target.checked)} 
-                  style={{ cursor: "pointer", width: "16px", height: "16px" }}
-                />
-                Ocultar Nome e Foto do Perfil
-              </label>
-          </div>
 
-          <div className="input-group">
-            <label>Profissão</label>
-            <input type="text" name="profissao" value={formData.profissao} onChange={handleChange} placeholder="Ex: Backend Developer" />
-          </div>
-          <div className="input-group">
-            <label>Telefone</label>
-            <input type="text" name="telefone" value={formData.telefone} onChange={handleChange} placeholder="+5548999999999" />
-          </div>
-          <div className="input-group">
-            <label>País</label>
-            <input type="text" name="pais" value={formData.pais} onChange={handleChange} />
-          </div>
-          <div className="input-group">
-            <label>Cidade</label>
-            <input type="text" name="cidade" value={formData.cidade} onChange={handleChange} />
-          </div>
-          <div className="input-group">
-            <label>GitHub (URL)</label>
-            <input type="url" name="github" value={formData.github} onChange={handleChange} />
-          </div>
-          <div className="input-group">
-            <label>LinkedIn (URL)</label>
-            <input type="url" name="linkedin" value={formData.linkedin} onChange={handleChange} />
+            <form onSubmit={handleSubmit} className="edit-form">
+              {/* SEÇÃO DA FOTO */}
+              <div className="foto-upload-section">
+                <div className="foto-preview">
+                  <img src={fotoUrl} alt="Avatar" />
+                  <label className="foto-overlay">
+                    <span>📷 Alterar</span>
+                    <input type="file" accept="image/*" onChange={handleFotoChange} hidden />
+                  </label>
+                </div>
+              </div>
+
+              <div className="form-grid">
+                <div className="input-group disabled">
+                  <label>Username</label>
+                  <input type="text" value={userData?.userName || ""} disabled />
+                </div>
+                <div className="input-group disabled">
+                  <label>E-mail</label>
+                  <input type="text" value={userData?.email || ""} disabled />
+                </div>
+
+                {/* Campo Nome Público + Checkbox Anônimo */}
+                <div className="input-group">
+                  <label>Nome Público</label>
+                  <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                    <input 
+                      type="text" 
+                      name="nomePublico" 
+                      value={formData.nomePublico} 
+                      onChange={handleChange} 
+                      placeholder="Como quer ser chamado?" 
+                      style={{ flex: 1 }}
+                    />
+                  </div>
+                  <label style={{margin: "10px 0 0 0", display: "flex", alignItems: "center", gap: "6px", cursor: "pointer", color: isAnonimo ? "#4caf50" : "#a0aec0", whiteSpace: "nowrap", fontWeight: isAnonimo ? "bold" : "normal" , textTransform: "none"}}>
+                    <input 
+                      type="checkbox" 
+                      checked={isAnonimo} 
+                      onChange={(e) => setIsAnonimo(e.target.checked)} 
+                      style={{ cursor: "pointer", width: "16px", height: "16px" }}
+                    />
+                    Ocultar Nome e Foto do Perfil
+                  </label>
+                </div>
+
+                <div className="input-group">
+                  <label>Profissão</label>
+                  <input type="text" name="profissao" value={formData.profissao} onChange={handleChange} placeholder="Ex: Backend Developer" />
+                </div>
+                <div className="input-group">
+                  <label>Telefone</label>
+                  <input type="text" name="telefone" value={formData.telefone} onChange={handleChange} placeholder="+5548999999999" />
+                </div>
+                <div className="input-group">
+                  <label>País</label>
+                  <input type="text" name="pais" value={formData.pais} onChange={handleChange} />
+                </div>
+                <div className="input-group">
+                  <label>Cidade</label>
+                  <input type="text" name="cidade" value={formData.cidade} onChange={handleChange} />
+                </div>
+                <div className="input-group">
+                  <label>GitHub (URL)</label>
+                  <input type="url" name="github" value={formData.github} onChange={handleChange} />
+                </div>
+                <div className="input-group">
+                  <label>LinkedIn (URL)</label>
+                  <input type="url" name="linkedin" value={formData.linkedin} onChange={handleChange} />
+                </div>
+              </div>
+
+              <div className="input-group bio-group">
+                <label>Sobre mim (Bio)</label>
+                <textarea name="bio" value={formData.bio} onChange={handleChange} rows="5" placeholder="Conte sua história..."></textarea>
+                <small className="char-count">{formData.bio.length}/1000</small>
+              </div>
+
+              <div className="form-actions">
+                <button type="button" className="btn-cancel" onClick={() => navigate("/")} disabled={isSaving}>Cancelar</button>
+                <button type="submit" className="btn-save" disabled={isSaving}>
+                  {isSaving ? "Processando..." : "Salvar Alterações"}
+                </button>
+              </div>
+            </form>
+
           </div>
         </div>
-
-        <div className="input-group bio-group">
-          <label>Sobre mim (Bio)</label>
-          <textarea name="bio" value={formData.bio} onChange={handleChange} rows="5" placeholder="Conte sua história..."></textarea>
-          <small className="char-count">{formData.bio.length}/1000</small>
-        </div>
-
-        <div className="form-actions">
-          <button type="button" className="btn-cancel" onClick={onClose} disabled={isSaving}>Cancelar</button>
-          <button type="submit" className="btn-save" disabled={isSaving}>
-            {isSaving ? "Processando..." : "Salvar Alterações"}
-          </button>
-        </div>
-      </form>
+      </main>
     </div>
-  );
-};
 
-export default EditProfile;
+  )};
+  
+  export default EditProfile;

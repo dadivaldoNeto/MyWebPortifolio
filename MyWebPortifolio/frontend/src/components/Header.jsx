@@ -1,21 +1,25 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom"; // 👈 NOVO: Importamos o useLocation
 import "../styles/header.css";
 
-const Header = ({ 
-  isAuthenticated, 
-  userName, 
-  userPhoto, 
-  handleLogout, 
-  openAuthModal, 
-  openEditProfile, 
-  goHome,
-  userRole 
+const Header = ({
+  isAuthenticated,
+  userName,
+  userPhoto,
+  handleLogout,
+  openAuthModal,
+  openEditProfile,
+  userRole
 }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+
   const navigate = useNavigate();
+  const location = useLocation(); // 👈 O nosso GPS atual
+
+  // Verifica se o usuário está exatamente na raiz do site ("/")
+  const isHomePage = location.pathname === "/";
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 50);
@@ -25,15 +29,11 @@ const Header = ({
 
   const defaultAvatar = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png";
   const avatarImage = userPhoto || defaultAvatar;
-
-  // Lógica corrigida para garantir que userRole não seja undefined
   const isAdminMaster = isAuthenticated && userRole === "ADMIN3";
 
-  // Função centralizada para navegação
   const handleAdminNavigation = (e) => {
-    e.preventDefault(); // Evita recarregamento indesejado
-    console.log("Navegando para /admin..."); // Para debug
-    setIsMenuOpen(false); // Fecha o menu mobile se estiver aberto
+    e.preventDefault();
+    setIsMenuOpen(false);
     navigate('/admin');
   };
 
@@ -57,22 +57,30 @@ const Header = ({
           </div>
 
           <div className="nav-links">
-            <button 
-              className="nav-link btn-home" 
-              onClick={() => {
-                if (goHome) goHome(); 
-                setIsMenuOpen(false); 
-              }}
+            <button
+              className="nav-link" // 👈 Limpamos o btn-home daqui
+              style={{ background: 'transparent', border: 'none', padding: '10px', fontFamily: 'inherit' }} // 👈 Reset do navegador
+              onClick={() => { navigate("/"); setIsMenuOpen(false); }}
             >
               Home
             </button>
-            <a href="#about" className="nav-link" onClick={() => setIsMenuOpen(false)}>Sobre</a>
-            <a href="#skills" className="nav-link" onClick={() => setIsMenuOpen(false)}>Habilidades</a>
-            <a href="#projects" className="nav-link" onClick={() => setIsMenuOpen(false)}>Projetos</a>
-            <a href="#contact" className="nav-link" onClick={() => setIsMenuOpen(false)}>Contato</a>
-            <a href="#feedback" className="nav-link" onClick={() => setIsMenuOpen(false)}>Deixe seu Feedback</a>
-            
-           
+
+            <button
+              className="nav-link" // 👈 Limpamos o btn-articles daqui
+              style={{ background: 'transparent', border: 'none', padding: '10px', fontFamily: 'inherit' }} // 👈 Reset do navegador
+              onClick={() => { navigate("/artigos"); setIsMenuOpen(false); }}
+            >
+              Artigos
+            </button>
+
+            {isHomePage && (
+              <>
+                <a href="#about" className="nav-link" onClick={() => setIsMenuOpen(false)}>Sobre</a>
+                <a href="#skills" className="nav-link" onClick={() => setIsMenuOpen(false)}>Habilidades</a>
+                <a href="#projects" className="nav-link" onClick={() => setIsMenuOpen(false)}>Projetos</a>
+                <a href="#contact" className="nav-link" onClick={() => setIsMenuOpen(false)}>Contato</a>
+              </>
+            )}
           </div>
 
           <div className="nav-footer">
@@ -82,7 +90,7 @@ const Header = ({
                   <img src={avatarImage} alt="Perfil" className="header-avatar" />
                   <span>Olá, <strong>{userName}</strong></span>
                 </div>
-                
+
                 <button className="nav-auth-button" onClick={() => { openEditProfile(); setIsMenuOpen(false); }}>
                   Editar Perfil
                 </button>
@@ -99,17 +107,16 @@ const Header = ({
           </div>
         </nav>
 
-        {/* SEÇÃO DIREITA (Apenas Avatar e Login) */}
+        {/* SEÇÃO DIREITA (Avatar e Login) */}
         <div className={`right-section ${isMenuOpen ? "hide-on-mobile" : ""}`}>
-           {/* O ÚNICO BOTÃO ADMIN: Fica junto com os outros links */}
-            {isAdminMaster && (
-              <button 
-                className="nav-link admin-nav-btn" 
-                onClick={handleAdminNavigation}
-              >
-                Painel Admin
-              </button>
-            )}
+          {isAdminMaster && (
+            <button
+              className="nav-link admin-nav-btn"
+              onClick={handleAdminNavigation}
+            >
+              Painel Admin
+            </button>
+          )}
           {isAuthenticated && userName ? (
             <div className="user-menu-container">
               <button className="user-menu-button" onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}>

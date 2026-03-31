@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import "../styles/articlecarousel.css";
+
 
 const BASE_URL = import.meta.env?.VITE_API_URL || "http://localhost:8080";
 const SLIDE_DURATION = 6000; // ms
@@ -7,6 +9,8 @@ const TICK_MS = 50;           // atualiza a barra a cada 50ms (~20fps, leve e su
 const MAX_ARTICLES = 6;
 
 const ArticleCarousel = () => {
+  const navigate = useNavigate();
+
   const [articles, setArticles] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [elapsed, setElapsed] = useState(0); // ms decorridos no slide atual
@@ -144,7 +148,7 @@ const ArticleCarousel = () => {
 
                 <button
                   className="kc-btn"
-                  onClick={() => console.log(`/artigo/${art.slug}`)}
+                  onClick={() => navigate(`/artigo/${art.slug}`)}
                 >
                   Ler artigo completo
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">

@@ -1,15 +1,46 @@
+// src/App.jsx
 import React from "react";
-import { Routes, Route } from "react-router-dom"; // 👈 O Guarda de Trânsito
-import Home from "./paginas/Home"; // (Ou ./components/Home, depende da sua pasta)
-import AdminDashboard from "./paginas/AdminDashboard"; // A nova página que criamos
+import { Routes, Route } from "react-router-dom"; 
+import { AuthProvider } from "./contexts/AuthContext"; 
+
+// Layout
+import MainLayout from "./components/MainLayout";
+
+// Páginas
+import Home from "./paginas/Home";
+import AdminDashboard from "./paginas/AdminDashboard"; 
+import ArticleViewer from "./paginas/ArticleViewer"; 
+import EditProfile from "./components/EditProfile";
+import ArticleShowcase from "./paginas/ArticleShowCase"; 
 
 function App() {
   return (
-    // O <Routes> verifica a URL atual e escolhe qual <Route> vai renderizar
-    <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="/admin" element={<AdminDashboard />} />
-    </Routes>
+    <AuthProvider> 
+      <Routes>
+        
+        {/* ==========================================
+            ROTAS COM HEADER E FOOTER (O Ciclo Completo)
+            ========================================== */}
+        <Route path="/" element={<MainLayout />}>
+          
+          <Route index element={<Home />} />
+          
+          <Route path="artigo/:slug" element={<ArticleViewer />} />
+          
+          <Route path="editar-perfil" element={<EditProfile />} />
+          
+          {/* 🚨 A CORREÇÃO: A Vitrine agora mora DENTRO do MainLayout! */}
+          <Route path="artigos" element={<ArticleShowcase />} /> 
+
+        </Route>
+
+        {/* ==========================================
+            ROTAS ISOLADAS (Sem Header Público)
+            ========================================== */}
+        <Route path="/admin" element={<AdminDashboard />} />
+
+      </Routes>
+    </AuthProvider>
   );
 }
 

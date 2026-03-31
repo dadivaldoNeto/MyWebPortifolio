@@ -1,0 +1,35 @@
+/* =========================================
+   MAIN LAYOUT (Estrutura Global)
+   ========================================= */
+
+/* 👉 CORRIGIDO: Agora o CSS conversa com o JSX (layout-wrapper) */
+.layout-wrapper {
+  position: relative;
+  width: 70%; /* O comprimido de 70% */
+  max-width: 1400px;
+  margin: 0 auto; /* Centraliza no monitor */
+  padding: 30px 20px;
+  box-sizing: border-box;
+  
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* Faz a página ter pelo menos a altura do monitor */
+}
+
+.layout-main-content {
+  width: 100%; /* Respeita os 70% do pai */
+  flex: 1; /* Empurra o footer pro final */
+  display: flex;
+  flex-direction: column;
+  padding: 20px 0; 
+}
+
+/* =========================================
+   RESPONSIVIDADE GLOBAL
+   ========================================= */
+@media (max-width: 1024px) {
+  .layout-wrapper {
+    width: 95%; /* Expande no celular */
+    padding: 20px 10px;
+  }
+}

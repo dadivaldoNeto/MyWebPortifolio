@@ -76,7 +76,7 @@ const ManageArticles = () => {
         resetForm();
         fetchArticles();
       } else {
-        const errorMsg = apiData.message || apiData.error || `Erro HTTP ${response.status}`;
+        const errorMsg = apiData.erro.message || apiData.erro.status || `Erro HTTP ${response.status}`;
         showMessage("error", `❌ ${errorMsg}`);
       }
     } catch (error) {
