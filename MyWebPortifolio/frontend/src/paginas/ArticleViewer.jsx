@@ -6,180 +6,374 @@ import "../styles/articleviewer.css";
 
 const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
 
-/* ── Estimativa de tempo de leitura ── */
+/* ─────────────────────────────────────────
+   UTILS
+───────────────────────────────────────── */
 const estimateReadTime = (html = "") => {
   const text = html.replace(/<[^>]+>/g, "");
-  const words = text.trim().split(/\s+/).length;
-  return Math.max(1, Math.ceil(words / 200));
+  return Math.max(1, Math.ceil(text.trim().split(/\s+/).length / 200));
 };
 
-/* ── Barra de progresso de scroll ── */
-const ReadingProgressBar = () => {
-  const [progress, setProgress] = useState(0);
+const slugify = (text) =>
+  text.toString().toLowerCase()
+    .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // remove acentos
+    .replace(/\s+/g, '-') // troca espaços por hífens
+    .replace(/[^\w-]+/g, '') // remove caracteres não-alfanuméricos
+    .replace(/--+/g, '-') // evita hífens duplos
+    .replace(/^-+/, '').replace(/-+$/, ''); // limpa as pontas
+
+/* ─────────────────────────────────────────
+   READING PROGRESS BAR
+───────────────────────────────────────── */
+const ReadingProgressBar = ({ progress }) => (
+  <div className="av-progress-track">
+    <div className="av-progress-fill" style={{ width: `${progress}%` }} />
+  </div>
+);
+
+/* ─────────────────────────────────────────
+   FLOATING TOOLBAR
+───────────────────────────────────────── */
+const FloatingToolbar = ({ article }) => {
+  const [liked, setLiked] = useState(false);
+  const [bookmarked, setBookmarked] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => {
-      const el    = document.documentElement;
-      const total = el.scrollHeight - el.clientHeight;
-      setProgress(total > 0 ? (el.scrollTop / total) * 100 : 0);
-    };
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    const fn = () => setVisible(window.scrollY > 320);
+    window.addEventListener("scroll", fn, { passive: true });
+    return () => window.removeEventListener("scroll", fn);
   }, []);
 
+  const handleShare = async () => {
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: article?.title, url: window.location.href });
+      } else {
+        await navigator.clipboard.writeText(window.location.href);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2500);
+      }
+    } catch (_) {}
+  };
+
   return (
-    <div className="reading-progress-track">
-      <div className="reading-progress-bar" style={{ width: `${progress}%` }} />
+    <div className={`av-toolbar ${visible ? "av-toolbar--visible" : ""}`}>
+      <button
+        className={`av-tool-btn ${liked ? "av-tool-btn--liked" : ""}`}
+        onClick={() => setLiked(v => !v)}
+        title={liked ? "Remover curtida" : "Curtir"}
+      >
+        <svg width="18" height="18" viewBox="0 0 24 24" fill={liked ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+        </svg>
+        <span>{liked ? "Curtido" : "Curtir"}</span>
+      </button>
+
+      <div className="av-tool-sep" />
+
+      <button
+        className={`av-tool-btn ${bookmarked ? "av-tool-btn--saved" : ""}`}
+        onClick={() => setBookmarked(v => !v)}
+        title={bookmarked ? "Remover dos salvos" : "Salvar"}
+      >
+        <svg width="16" height="16" viewBox="0 0 24 24" fill={bookmarked ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+        </svg>
+        <span>{bookmarked ? "Salvo" : "Salvar"}</span>
+      </button>
+
+      <div className="av-tool-sep" />
+
+      <button
+        className={`av-tool-btn ${copied ? "av-tool-btn--copied" : ""}`}
+        onClick={handleShare}
+        title="Compartilhar"
+      >
+        {copied ? (
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+        ) : (
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
+            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+          </svg>
+        )}
+        <span>{copied ? "Copiado!" : "Compartilhar"}</span>
+      </button>
     </div>
   );
 };
+
+/* ─────────────────────────────────────────
+   TABLE OF CONTENTS
+───────────────────────────────────────── */
+const TableOfContents = ({ headings }) => {
+  const [active, setActive] = useState("");
+
+  useEffect(() => {
+    if (!headings || !headings.length) return;
+    
+    const obs = new IntersectionObserver(
+      (entries) => {
+        const visible = entries.find(e => e.isIntersecting);
+        if (visible) setActive(visible.target.id);
+      },
+      { rootMargin: "-100px 0px -60% 0px" } // Gatilho de leitura
+    );
+    
+    // Pequeno atraso para garantir que o DOM injetou o HTML processado
+    const timeoutId = setTimeout(() => {
+      headings.forEach(h => {
+        const el = document.getElementById(h.id);
+        if (el) obs.observe(el);
+      });
+    }, 150);
+    
+    return () => {
+      clearTimeout(timeoutId);
+      obs.disconnect();
+    };
+  }, [headings]);
+
+  const handleScroll = (e, id) => {
+    e.preventDefault();
+    const el = document.getElementById(id);
+    if (el) {
+      // 100px de offset para o título não ficar grudado no topo
+      const y = el.getBoundingClientRect().top + window.scrollY - 100;
+      window.scrollTo({ top: y, behavior: "smooth" });
+      window.history.pushState(null, "", `#${id}`);
+      setActive(id);
+    }
+  };
+
+  if (!headings || headings.length < 2) return null;
+
+  return (
+    <aside className="av-toc">
+      <p className="av-toc-label">Neste artigo</p>
+      <nav>
+        {headings.map(h => (
+          <a
+            key={h.id}
+            href={`#${h.id}`}
+            className={`av-toc-item av-toc-item--${h.level} ${active === h.id ? "av-toc-item--active" : ""}`}
+            onClick={(e) => handleScroll(e, h.id)}
+          >
+            {h.text}
+          </a>
+        ))}
+      </nav>
+    </aside>
+  );
+};
+
+/* ─────────────────────────────────────────
+   SKELETON
+───────────────────────────────────────── */
+const Skeleton = () => (
+  <div className="av-skeleton">
+    <div className="av-skel av-skel--chip" />
+    <div className="av-skel av-skel--h1" />
+    <div className="av-skel av-skel--h1 av-skel--h1b" />
+    <div className="av-skel av-skel--sub" />
+    <div className="av-skel av-skel--meta" />
+    <div className="av-skel av-skel--cover" />
+    {[90, 100, 75, 100, 88, 60].map((w, i) => (
+      <div key={i} className="av-skel av-skel--line" style={{ width: `${w}%` }} />
+    ))}
+  </div>
+);
 
 /* ══════════════════════════════════════════
    COMPONENTE PRINCIPAL
 ══════════════════════════════════════════ */
 const ArticleViewer = () => {
-  const { slug }            = useParams();
-  const navigate            = useNavigate();
-  const [article, setArticle]   = useState(null);
-  const [loading, setLoading]   = useState(true);
+  const { slug } = useParams();
+  const navigate = useNavigate();
+
+  const [article, setArticle] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [readTime, setReadTime] = useState(0);
+  const [progress, setProgress] = useState(0);
+  const [readPct, setReadPct] = useState(0);
+
+  // Estados para o HTML processado e o Sumário
+  const [processedHtml, setProcessedHtml] = useState("");
+  const [headings, setHeadings] = useState([]);
 
   useEffect(() => {
-    const fetchArticleBySlug = async () => {
+    (async () => {
       try {
-        const response = await fetch(`${BASE_URL}/geral/artigos/${slug}`);
-        if (response.ok) {
-          const data = await response.json();
-          const art  = data.dados || data;
+        const res = await fetch(`${BASE_URL}/geral/artigos/${slug}`);
+        if (res.ok) {
+          const data = await res.json();
+          const art = data.dados || data;
           setArticle(art);
           setReadTime(estimateReadTime(art.contentHtml));
+
+          // 🚀 Injeta os IDs semânticos no HTML recebido do backend
+          if (art.contentHtml) {
+            const doc = new DOMParser().parseFromString(art.contentHtml, "text/html");
+            const nodes = Array.from(doc.querySelectorAll("h2, h3"));
+            const newHeadings = [];
+
+            nodes.forEach((n, i) => {
+              const text = n.textContent.trim();
+              const id = slugify(text) || `av-h-${i}`;
+              n.id = id; // Embutindo o ID fisicamente na tag H2/H3
+              newHeadings.push({ id, text, level: n.tagName.toLowerCase() });
+            });
+
+            setHeadings(newHeadings);
+            setProcessedHtml(doc.body.innerHTML); // Guarda o HTML atualizado
+          }
         } else {
           navigate("/");
         }
-      } catch (error) {
-        console.error("Erro ao carregar artigo:", error);
-        navigate("/");
-      } finally {
-        setLoading(false);
+      } catch { 
+        navigate("/"); 
+      } finally { 
+        setLoading(false); 
       }
-    };
-    fetchArticleBySlug();
+    })();
   }, [slug, navigate]);
 
-  /* ── Loading ── */
-  if (loading) {
-    return (
-      <div className="article-loading-screen">
-        <div className="av-loading-orb" />
-        <p>Carregando artigo…</p>
-      </div>
-    );
-  }
+  useEffect(() => {
+    const fn = () => {
+      const el = document.documentElement;
+      const tot = el.scrollHeight - el.clientHeight;
+      const pct = tot > 0 ? (el.scrollTop / tot) * 100 : 0;
+      setProgress(pct);
+      setReadPct(Math.min(100, Math.round(pct)));
+    };
+    window.addEventListener("scroll", fn, { passive: true });
+    return () => window.removeEventListener("scroll", fn);
+  }, []);
 
+  if (loading) return <Skeleton />;
   if (!article) return null;
 
-  const authorInitial = article.criadoPor
-    ? article.criadoPor.charAt(0).toUpperCase()
-    : "B";
-
-  const formattedDate = new Date(article.dataCriacao).toLocaleDateString("pt-BR", {
-    day: "2-digit",
-    month: "long",
-    year: "numeric",
+  const initial = article.criadoPor?.charAt(0).toUpperCase() || "B";
+  const displayDate = new Date(article.dataCriacao).toLocaleDateString("pt-BR", {
+    day: "2-digit", month: "long", year: "numeric",
   });
 
   return (
     <>
-      {/* Barra de progresso de leitura — fora do article para ficar no topo da página */}
-      <ReadingProgressBar />
+      <ReadingProgressBar progress={progress} />
+      <FloatingToolbar article={article} />
 
-      <article className="article-viewer-container av-fadein">
+      <div className="av-layout">
+        
+        {/* Sumário recebe os cabeçalhos já processados */}
+        <TableOfContents headings={headings} />
 
-        {/* ══ 1. CABEÇALHO ══ */}
-        <header className="article-header">
+        <article className="av-article av-fadein">
+          <header className="av-header">
+            {article.tags?.length > 0 && (
+              <div className="av-tags">
+                {article.tags.map(t => <span key={t} className="av-tag">#{t}</span>)}
+              </div>
+            )}
 
-          {/* Tags */}
-          {article.tags?.length > 0 && (
-            <div className="article-tags">
-              {article.tags.map(t => (
-                <span key={t} className="tag-pill">#{t}</span>
-              ))}
-            </div>
-          )}
+            <h1 className="av-title">{article.title}</h1>
 
-          {/* Título */}
-          <h1 className="article-title">{article.title}</h1>
+            {article.subtitle && <p className="av-subtitle">{article.subtitle}</p>}
 
-          {/* Subtítulo */}
-          {article.subtitle && (
-            <p className="article-subtitle">{article.subtitle}</p>
-          )}
-
-          {/* Meta: autor + data + tempo de leitura */}
-          <div className="article-meta">
-            <div className="meta-author">
-              <div className="author-avatar">{authorInitial}</div>
-              <div className="author-details">
-                <span className="author-name">{article.criadoPor || "Autor Desconhecido"}</span>
-                <span className="publish-date">
-                  {formattedDate}
-                  <span className="meta-dot">·</span>
-                  <span className="read-time">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ display: "inline", verticalAlign: "middle", marginRight: 3 }}>
-                      <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
+            <div className="av-meta-bar">
+              <div className="av-author">
+                <div className="av-author-avatar">{initial}</div>
+                <div>
+                  <span className="av-author-name">{article.criadoPor || "Bruno Fraga"}</span>
+                  <span className="av-author-meta">
+                    {displayDate}
+                    <span className="av-dot">·</span>
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{display:"inline",verticalAlign:"middle",marginRight:3}}>
+                      <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
                     </svg>
                     {readTime} min de leitura
                   </span>
-                </span>
+                </div>
               </div>
+
+              {readPct > 8 && readPct < 96 && (
+                <div className="av-ring" title={`${readPct}% lido`}>
+                  <svg width="32" height="32" viewBox="0 0 32 32">
+                    <circle cx="16" cy="16" r="12" fill="none" stroke="#21262d" strokeWidth="3"/>
+                    <circle
+                      cx="16" cy="16" r="12" fill="none" stroke="#3fb950" strokeWidth="3"
+                      strokeDasharray={`${2 * Math.PI * 12}`}
+                      strokeDashoffset={`${2 * Math.PI * 12 * (1 - readPct / 100)}`}
+                      strokeLinecap="round"
+                      transform="rotate(-90 16 16)"
+                      style={{ transition: "stroke-dashoffset 0.3s ease" }}
+                    />
+                  </svg>
+                  <span className="av-ring-label">{readPct}%</span>
+                </div>
+              )}
             </div>
+          </header>
+
+          {article.coverImage && (
+            <figure className="av-cover">
+              <img src={article.coverImage} alt={article.title} loading="lazy" />
+            </figure>
+          )}
+
+          <section
+            className="av-content"
+            style={{ fontFamily: article.fontFamily || "inherit" }}
+            // Renderiza o HTML modificado com os IDs
+            dangerouslySetInnerHTML={{ __html: processedHtml || article.contentHtml }}
+          />
+
+          {article.tags?.length > 0 && (
+            <div className="av-footer-tags">
+              {article.tags.map(t => <span key={t} className="av-tag av-tag--dim">#{t}</span>)}
+            </div>
+          )}
+
+          <div className="av-author-card">
+            <div className="av-author-card-ring">
+              <div className="av-author-card-avatar">{initial}</div>
+            </div>
+            <div className="av-author-card-info">
+              <span className="av-author-card-name">{article.criadoPor || "Bruno Fraga"}</span>
+              <span className="av-author-card-bio">
+                Backend Developer · Java · Spring Boot · Clean Architecture · DDD
+              </span>
+            </div>
+            <a
+              href="https://www.linkedin.com/in/bruno-fraga-dev/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="av-follow-btn"
+            >
+              Seguir
+            </a>
           </div>
-        </header>
 
-        {/* ══ 2. CAPA (HERO IMAGE) ══ */}
-        {article.coverImage && (
-          <figure className="article-cover-wrapper">
-            <img
-              src={article.coverImage}
-              alt={article.title}
-              className="article-cover-image"
-              loading="lazy"
-            />
-          </figure>
-        )}
+          {article.id && (
+            <div className="av-feedback-zone">
+              <ArticleFeedbackPanel articleId={article.id} />
+            </div>
+          )}
 
-       {/* ══ 3. CORPO EDITORIAL ══ */}
-        <section
-          className="editorial-content"
-          style={{ fontFamily: article.fontFamily || "inherit" }}
-          dangerouslySetInnerHTML={{ __html: article.contentHtml }}
-        />
-
-        {/* ══ 4. DIVIDER + TAGS RODAPÉ ══ */}
-        <div className="article-footer-tags">
-          {article.tags?.map(t => (
-            <span key={t} className="tag-pill tag-pill--footer">#{t}</span>
-          ))}
-        </div>
-
-        {/* 🚀 AQUI ENTRA A MÁGICA: O Card de Feedback Inline! */}
-        {article.id && (
-          <div className="article-inline-feedback">
-            <ArticleFeedbackPanel articleId={article.id} />
-          </div>
-        )}
-
-        {/* ══ 5. RODAPÉ ══ */}
-        <footer className="article-footer">
-          <button className="btn-back-home" onClick={() => navigate("/")}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="19" y1="12" x2="5" y2="12" /><polyline points="12 19 5 12 12 5" />
-            </svg>
-            Voltar para os artigos
-          </button>
-        </footer>
-
-      </article>
+          <footer className="av-footer">
+            <button className="av-back-btn" onClick={() => navigate("/")}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
+              </svg>
+              Voltar para os artigos
+            </button>
+          </footer>
+        </article>
+      </div>
     </>
   );
 };

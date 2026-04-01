@@ -1,14 +1,13 @@
-// src/paginas/Home.jsx
 import React from "react";
 import { useAuth } from "../contexts/AuthContext";
-import Sidebar from "../components/Sidebar"; // 👉 De volta!
-import About from "../components/About";
+import Sidebar from "../components/Sidebar"; 
+import About from "../components/home/About";
 import Skills from "../components/Skills";
 import Projects from "../components/Projects";
-import Contact from "../components/Contact";
-import Feedback from "../components/Feedback";
-import FeedbackList from "../components/FeedbackList";
-import ArticleCarousel from "../components/ArticleCarousel";
+import Contact from "../components/home/Contact";
+import Feedback from "../components/home/Feedback";
+import FeedbackList from "../components/home/FeedbackList";
+import ArticleCarousel from "../components/home/ArticleCarousel";
 import "../styles/global.css";
 import "../styles/home.css";
 

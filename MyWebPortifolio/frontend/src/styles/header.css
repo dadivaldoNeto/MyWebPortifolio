@@ -1,571 +1,717 @@
-/* ===== CABEÇALHO ===== */
-.header {
+/* ================================================================
+   header.css  ·  BrunoFraga.dev
+   Aesthetic: Terminal-editorial · Dark glass · Sharp green accent
+   ================================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=DM+Sans:wght@400;500;600;700&display=swap');
+
+/* ── CSS Variables ── */
+:root {
+  --hdr-bg:           rgba(10, 12, 16, 0.85);
+  --hdr-bg-scrolled:  rgba(10, 12, 16, 0.97);
+  --hdr-border:       rgba(255, 255, 255, 0.06);
+  --hdr-accent:       #4ade80;       /* green-400 */
+  --hdr-accent-dim:   rgba(74, 222, 128, 0.12);
+  --hdr-accent-glow:  rgba(74, 222, 128, 0.25);
+  --hdr-text:         #e2e8f0;
+  --hdr-text-muted:   #64748b;
+  --hdr-text-sub:     #94a3b8;
+  --hdr-danger:       #f87171;
+  --hdr-danger-dim:   rgba(248, 113, 113, 0.1);
+  --hdr-h:            60px;
+  --hdr-font-ui:      'DM Sans', system-ui, sans-serif;
+  --hdr-font-mono:    'JetBrains Mono', monospace;
+  --ease-out-expo:    cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ================================================================
+   1. HEADER SHELL
+================================================================ */
+.hdr {
   position: sticky;
   top: 0;
   width: 100%;
-  padding: 12px 24px;
-  background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
-  backdrop-filter: blur(12px);
-  border-radius: 0 0 12px 12px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-  font-family: 'Inter', sans-serif;
-  transition: box-shadow 0.3s ease, background 0.3s ease;
-  z-index: 1000;
-  box-sizing: border-box;
-}
-.nav-header {
-  display: none;
-}
-.nav-footer{
-  display: none;
+  height: var(--hdr-h);
+  background: var(--hdr-bg);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid var(--hdr-border);
+  z-index: 900;
+  transition: background 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+  font-family: var(--hdr-font-ui);
 }
 
-.header.scrolled {
-  box-shadow: 0 4px 12px rgba(0, 255, 0, 0.1);
-  background: linear-gradient(135deg, #202020, #303030);
+.hdr--scrolled {
+  background: var(--hdr-bg-scrolled);
+  border-bottom-color: rgba(74, 222, 128, 0.1);
+  box-shadow:
+    0 1px 0 rgba(74, 222, 128, 0.06),
+    0 8px 32px rgba(0, 0, 0, 0.4);
 }
 
-/* ===== CONTAINER ===== */
-.header-container {
-  display: flex;
-  justify-content: space-between;
+/* Top accent line */
+.hdr-accent-line {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    var(--hdr-accent) 30%,
+    rgba(74, 222, 128, 0.5) 70%,
+    transparent 100%
+  );
+  opacity: 0.7;
+}
+
+/* Inner layout */
+.hdr-inner {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
   align-items: center;
+  height: 100%;
   max-width: 1280px;
   margin: 0 auto;
+  padding: 0 28px;
+  gap: 0;
 }
 
-/* ===== NOVO: AVATAR NO HEADER ===== */
-.header-avatar {
-  width: 32px;
-  height: 32px;
+/* ================================================================
+   2. LOGO
+================================================================ */
+.hdr-logo {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px 0;
+  display: flex;
+  align-items: center;
+  gap: 1px;
+  font-family: var(--hdr-font-mono);
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  transition: opacity 0.2s ease;
+  flex-shrink: 0;
+}
+
+.hdr-logo:hover { opacity: 0.85; }
+
+.hdr-logo-bracket {
+  color: var(--hdr-text-muted);
+  font-weight: 400;
+}
+
+.hdr-logo-name {
+  color: var(--hdr-text);
+}
+
+.hdr-logo-dot {
+  color: var(--hdr-accent);
+  font-size: 1.3rem;
+  line-height: 1;
+  margin: 0 1px;
+}
+
+.hdr-logo-role {
+  color: var(--hdr-accent);
+}
+
+/* ================================================================
+   3. DESKTOP NAV
+================================================================ */
+.hdr-nav {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 0 32px;
+}
+
+.hdr-navlink {
+  background: none;
+  border: none;
+  color: var(--hdr-text-sub);
+  font-family: var(--hdr-font-ui);
+  font-size: 0.875rem;
+  font-weight: 500;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: color 0.2s ease, background 0.2s ease;
+  position: relative;
+  white-space: nowrap;
+  letter-spacing: 0.1px;
+}
+
+.hdr-navlink:hover {
+  color: var(--hdr-text);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.hdr-navlink--active {
+  color: var(--hdr-accent) !important;
+  background: var(--hdr-accent-dim);
+}
+
+/* Section links (sobre, skills...) são ligeiramente menores */
+.hdr-navlink--section {
+  font-size: 0.82rem;
+  color: var(--hdr-text-muted);
+}
+
+/* Divider between main links and section links */
+.hdr-nav-divider {
+  width: 1px;
+  height: 18px;
+  background: var(--hdr-border);
+  margin: 0 8px;
+  flex-shrink: 0;
+}
+
+/* ================================================================
+   4. RIGHT ACTIONS
+================================================================ */
+.hdr-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+/* ── Admin button ── */
+.hdr-admin-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(248, 113, 113, 0.08);
+  border: 1px solid rgba(248, 113, 113, 0.25);
+  color: var(--hdr-danger);
+  font-family: var(--hdr-font-ui);
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 6px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  letter-spacing: 0.2px;
+  transition: all 0.2s ease;
+}
+
+.hdr-admin-btn:hover {
+  background: rgba(248, 113, 113, 0.15);
+  border-color: rgba(248, 113, 113, 0.5);
+  box-shadow: 0 0 14px rgba(248, 113, 113, 0.2);
+  transform: translateY(-1px);
+}
+
+/* ── Login button ── */
+.hdr-login-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: var(--hdr-accent-dim);
+  border: 1px solid rgba(74, 222, 128, 0.25);
+  color: var(--hdr-accent);
+  font-family: var(--hdr-font-ui);
+  font-size: 0.875rem;
+  font-weight: 600;
+  padding: 8px 18px;
+  border-radius: 8px;
+  cursor: pointer;
+  letter-spacing: 0.1px;
+  transition: all 0.2s ease;
+}
+
+.hdr-login-btn:hover {
+  background: rgba(74, 222, 128, 0.18);
+  border-color: rgba(74, 222, 128, 0.5);
+  box-shadow: 0 0 20px var(--hdr-accent-glow);
+  transform: translateY(-1px);
+}
+
+/* ── User menu trigger ── */
+.hdr-user { position: relative; }
+
+.hdr-user-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--hdr-border);
+  border-radius: 8px;
+  padding: 5px 12px 5px 5px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: var(--hdr-text);
+  font-family: var(--hdr-font-ui);
+}
+
+.hdr-user-btn:hover,
+.hdr-user-btn--open {
+  background: rgba(255, 255, 255, 0.07);
+  border-color: rgba(74, 222, 128, 0.2);
+}
+
+.hdr-avatar {
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid #48bb78; /* Bordinha verde combinando com o tema */
-  background-color: #222;
-  box-shadow: 0 0 8px rgba(72, 187, 120, 0.4);
-  transition: transform 0.3s ease;
-}
-
-/* Dá um efeito legal de leve crescimento na foto quando passa o mouse no botão */
-.user-menu-button:hover .header-avatar {
-  transform: scale(1.1);
-  box-shadow: 0 0 12px rgba(72, 187, 120, 0.6);
-
-}
-/* ===== ESTILO PARA O BOTÃO HOME (Igualando aos Links) ===== */
-.nav-link.btn-home {
-  background: transparent; /* Remove o fundo nativo do botão */
-  border: none; /* Remove a borda padrão */
-  font-family: inherit; /* Usa a mesma fonte do menu */
-  cursor: pointer;
-  display: inline-block;
-}
-
-/* Garante que o sublinhado verde e o hover funcionem igual aos outros links */
-.nav-link.btn-home::after {
-  content: '';
-  position: absolute;
-  width: 0;
-  height: 2px;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: #48bb78;
-  transition: width 0.3s ease;
-}
-
-.nav-link.btn-home:hover::after {
-  width: 70%;
-}
-
-.nav-link.btn-home:hover {
-  color: #ffffff;
-  background: rgba(72, 187, 120, 0.1);
-}
-/* ===== NAVEGAÇÃO ===== */
-.nav {
+  border: 1.5px solid rgba(74, 222, 128, 0.35);
+  background: rgba(74, 222, 128, 0.1);
   display: flex;
-  gap: 28px;
   align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
-.nav-link {
-  position: relative;
-  color: #e0e0e0;
-  text-decoration: none;
-  font-size: 1.1rem;
-  font-weight: 500;
-  padding: 8px 12px;
-  border-radius: 6px;
-  transition: color 0.3s ease, background 0.3s ease;
-}
-
-.nav-link::after {
-  content: '';
-  position: absolute;
-  width: 0;
-  height: 2px;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: #48bb78;
-  transition: width 0.3s ease;
-}
-
-.nav-link:hover::after {
-  width: 70%;
-}
-
-.nav-link:hover {
-  color: #ffffff;
-  background: rgba(72, 187, 120, 0.1);
-}
-
-/* ===== BOTÃO HAMBURGUER (MENU MOBILE) ===== */
-.menu-toggle {
-  display: none;
-  background: none;
-  border: none;
-  border-radius: 6px;
-  padding: 8px;
-  cursor: pointer;
-  color: #e0e0e0;
-  transition: background 0.3s ease;
-}
-
-.menu-toggle:hover {
-  background: rgba(72, 187, 120, 0.2);
-}
-
-.menu-toggle svg {
-  width: 28px;
-  height: 28px;
-}
-
-/* ===== BOTÃO DE FECHAR MENU ===== */
-.close-menu {
-  background: none;
-  border: none;
-  color: #e0e0e0;
-  font-size: 1.1rem;
+.hdr-avatar--initials {
+  font-family: var(--hdr-font-mono);
+  font-size: 0.7rem;
   font-weight: 700;
-  cursor: pointer;
-  align-self: flex-end;
-  margin-bottom: 16px;
-  transition: color 0.3s ease;
+  color: var(--hdr-accent);
 }
 
-.close-menu:hover {
-  color: #48bb78;
-}
-
-/* ===== SEÇÃO DIREITA (ENGINE + AUTH) ===== */
-.right-section {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-}
-/* Texto de boas-vindas */
-.welcome-text {
-  font-size: 0.9rem;
-  color: #ccc;
+.hdr-user-name {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--hdr-text);
+  max-width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-/* ===== CONTAINER DO STATUS DOS MOTORES ===== */
-.engine-status-container {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
+.hdr-chevron {
+  color: var(--hdr-text-muted);
+  transition: transform 0.25s var(--ease-out-expo);
+  flex-shrink: 0;
 }
 
-.engine-status {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 12px 24px;
-  border-radius: 8px;
-  font-size: 1.1rem;
-  font-weight: 500;
-  color: #ffffff;
-  transition: background 0.3s ease;
+.hdr-chevron--up {
+  transform: rotate(180deg);
 }
 
-.engine-status.loading,
-.engine-status.error {
-  background: #ef4444;
-}
-
-.engine-status.success {
-  background: linear-gradient(45deg, #48bb78, #68d391);
-  animation: glow 3s ease-in-out infinite;
-}
-
-/* ===== TOOLTIP ===== */
-.engine-status.success:hover .tooltip {
-  visibility: visible;
-  opacity: 1;
-  transform: translate(-50%, 0);
-}
-
-.tooltip {
-  visibility: hidden;
-  opacity: 0;
+/* ── User dropdown ── */
+.hdr-dropdown {
   position: absolute;
   top: calc(100% + 10px);
-  left: 50%;
-  transform: translate(-50%, 5px);
-  background: #1a1a1a;
-  color: #e0e0e0;
-  padding: 8px 12px;
-  border-radius: 8px;
-  border: 1px solid rgba(72, 187, 120, 0.3);
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
-  font-size: 0.85rem;
-  font-weight: 400;
-  width: 180px;
-  text-align: center;
-  z-index: 1001;
-  transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s ease;
+  right: 0;
+  width: 230px;
+  background: #0f1318;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 12px;
+  box-shadow:
+    0 0 0 1px rgba(74, 222, 128, 0.04),
+    0 20px 50px rgba(0, 0, 0, 0.6),
+    0 4px 16px rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+  animation: hdrDropIn 0.2s var(--ease-out-expo) both;
+  z-index: 901;
 }
 
-.tooltip::before {
-  content: "";
-  position: absolute;
-  top: -6px;
-  left: 50%;
-  transform: translateX(-50%);
-  border-left: 6px solid transparent;
-  border-right: 6px solid transparent;
-  border-bottom: 6px solid #1a1a1a;
+@keyframes hdrDropIn {
+  from { opacity: 0; transform: translateY(-8px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0)   scale(1);    }
 }
 
-.loader {
-  width: 16px;
-  height: 16px;
-  border: 2px solid #ffffff;
-  border-top: 2px solid transparent;
+.hdr-dropdown-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+}
+
+.hdr-dropdown-avatar {
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
-  animation: spin 1s linear infinite;
+  object-fit: cover;
+  border: 1.5px solid rgba(74, 222, 128, 0.3);
+  background: rgba(74, 222, 128, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-family: var(--hdr-font-mono);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--hdr-accent);
 }
 
-.blink {
-  animation: blink 1.5s ease-in-out infinite;
+.hdr-dropdown-name {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--hdr-text);
+  font-family: var(--hdr-font-ui);
 }
 
-/* ===== CONTAINER DO BOTÃO DE AUTENTICAÇÃO ===== */
-.auth-button-container {
-  position: relative;
-  display: inline-block;
+.hdr-dropdown-role {
+  display: block;
+  font-size: 0.72rem;
+  color: var(--hdr-text-muted);
+  font-family: var(--hdr-font-mono);
+  margin-top: 1px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
-/* ===== BOTÃO DE AUTENTICAÇÃO ===== */
-.auth-button {
-  background: #48bb78;
-  color: #ffffff;
+.hdr-dropdown-sep {
+  height: 1px;
+  background: var(--hdr-border);
+  margin: 0;
+}
+
+.hdr-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  background: none;
   border: none;
-  border-radius: 8px;
-  padding: 12px 24px;
-  font-size: 1.1rem;
+  color: var(--hdr-text-sub);
+  font-family: var(--hdr-font-ui);
+  font-size: 0.875rem;
   font-weight: 500;
+  padding: 12px 16px;
   cursor: pointer;
-  transition: background 0.3s ease, transform 0.2s ease;
+  text-align: left;
+  transition: background 0.15s ease, color 0.15s ease;
+  border-bottom: 1px solid var(--hdr-border);
 }
 
-.auth-button:hover:not(:disabled) {
-  background: #38a169;
-  transform: translateY(-2px);
-}
-/* ===== NOVO: MENU DO USUÁRIO (DROPDOWN) ===== */
-.user-menu-container {
-  position: relative;
-  display: inline-block;
+.hdr-dropdown-item:last-child { border-bottom: none; }
+
+.hdr-dropdown-item:hover {
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--hdr-text);
 }
 
-.user-menu-button {
-  background: transparent; /* Fundo verde translúcido */
-  color: #e0e0e0;
-  border: 1px solid transparent;
-  border-radius: 8px;
-  padding: 10px 18px;
-  font-size: 1rem;
-  font-family: 'Inter', sans-serif;
+.hdr-dropdown-item--danger { color: var(--hdr-text-muted); }
+
+.hdr-dropdown-item--danger:hover {
+  background: var(--hdr-danger-dim);
+  color: var(--hdr-danger);
+}
+
+/* ================================================================
+   5. HAMBURGER
+================================================================ */
+.hdr-hamburger {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  background: none;
+  border: 1px solid var(--hdr-border);
+  border-radius: 7px;
+  padding: 8px 9px;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease;
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+}
+
+.hdr-hamburger:hover {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(74, 222, 128, 0.2);
+}
+
+.hdr-hamburger span {
+  display: block;
+  width: 100%;
+  height: 1.5px;
+  background: var(--hdr-text-sub);
+  border-radius: 2px;
+  transition: all 0.3s var(--ease-out-expo);
+  transform-origin: center;
+}
+
+.hdr-hamburger--open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+.hdr-hamburger--open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+.hdr-hamburger--open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+/* ================================================================
+   6. BACKDROP
+================================================================ */
+.hdr-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(3px);
+  z-index: 950;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.hdr-backdrop--visible {
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* ================================================================
+   7. MOBILE DRAWER
+================================================================ */
+.hdr-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 280px;
+  height: 100dvh;
+  background: #0a0c10;
+  border-left: 1px solid rgba(255, 255, 255, 0.07);
+  box-shadow: -24px 0 60px rgba(0, 0, 0, 0.7);
+  z-index: 960;
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform 0.38s var(--ease-out-expo);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.hdr-drawer--open {
+  transform: translateX(0);
+}
+
+/* Drawer header */
+.hdr-drawer-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 20px 18px;
+  border-bottom: 1px solid var(--hdr-border);
+  flex-shrink: 0;
+}
+
+.hdr-drawer-logo {
+  display: flex;
+  align-items: center;
+  gap: 1px;
+  font-family: var(--hdr-font-mono);
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.hdr-drawer-close {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--hdr-border);
+  border-radius: 6px;
+  color: var(--hdr-text-muted);
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 8px;
-  transition: all 0.3s ease;
+  justify-content: center;
+  padding: 5px;
+  transition: all 0.15s ease;
 }
 
-.user-menu-button:hover {
-  background: rgba(72, 187, 120, 0.2);
-  color: #fff;
-  border-color: #48bb78;
+.hdr-drawer-close:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--hdr-text);
 }
 
-.user-menu-button strong {
-  color: #48bb78; /* Deixa o seu nome em destaque verde */
+/* Drawer user block */
+.hdr-drawer-user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  background: rgba(74, 222, 128, 0.04);
+  border-bottom: 1px solid var(--hdr-border);
+  flex-shrink: 0;
 }
 
-/* A caixa suspensa com as opções */
-.user-dropdown {
-  position: absolute;
-  top: calc(100% + 10px); /* Fica logo abaixo do botão */
-  right: 0;
-  background: #1a1a1a;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+.hdr-drawer-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1.5px solid rgba(74, 222, 128, 0.3);
+  background: rgba(74, 222, 128, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-family: var(--hdr-font-mono);
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--hdr-accent);
+}
+
+.hdr-drawer-uname {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--hdr-text);
+  font-family: var(--hdr-font-ui);
+}
+
+.hdr-drawer-urole {
+  display: block;
+  font-size: 0.68rem;
+  color: var(--hdr-text-muted);
+  font-family: var(--hdr-font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 2px;
+}
+
+/* Drawer links */
+.hdr-drawer-links {
+  flex: 1;
+  padding: 20px 16px;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
-  min-width: 160px;
-  z-index: 1005;
-  animation: fadeInDropdown 0.2s ease-in-out;
+  gap: 2px;
 }
 
-/* Os botões dentro da caixa */
-.dropdown-item {
+.hdr-drawer-section-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--hdr-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  font-family: var(--hdr-font-mono);
+  margin: 0 0 6px 8px;
+}
+
+.hdr-drawer-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   background: none;
   border: none;
-  color: #e0e0e0;
-  padding: 14px 16px;
+  color: var(--hdr-text-sub);
+  font-family: var(--hdr-font-ui);
+  font-size: 0.925rem;
+  font-weight: 500;
+  padding: 10px 12px;
+  border-radius: 8px;
+  cursor: pointer;
   text-align: left;
-  font-size: 0.95rem;
+  width: 100%;
+  transition: all 0.18s ease;
+}
+
+.hdr-drawer-link:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--hdr-text);
+  transform: translateX(3px);
+}
+
+.hdr-drawer-link--active {
+  color: var(--hdr-accent);
+  background: var(--hdr-accent-dim);
+}
+
+.hdr-drawer-link-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--hdr-text-muted);
+  flex-shrink: 0;
+  margin-left: 4px;
+}
+
+.hdr-drawer-link--admin {
+  color: var(--hdr-danger);
+}
+
+.hdr-drawer-link--admin:hover {
+  background: var(--hdr-danger-dim);
+  color: var(--hdr-danger);
+}
+
+/* Drawer footer */
+.hdr-drawer-footer {
+  padding: 16px;
+  border-top: 1px solid var(--hdr-border);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.hdr-drawer-action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--hdr-border);
+  color: var(--hdr-text-sub);
+  font-family: var(--hdr-font-ui);
+  font-size: 0.875rem;
+  font-weight: 600;
+  padding: 11px 0;
+  border-radius: 9px;
   cursor: pointer;
-  transition: background 0.2s ease, color 0.2s ease;
-  font-family: 'Inter', sans-serif;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  transition: all 0.2s ease;
+  width: 100%;
 }
 
-.dropdown-item:last-child {
-  border-bottom: none;
+.hdr-drawer-action:hover {
+  background: rgba(255, 255, 255, 0.07);
+  color: var(--hdr-text);
+  border-color: rgba(255, 255, 255, 0.12);
 }
 
-.dropdown-item:hover {
-  background: rgba(72, 187, 120, 0.15);
-  color: #48bb78;
+.hdr-drawer-action--primary {
+  background: var(--hdr-accent-dim);
+  border-color: rgba(74, 222, 128, 0.25);
+  color: var(--hdr-accent);
 }
 
-/* Botão de sair com cor avermelhada no hover para indicar perigo/saída */
-.dropdown-item.logout:hover {
-  background: rgba(239, 68, 68, 0.15);
-  color: #ef4444;
+.hdr-drawer-action--primary:hover {
+  background: rgba(74, 222, 128, 0.18);
+  border-color: rgba(74, 222, 128, 0.45);
+  box-shadow: 0 4px 16px var(--hdr-accent-glow);
+  color: var(--hdr-accent);
 }
 
-@keyframes fadeInDropdown {
-  from { opacity: 0; transform: translateY(-10px); }
-  to { opacity: 1; transform: translateY(0); }
+.hdr-drawer-action--danger {
+  border-color: rgba(248, 113, 113, 0.15);
 }
 
-/* ===== BOTÃO PAINEL ADMIN ===== */
-.admin-nav-btn {
-  background: transparent;
-  border: 1px solid #ff4d4d; /* Borda vermelha para destaque */
-  color: #ff4d4d !important; /* Força a cor vermelha no texto */
-  font-family: inherit;
-  cursor: pointer;
-  display: inline-block;
-  padding: 8px 12px;
-  border-radius: 6px;
-  font-weight: bold;
-  transition: all 0.3s ease;
+.hdr-drawer-action--danger:hover {
+  background: var(--hdr-danger-dim);
+  border-color: rgba(248, 113, 113, 0.3);
+  color: var(--hdr-danger);
 }
 
-/* Remove a linha verde padrão dos outros links */
-.admin-nav-btn::after {
-  display: none; 
+.hdr-drawer-copy {
+  font-size: 0.68rem;
+  color: var(--hdr-text-muted);
+  font-family: var(--hdr-font-mono);
+  text-align: center;
+  padding-top: 4px;
 }
 
-/* Efeito Hover do Admin */
-.admin-nav-btn:hover {
-  background: #ff4d4d;
-  color: #ffffff !important;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(255, 77, 77, 0.3);
-}
+/* ================================================================
+   8. RESPONSIVE
+================================================================ */
+@media (max-width: 960px) {
+  .hdr-nav      { display: none; }
+  .hdr-hamburger { display: flex; }
 
-/* ========================================================= */
-/* ===== ESTILOS MOBILE (Onde a mágica acontece) ===== */
-/* ========================================================= */
-@media (max-width: 930px) {
-  .header-container {
-    display: grid;
+  .hdr-inner {
     grid-template-columns: auto 1fr auto;
-    align-items: center;
-  }
-.admin-nav-btn {
-    display: none; /* Esconde o botão de admin no mobile */
-  }
-  .menu-toggle {
-    display: block;
-    grid-column: 1;
-    justify-self: start;
-    font-size: 1.5rem;
+    padding: 0 18px;
   }
 
-  .right-section {
-    grid-column: 3;
-    justify-self: end;
-    gap: 12px;
-  }
+  .hdr-actions { gap: 8px; }
 
-  /* Esconde o texto no botão do topo pra não apertar, mostra só a foto */
-  .user-menu-name {
-    display: none; 
-  }
-
- .user-menu-button {
-    padding: 0;
-    background: transparent;
-    border: none;
-    gap: 2;
-  }
-
-  /* Ajusta o balão de dropdown para não sair da tela no celular */
-  .user-dropdown {
-    right: -10px;
-  }
-
-  /* Oculta os links no topo */
-  .nav {
-    display: none;
-  }
-
-  /* Menu Lateral Overlay */
-  .nav.open {
-    display: flex;
-    flex-direction: column;
-    position: fixed;
-    top: 0;
-    right: 0;
-    width: 260px;
-    height: 100vh;
-    background: linear-gradient(180deg, #1b1b1b, #0e0e0e);
-    backdrop-filter: blur(14px);
-    padding: 28px 22px;
-    gap: 28px;
-    border-left: 1px solid rgba(255, 255, 255, 0.08);
-    box-shadow: -12px 0 40px rgba(0, 0, 0, 0.75), inset 1px 0 0 rgba(255, 255, 255, 0.05);
-    z-index: 1100;
-    animation: slideInSoft 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  .nav-header {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-
-  .nav-title {
-    font-size: 1.35rem;
-    font-weight: 600;
-    color: #ffffff;
-    letter-spacing: 0.3px;
-  }
-
-  .nav-subtitle {
-    font-size: 0.75rem;
-    color: #9ca3af;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-  }
-
-  .nav-divider {
-    margin-top: 10px;
-    height: 2px;
-    width: 40%;
-    background: linear-gradient(90deg, #48bb78, transparent);
-    border-radius: 2px;
-  }
-
-  .nav-links {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-
-  .nav-links .nav-link {
-    padding: 12px 14px;
-    border-radius: 8px;
-    font-size: 1rem;
-    font-weight: 500;
-    color: #e5e7eb;
-    transition: background 0.25s ease, transform 0.2s ease;
-  }
-
-  .nav-links .nav-link:hover {
-    background: rgba(72, 187, 120, 0.15);
-    transform: translateX(4px);
-  }
-
-  /* ALINHAMENTO DO BOTÃO HOME NO MOBILE */
-  .nav-links .btn-home {
-    text-align: left;
-    width: 100%;
-  }
-
-
-  /* FOOTER DO MENU LATERAL (Auth) */
-  .nav-footer {
-    margin-top: auto;
-    padding-top: 24px;
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-  }
-
-  .nav-auth-button {
-    background: linear-gradient(135deg, #48bb78, #2f855a);
-    border: none;
-    border-radius: 10px;
-    padding: 12px;
-    color: #0f172a;
-    font-weight: 600;
-    cursor: pointer;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-  }
-
-  .nav-auth-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 18px rgba(72, 187, 120, 0.45);
-  }
-
-  /* Deixa o botão Sair vermelho no menu lateral */
-  .nav-auth-button.logout {
-    background: linear-gradient(135deg, #ef4444, #b91c1c);
-    color: #ffffff;
-  }
-
-  .nav-footer-text {
-    font-size: 0.7rem;
-    color: #9ca3af;
-    text-align: center;
-  }
-
-  .auth-button {
-    font-size: 1rem;
-    padding: 10px 20px;
-  }
+  .hdr-user-name   { display: none; }
+  .hdr-chevron     { display: none; }
+  .hdr-user-btn    { padding: 4px; background: none; border-color: transparent; }
+  .hdr-admin-btn   { display: none; }
 }
 
-/* ===== ANIMAÇÕES ===== */
-@keyframes slideInSoft {
-  from { transform: translateX(100%); opacity: 0; }
-  to { transform: translateX(0); opacity: 1; }
-}
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-@keyframes blink {
-  0% { opacity: 1; }
-  50% { opacity: 0.4; }
-  100% { opacity: 1; }
-}
-@keyframes glow {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+@media (max-width: 480px) {
+  .hdr-logo-role,
+  .hdr-logo-bracket { display: none; }
 }

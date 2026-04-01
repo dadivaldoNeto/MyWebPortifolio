@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom"; // 👈 useNavigate importado!
 import { useAuth } from "../contexts/AuthContext";
-import Header from "./Header";
+import Header from "./compartilhado/header/Header";
 import Footer from "./Footer";
 import AuthModal from "./auth/AuthModal";
 import Modal from "./Modal";

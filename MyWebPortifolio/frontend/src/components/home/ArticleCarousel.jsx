@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import "../styles/articlecarousel.css";
+import "../../styles/articlecarousel.css";
 
 const BASE_URL = import.meta.env?.VITE_API_URL || "http://localhost:8080";
 const SLIDE_DURATION = 6000;

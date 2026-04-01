@@ -10,7 +10,7 @@ import MainLayout from "./components/MainLayout";
 import Home from "./paginas/Home";
 import AdminDashboard from "./paginas/AdminDashboard"; 
 import ArticleViewer from "./paginas/ArticleViewer"; 
-import EditProfile from "./components/EditProfile";
+import EditProfile from "./components/compartilhado/header/EditProfile";
 import ArticleShowcase from "./paginas/ArticleShowCase"; 
 
 function App() {

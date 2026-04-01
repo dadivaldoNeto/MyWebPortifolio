@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import "../styles/feedback.css";
+import "../../styles/feedback.css";
 
 // Função utilitária para requisições com retry
 const fetchWithRetry = async (url, options, retries = 3, delay = 1000) => {

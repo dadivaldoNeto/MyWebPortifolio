@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../contexts/AuthContext";
-import "../styles/editprofile.css";
-import Sidebar from "./Sidebar";
+import { useAuth } from "../../../contexts/AuthContext";
+import "../../../styles/editprofile.css";
+import Sidebar from "../../Sidebar";
 
 // Configurações constantes
 const API_BASE_URL = import.meta.env.VITE_API_URL + "/usuario";
