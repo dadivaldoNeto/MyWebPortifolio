@@ -12,7 +12,7 @@
 import React, { useState, useCallback, useRef, useEffect } from "react";
 import { EditorContent, useEditorState } from "@tiptap/react";
 
-import { UseArticleEditor, EDITOR_FONTS, LINE_HEIGHT_OPTIONS } from "./UseArticleEditor";
+import { useArticleEditor, EDITOR_FONTS, LINE_HEIGHT_OPTIONS } from "./useArticleEditor";
 import "../../styles/articleeditor.css";
 
 // ─── Paleta de cores ──────────────────────────────────────────────────────────
