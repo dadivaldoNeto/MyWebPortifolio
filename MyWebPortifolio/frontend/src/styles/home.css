@@ -1,161 +1,116 @@
 /* =========================================
-   ESTRUTURA BASE E ALINHAMENTO GERAL
+   1. A DIVISÃO DA HOME (SIDEBAR LADO A LADO)
    ========================================= */
-.container {
-  position: relative;
-  width: 100%;
-  max-width: 1400px; /* Aumentei um pouco para aproveitar telas maiores */
-  margin: 0 auto;
-  padding: 30px 20px;
-  box-sizing: border-box;
-}
-
 .content {
   display: flex;
-  gap: 40px; /* Mais "respiro" entre a Sidebar e o Conteúdo */
-  align-items: flex-start; /* Essencial para a Sidebar Sticky funcionar */
-  max-width: 100%;
+  flex-direction: row; 
+  align-items: flex-start; 
+  gap: 40px; 
+  width: 100%;
 }
 
 /* =========================================
-   SURPRESA 1: SIDEBAR STICKY (Fixa na rolagem)
+   2. SIDEBAR (FIXA NA ESQUERDA)
    ========================================= */
-/* O container que abraça a sidebar. Ele precisa dessa classe para acompanhar o scroll */
-.sidebar {
+.sidebar-wrapper {
   position: sticky;
-  top: 30px; /* Distância do topo ao rolar */
-  flex-shrink: 0;
-  width: 300px;
+  top: 80px; /* Um respiro um pouco maior do topo */
+  width: 300px; 
+  flex-shrink: 0; 
   z-index: 100;
 }
 
 /* =========================================
-   SURPRESA 2: MAIN CONTENT COM GLASSMORPHISM
+   3. CONTEÚDO PRINCIPAL E GLASSMORPHISM
    ========================================= */
 .main-content {
+  flex: 1; 
+  min-width: 0; 
   display: flex;
-  flex: 1;
-  max-width: calc(100% - 340px); /* Garante que não empurre a sidebar */
+  flex-direction: column; 
 }
 
+/* O Efeito "Vidro Premium" */
 .main-container {
-  display: block;
   width: 100%;
-  /* Efeito Vidro Escuro (Glassmorphism) */
-  background: rgba(18, 18, 18, 0.7);
-  backdrop-filter: blur(12px); /* Desfoca o fundo Matrix levemente */
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(76, 175, 80, 0.15); /* Borda neon super suave */
-  border-radius: 16px; /* Cantos arredondados modernos */
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-  color: #e5e5e5;
-  padding: 40px; /* Mais espaço interno */
-  animation: fadeIn 0.8s ease-out forwards;
+
+  backdrop-filter: blur(16px);
+ 
+  border-radius: 20px; /* Cantos bem arredondados e modernos */
+  color: #e2e8f0;
 }
 
-/* Removido o hover que fazia a tela inteira pular. É má prática de UX. */
-
 /* =========================================
-   SESSÕES E TIPOGRAFIA
+   4. UX: ESPAÇAMENTO DAS SEÇÕES E ANIMAÇÕES
    ========================================= */
-.section-about,
-.section-experience,
-.section-skills,
-.section-projects,
-.section-contact,
-.section-feedback {
-  padding: 10px 0; /* O espaçamento maior agora vem da margin da linha separadora */
-  color: #f5f5f5;
+/* Todas as seções ganham respiro e uma entrada suave */
+.main-container section {
+  padding: 10px 0;
+  animation: fadeUp 0.8s ease-out forwards;
+  opacity: 0; /* Começa invisível para a animação atuar */
 }
 
-.main-container h2 {
-  font-size: 2rem;
-  margin-bottom: 24px;
-  color: #4caf50;
-  text-shadow: 0 0 8px rgba(76, 175, 80, 0.4);
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  display: inline-block;
-  position: relative;
-}
+/* Animação em cascata (opcional, mas muito chique) */
+.section-articles { animation-delay: 0.1s; width: 100% !important;  }
+.section-about { animation-delay: 0.2s; }
+.section-skills { animation-delay: 0.3s; }
+.section-projects { animation-delay: 0.4s; }
 
 /* =========================================
-   EXPERIÊNCIA E LISTAS
-   ========================================= */
-.section-experience ul {
-  list-style: none;
-  padding: 0;
-}
-
-.section-experience li {
-  margin: 15px 0;
-  padding: 12px 16px;
-  background: rgba(255, 255, 255, 0.02);
-  border-left: 4px solid #4caf50;
-  border-radius: 0 8px 8px 0;
-  transition: transform 0.3s ease, background 0.3s ease, border-color 0.3s ease;
-}
-
-/* Surpresa Extra: Apenas os itens da lista pulam suavemente, dando dinamismo */
-.section-experience li:hover {
-  transform: translateX(10px);
-  border-left-color: #81c784;
-  background: rgba(76, 175, 80, 0.1);
-}
-
-/* =========================================
-   SURPRESA 3: SEPARADORES NEON (Glowing Lines)
+   5. A LINHA NEON (O SEPARADOR ELEGANTE)
    ========================================= */
 .separator {
   border: none;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, rgba(76, 175, 80, 0.8), transparent);
-  width: 100%;
-  margin: 50px auto;
-  box-shadow: 0 0 10px rgba(76, 175, 80, 0.5); /* O Brilho */
-  opacity: 0.8;
+  height: 1px; /* Linha fina é mais elegante que linha grossa */
+  background: linear-gradient(90deg, transparent, rgba(76, 175, 80, 0.6), transparent);
+  width: 85%; /* Não encosta nas bordas, dando um ar de componente flutuante */
+  margin: 60px auto; /* 👈 UX: Distância gigantesca entre blocos. O segredo da leitura limpa. */
+  box-shadow: 0 0 10px rgba(76, 175, 80, 0.3); /* Brilho sutil */
 }
 
 /* =========================================
-   ANIMAÇÕES
+   6. TIPOGRAFIA BASE DO CONTEÚDO
    ========================================= */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(30px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes pulse {
-  0% { transform: scale(1); box-shadow: 0 0 10px rgba(76, 175, 80, 0.4); }
-  50% { transform: scale(1.1); box-shadow: 0 0 20px rgba(76, 175, 80, 0.8); }
-  100% { transform: scale(1); box-shadow: 0 0 10px rgba(76, 175, 80, 0.4); }
+.main-container h2 {
+  font-size: 2rem;
+  margin-bottom: 30px;
+  color: #4caf50; /* O seu verde matriz */
+  text-shadow: 0 0 12px rgba(76, 175, 80, 0.2); /* Glow no título */
+  font-weight: 700;
+  letter-spacing: -0.5px; /* Deixa a fonte mais unida e moderna */
 }
 
 /* =========================================
-   RESPONSIVIDADE (MOBILE E TABLETS)
+   7. KEYFRAMES (ANIMAÇÕES)
+   ========================================= */
+@keyframes fadeUp {
+  from { 
+    opacity: 0; 
+    transform: translateY(30px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
+}
+
+/* =========================================
+   8. RESPONSIVIDADE (CELULAR E TABLET)
    ========================================= */
 @media (max-width: 1024px) {
   .content {
-    gap: 20px;
+    flex-direction: column; 
+    gap: 30px;
   }
-
-  .sidebar {
-    display: none; /* Esconde a lateral fixa em telas menores */
+  .sidebar-wrapper {
+    display: none; 
   }
-
-  .main-content {
-    max-width: 100%;
-  }
-
   .main-container {
-    padding: 20px;
-    border-radius: 10px;
+    padding: 30px 20px; /* Reduz o padding interno no celular para economizar tela */
+    border-radius: 12px;
   }
-
-  .main-container h2 {
-    font-size: 1.6rem;
-  }
-
   .separator {
-    margin: 30px auto;
+    margin: 40px auto; /* Reduz a distância no mobile */
+    width: 95%;
   }
 }

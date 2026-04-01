@@ -1,0 +1,281 @@
+/* =========================================
+   CARD INLINE DE FEEDBACK (Estilo Premium Refinado)
+   ========================================= */
+.inline-feedback-card {
+  background: rgba(18, 18, 18, 0.4);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  padding: 30px;
+  margin: 60px auto 40px auto;
+  max-width: 860px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+/* ── 1. SEÇÃO DE LISTA (SUPERIOR) ── */
+.fbp-list-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.fbp-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  padding-bottom: 12px;
+}
+
+.fbp-section-header h3 {
+  font-size: 1.2rem;
+  color: #fff;
+  font-weight: 700;
+  margin: 0;
+}
+
+.fbp-badge {
+  background: rgba(76, 175, 80, 0.15);
+  color: #48bb78;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  border: 1px solid rgba(76, 175, 80, 0.2);
+}
+
+/* ÁREA DE SCROLL */
+.fbp-scroll-area {
+  max-height: 400px; /* Altura generosa para leitura */
+  overflow-y: auto;
+  padding-right: 12px;
+}
+
+/* Custom Scrollbar Premium */
+.fbp-scroll-area::-webkit-scrollbar {
+  width: 5px;
+}
+.fbp-scroll-area::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.02);
+}
+.fbp-scroll-area::-webkit-scrollbar-thumb {
+  background: rgba(76, 175, 80, 0.4);
+  border-radius: 10px;
+}
+.fbp-scroll-area::-webkit-scrollbar-thumb:hover {
+  background: #48bb78;
+}
+
+/* Itens da Lista */
+.fbp-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.fbp-item {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-radius: 14px;
+  padding: 18px;
+  transition: transform 0.2s;
+}
+
+.fbp-item:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.fbp-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.fbp-author {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 600;
+  color: #e2e8f0;
+}
+
+.fbp-author img {
+  width: 34px; height: 34px; border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.fbp-avatar-placeholder {
+  width: 34px; height: 34px; border-radius: 50%;
+  background: #48bb78; color: #121212;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 800; font-size: 0.9rem;
+}
+
+.fbp-list-meta-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.fbp-stars-display {
+  color: #f6e05e;
+  font-size: 0.85rem;
+  letter-spacing: 2px;
+  text-shadow: 0 0 8px rgba(246, 224, 94, 0.2);
+}
+
+.fbp-list-date {
+  font-size: 0.75rem;
+  color: #718096;
+}
+
+.fbp-comment-text {
+  color: #cbd5e1;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Divisor Elegante */
+.fbp-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent);
+  margin: 10px 0;
+}
+
+/* ── 2. SEÇÃO DE INPUT (INFERIOR) ── */
+.fbp-input-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.rating-section {
+  margin-bottom: 20px;
+}
+
+.fbp-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #e2e8f0;
+  margin-bottom: 12px;
+  display: block;
+}
+
+.star-rating {
+  display: flex;
+  gap: 10px;
+}
+
+.star-btn {
+  background: none; border: none;
+  font-size: 2.2rem;
+  color: #2d3748;
+  cursor: pointer;
+  padding: 0;
+  transition: transform 0.2s, color 0.2s;
+}
+
+.star-btn:hover { transform: scale(1.15); }
+.star-btn--active {
+  color: #f6e05e;
+  text-shadow: 0 0 15px rgba(246, 224, 94, 0.3);
+}
+
+/* Textarea */
+.comment-section {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.fbp-inline-textarea {
+  width: 100%;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 16px;
+  color: #fff;
+  font-family: inherit;
+  font-size: 1rem;
+  resize: none;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.fbp-inline-textarea:focus {
+  outline: none;
+  border-color: #48bb78;
+  box-shadow: 0 0 15px rgba(76, 175, 80, 0.1);
+}
+
+.fbp-auth-overlay {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(18, 18, 18, 0.85);
+  backdrop-filter: blur(3px);
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 14px;
+  font-weight: 700; color: #cbd5e1;
+}
+
+/* Botão Enviar */
+.fbp-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.btn-submit-feedback {
+  background: #48bb78;
+  color: #0d1117;
+  border: none;
+  padding: 12px 28px;
+  border-radius: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 4px 15px rgba(76, 175, 80, 0.2);
+}
+
+.btn-submit-feedback:disabled {
+  background: #2d3748;
+  color: #718096;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+.btn-submit-feedback:not(:disabled):hover {
+  background: #68d391;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(76, 175, 80, 0.3);
+}
+
+.fbp-success-box {
+  text-align: center;
+  padding: 30px;
+  background: rgba(72, 187, 120, 0.05);
+  border-radius: 14px;
+  border: 1px dashed rgba(72, 187, 120, 0.4);
+  color: #48bb78;
+  font-weight: 600;
+}
+
+.fbp-error-text { 
+  color: #f87171; 
+  font-size: 0.85rem; 
+  margin-bottom: 15px; 
+  font-weight: 500;
+}
+
+.fbp-info, .fbp-empty {
+  text-align: center;
+  padding: 40px;
+  color: #718096;
+  font-style: italic;
+}

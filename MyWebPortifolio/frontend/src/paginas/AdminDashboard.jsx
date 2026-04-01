@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import MatrixBackground from "../components/MatrixBackground";
 import ManageProjects from "../components/paineladm/ManageProjects";
+// 🚨 MUDANÇA AQUI: Importando o Pai (ManageArticles) em vez do Filho
+import ManageArticles from "../components/paineladm/ManageArticles"; 
 import "../styles/admindashboard.css";
 
 const AdminDashboard = () => {
@@ -44,9 +46,7 @@ const AdminDashboard = () => {
     <div className="admin-dashboard-wrapper">
       <MatrixBackground />
       
-      {/* =========================================
-          NOVA TOPBAR EXCLUSIVA DO ADMIN
-          ========================================= */}
+      {/* NOVA TOPBAR EXCLUSIVA DO ADMIN */}
       <header className="admin-topbar">
         <div className="topbar-left">
           <span className="admin-brand">⚙️ Painel de Controle</span>
@@ -78,13 +78,13 @@ const AdminDashboard = () => {
               className={activeModule === "projetos" ? "active" : ""}
               onClick={() => setActiveModule("projetos")}
             >
-              🚀 Gerenciar Projetos
+              Gerenciar Projetos
             </li>
             <li 
               className={activeModule === "artigos" ? "active" : ""}
               onClick={() => setActiveModule("artigos")}
             >
-              📝 Gerenciar Artigos
+               Gerenciar Artigos
             </li>
           </ul>
         </aside>
@@ -100,10 +100,8 @@ const AdminDashboard = () => {
           )}
 
           {activeModule === "artigos" && (
-            <div className="admin-module">
-              <h1>Artigos do Blog</h1>
-              <p>Área reservada para criar publicações técnicas.</p>
-              <div className="placeholder-box">Área do Editor de Textos (Em breve)</div>
+            <div className="admin-module" style={{ padding: "0" }}>
+              <ManageArticles />
             </div>
           )}
         </main>

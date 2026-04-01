@@ -1,114 +1,550 @@
-.sidebar {
-  background-color: #181818;
-  padding: 20px;
-  border: 2px solid #4caf50;
-  border-radius: 10px;
-  color: #fff;
-  text-align: center;
-  width: 260px;
-  height: 50rem;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-  transition: border-color 0.3s ease;
+/* ================================================================
+   sidebar.css  ·  BrunoFraga.dev — Profile Sidebar
+   Aesthetic: Terminal-card · dark glass · sharp green accent
+   ================================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=DM+Sans:wght@400;500;600;700&display=swap');
+
+/* ── Variables ── */
+:root {
+  --sdb-bg:          #0c0f14;
+  --sdb-bg-2:        #111620;
+  --sdb-border:      rgba(255, 255, 255, 0.07);
+  --sdb-accent:      #4ade80;
+  --sdb-accent-dim:  rgba(74, 222, 128, 0.10);
+  --sdb-accent-glow: rgba(74, 222, 128, 0.22);
+  --sdb-text:        #e2e8f0;
+  --sdb-text-sub:    #94a3b8;
+  --sdb-text-muted:  #475569;
+  --sdb-mono:        'JetBrains Mono', monospace;
+  --sdb-sans:        'DM Sans', system-ui, sans-serif;
+  --sdb-radius:      16px;
+  --sdb-w:           270px;
+}
+
+/* ================================================================
+   1. SHELL
+================================================================ */
+.sdb {
+  width: var(--sdb-w);
+  background: var(--sdb-bg);
+  border: 1px solid var(--sdb-border);
+  border-radius: var(--sdb-radius);
+  padding: 0 0 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
   position: sticky;
-  top: 100px;
+  top: 80px;
   align-self: flex-start;
+  font-family: var(--sdb-sans);
+  overflow: hidden;
+  box-shadow:
+    0 0 0 1px rgba(74, 222, 128, 0.05),
+    0 24px 64px rgba(0, 0, 0, 0.55),
+    0 4px 16px rgba(0, 0, 0, 0.35);
+
+  /* Entrada suave */
+  opacity: 0;
+  transform: translateX(-12px);
+  transition:
+    opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.55s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.3s ease;
 }
 
-.sidebar:hover {
-  border-color: #f50505;
+.sdb--visible {
+  opacity: 1;
+  transform: translateX(0);
 }
 
-.profile-pic {
-  width: 210px;
-  height: 260px;
-  border-radius: 10px;
-  margin-bottom: 15px;
-  border: 2px solid #0c0c0c;
+.sdb:hover {
+  box-shadow:
+    0 0 0 1px rgba(74, 222, 128, 0.12),
+    0 32px 80px rgba(0, 0, 0, 0.6),
+    0 0 40px rgba(74, 222, 128, 0.06);
+}
+
+/* Accent bar top */
+.sdb-accent-bar {
+  height: 3px;
+  background: linear-gradient(90deg,
+    transparent,
+    var(--sdb-accent) 25%,
+    rgba(74, 222, 128, 0.4) 75%,
+    transparent
+  );
+  flex-shrink: 0;
+}
+
+/* ================================================================
+   2. HERO — FOTO + IDENTIDADE
+================================================================ */
+.sdb-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 28px 20px 20px;
+  gap: 16px;
+  position: relative;
+}
+
+/* Fundo com noise sutil atrás do hero */
+.sdb-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 0%, rgba(74, 222, 128, 0.07) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* Ring animado em volta do avatar */
+.sdb-avatar-ring {
+  position: relative;
+  width: 112px;
+  height: 112px;
+  flex-shrink: 0;
+}
+
+.sdb-avatar-ring::before {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  background: conic-gradient(
+    var(--sdb-accent) 0deg,
+    rgba(74, 222, 128, 0.15) 120deg,
+    transparent 180deg,
+    rgba(74, 222, 128, 0.15) 240deg,
+    var(--sdb-accent) 360deg
+  );
+  animation: sdbRingSpin 6s linear infinite;
+}
+
+@keyframes sdbRingSpin {
+  to { transform: rotate(360deg); }
+}
+
+.sdb-avatar-ring-inner {
+  position: absolute;
+  inset: 2px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: var(--sdb-bg);
+  border: 2px solid var(--sdb-bg);
+  z-index: 1;
+}
+
+.sdb-avatar {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: 50%;
+}
+
+/* Status badge */
+.sdb-status-badge {
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+  width: 20px;
+  height: 20px;
+  background: var(--sdb-bg);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  border: 2px solid var(--sdb-bg);
+}
+
+.sdb-status-dot {
+  width: 10px;
+  height: 10px;
+  background: var(--sdb-accent);
+  border-radius: 50%;
+  animation: sdbPulse 2s ease-in-out infinite;
+}
+
+@keyframes sdbPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.6); }
+  50%       { box-shadow: 0 0 0 5px rgba(74, 222, 128, 0); }
+}
+
+/* Identidade */
+.sdb-identity {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  z-index: 1;
+}
+
+.sdb-name {
+  font-family: var(--sdb-sans);
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--sdb-text);
+  letter-spacing: -0.3px;
+  margin: 0;
+}
+
+.sdb-title-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--sdb-mono);
+  font-size: 0.78rem;
+}
+
+.sdb-title-bracket {
+  color: var(--sdb-text-muted);
+}
+
+.sdb-title {
+  color: var(--sdb-accent);
+  font-weight: 600;
+}
+
+
+
+/* ================================================================
+   3. SEPARADOR ENTRE SEÇÕES
+================================================================ */
+.sdb-stack-section,
+.sdb-stats,
+.sdb-contact,
+.sdb-socials,
+.sdb-qr {
+  padding: 16px 20px;
+  border-top: 1px solid var(--sdb-border);
+}
+
+/* ── Section label ── */
+.sdb-section-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--sdb-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  font-family: var(--sdb-mono);
+  margin: 0 0 10px;
+}
+
+/* ================================================================
+   4. STACK CHIPS
+================================================================ */
+.sdb-stack {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.sdb-chip {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--sdb-text-sub);
+  font-size: 0.72rem;
+  font-weight: 600;
+  font-family: var(--sdb-mono);
+  padding: 3px 9px;
+  border-radius: 5px;
+  transition: all 0.18s ease;
+  cursor: default;
+  letter-spacing: 0.2px;
+}
+
+.sdb-chip:hover {
+  background: var(--sdb-accent-dim);
+  border-color: rgba(74, 222, 128, 0.3);
+  color: var(--sdb-accent);
+  transform: translateY(-1px);
+}
+
+
+
+/* ================================================================
+   6. CONTATO
+================================================================ */
+.sdb-contact {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sdb-contact-row {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  transition: background 0.18s ease;
+}
+
+.sdb-contact-row:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+/* Versão button (email copiável) */
+.sdb-contact-row--btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+  position: relative;
+}
+
+.sdb-contact-row--btn:hover {
+  background: var(--sdb-accent-dim) !important;
+}
+
+.sdb-contact-icon {
+  color: var(--sdb-accent);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  opacity: 0.8;
+}
+
+.sdb-contact-text {
+  font-size: 0.78rem;
+  color: var(--sdb-text-sub);
+  font-family: var(--sdb-sans);
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sdb-copy-hint {
+  color: var(--sdb-text-muted);
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.sdb-contact-row--btn:hover .sdb-copy-hint {
+  opacity: 1;
+}
+
+/* ================================================================
+   7. CTA DOWNLOAD
+================================================================ */
+.sdb-download-btn {
+  margin: 0 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: linear-gradient(135deg, rgba(74, 222, 128, 0.12), rgba(74, 222, 128, 0.06));
+  border: 1px solid rgba(74, 222, 128, 0.25);
+  border-radius: 12px;
+  padding: 13px 16px;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  width: calc(100% - 40px);
+  text-align: left;
   position: relative;
   overflow: hidden;
-  animation: glowingBorder 8s ease-in-out infinite;
 }
 
-.contact-info {
-  margin-top: 20px;
-  font-size: 14px;
-  line-height: 1.6;
+/* Shimmer no hover */
+.sdb-download-btn::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(74, 222, 128, 0.08), transparent);
+  transition: left 0.5s ease;
 }
 
-.btn1 {
-  background: linear-gradient(135deg, rgb(15, 172, 15), rgb(51, 51, 51), black);
-  background-size: 200% 200%;
-  animation: waveDiagonal 10s ease-in-out infinite;
-  margin-top: 15%;
-  color: white;
-  width: 150px;
-  height: 40px;
-  border: black solid 1px;
-  border-radius: 15px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
+.sdb-download-btn:hover::before {
+  left: 150%;
 }
 
-.btn1:hover {
-  background: #f50505;
+.sdb-download-btn:hover {
+  background: linear-gradient(135deg, rgba(74, 222, 128, 0.18), rgba(74, 222, 128, 0.1));
+  border-color: rgba(74, 222, 128, 0.45);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(74, 222, 128, 0.18);
 }
 
-.img-qr-code img {
-  width: 150px;
-  height: 150px;
-  margin-top: 10px;
-  transition: transform 0.3s ease, border 0.3s ease;
+.sdb-download-btn:active {
+  transform: translateY(0);
 }
 
-.img-qr-code img:hover {
-  transform: scale(1.5);
-  border: 2px solid #f50505;
+.sdb-download-icon {
+  color: var(--sdb-accent);
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  background: rgba(74, 222, 128, 0.1);
+  border-radius: 8px;
+  padding: 7px;
+}
+
+.sdb-download-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+
+.sdb-download-text strong {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--sdb-text);
+  font-family: var(--sdb-sans);
+}
+
+.sdb-download-text small {
+  display: block;
+  font-size: 0.68rem;
+  color: var(--sdb-text-muted);
+  font-family: var(--sdb-mono);
+  letter-spacing: 0.3px;
+}
+
+.sdb-download-arrow {
+  color: var(--sdb-accent);
+  font-size: 1.1rem;
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.sdb-download-btn:hover .sdb-download-arrow {
+  transform: translateX(3px);
+}
+
+/* ================================================================
+   8. SOCIAL BUTTONS
+================================================================ */
+.sdb-socials {
+  display: flex;
+  gap: 8px;
+}
+
+.sdb-social-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  flex: 1;
+  padding: 9px 12px;
+  border-radius: 9px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  font-family: var(--sdb-sans);
+  text-decoration: none;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+}
+
+.sdb-social-btn--linkedin {
+  background: rgba(10, 102, 194, 0.1);
+  border-color: rgba(10, 102, 194, 0.2);
+  color: #5ba4cf;
+}
+
+.sdb-social-btn--linkedin:hover {
+  background: rgba(10, 102, 194, 0.18);
+  border-color: rgba(10, 102, 194, 0.45);
+  color: #74b5de;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(10, 102, 194, 0.2);
+}
+
+.sdb-social-btn--github {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: var(--sdb-text-sub);
+}
+
+.sdb-social-btn--github:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: var(--sdb-text);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
+}
+
+/* ================================================================
+   9. QR CODE
+================================================================ */
+.sdb-qr {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.sdb-qr-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+}
+
+.sdb-qr-wrapper img {
+  width: 100px;
+  height: 100px;
   border-radius: 10px;
+  border: 1px solid var(--sdb-border);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  display: block;
+  background: white; /* QR precisa de fundo branco */
+  padding: 6px;
 }
 
-.redes-icons img {
-  width: 30px;
-  height: 30px;
-  margin: 20px 10px;
-  cursor: pointer;
-  transition: transform 0.3s ease;
+.sdb-qr-wrapper img:hover {
+  transform: scale(1.6);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.6);
+  z-index: 10;
+  border-color: rgba(74, 222, 128, 0.4);
 }
 
-.redes-icons img:hover {
-  transform: scale(1.2);
+.sdb-qr-label {
+  font-size: 0.68rem;
+  color: var(--sdb-text-muted);
+  font-family: var(--sdb-mono);
+  letter-spacing: 0.5px;
 }
 
-@keyframes waveDiagonal {
-  0% { background-position: 0% 0%; }
-  50% { background-position: 100% 100%; }
-  100% { background-position: 0% 0%; }
+/* ================================================================
+   10. MOBILE VERSION
+================================================================ */
+.sdb--mobile {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100dvh;
+  width: 280px;
+  border-radius: 0;
+  z-index: 800;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  transform: translateX(-100%);
+  transition: transform 0.38s cubic-bezier(0.16, 1, 0.3, 1);
+  opacity: 1; /* no mobile não faz fade, faz slide */
 }
 
-@keyframes glowingBorder {
-  0% {
-    box-shadow: 
-      0 0 10px 2px rgba(22, 23, 22, 0.7),
-      0 0 20px 5px rgba(76, 175, 80, 0.3);
-    transform: rotate(0deg);
-  }
-  25% {
-    box-shadow: 
-      10px 0 10px 2px rgba(34, 34, 34, 0.7),
-      10px 0 20px 5px rgba(76, 175, 80, 0.3);
-  }
-  50% {
-    box-shadow: 
-      0 10px 10px 2px rgba(25, 25, 25, 0.7),
-      0 10px 20px 5px rgba(76, 175, 80, 0.3);
-  }
-  75% {
-    box-shadow: 
-      -10px 0 5px 2px rgba(19, 19, 19, 0.7),
-      -10px 0 10px 5px rgba(76, 175, 80, 0.3);
-  }
-  100% {
-    box-shadow: 
-      0 0 5px 2px rgba(16, 17, 16, 0.7),
-      0 0 10px 5px rgba(76, 175, 80, 0.3);
-  }
+.sdb--mobile.sdb--open {
+  transform: translateX(0);
+}
+
+/* ================================================================
+   11. SCROLLBAR
+================================================================ */
+.sdb::-webkit-scrollbar { width: 3px; }
+.sdb::-webkit-scrollbar-track { background: transparent; }
+.sdb::-webkit-scrollbar-thumb {
+  background: rgba(74, 222, 128, 0.2);
+  border-radius: 3px;
 }
