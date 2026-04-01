@@ -99,15 +99,15 @@ const ArticleFeedbackPanel = ({ articleId }) => {
                 <li key={fb.id || i} className="fbp-item animate-fadeIn">
                   <div className="fbp-item-header">
                     <span className="fbp-author">
-                      {fb.userPhoto 
-                        ? <img src={fb.userPhoto} alt="avatar" /> 
-                        : <div className="fbp-avatar-placeholder">{fb.userName ? fb.userName[0] : '?'}</div>
+                      {fb.fotoUsuario 
+                        ? <img src={fb.fotoUsuario} alt="avatar" /> 
+                        : <div className="fbp-avatar-placeholder">{fb.criadoPor ? fb.criadoPor[0] : '?'}</div>
                       }
                       {fb.userName || "Leitor"}
                     </span>
                     <div className="fbp-list-meta-group">
                       <span className="fbp-stars-display">
-                        {"★".repeat(fb.avaliacao || 0)}{"☆".repeat(5 - (fb.avaliacao || 0))}
+                        {"★".repeat(fb.notaAvaliacao || 0)}{"☆".repeat(5 - (fb.notaAvaliacao || 0))}
                       </span>
                     </div>
                   </div>
