@@ -1,30 +1,26 @@
-// src/components/MainLayout.jsx
 import React, { useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom"; // 👈 useNavigate importado!
 import { useAuth } from "../contexts/AuthContext";
 import Header from "./compartilhado/header/Header";
-import Footer from "./Footer";
+import Footer from "./compartilhado/footer/Footer";
 import AuthModal from "./auth/AuthModal";
 import Modal from "./Modal";
 import "../styles/mainlayout.css";
 
 const MainLayout = () => {
-  const { 
-    isAuthenticated, userName, userPhoto, userRole, token, 
-    handleLogin, handleLogout 
-  } = useAuth(); // "Abrindo a torneira"
+  const {
+    isAuthenticated, userName, userPhoto, userRole, token,
+    handleLogin, handleLogout
+  } = useAuth();
 
-  const navigate = useNavigate(); // 👈 GPS ativado
+  const navigate = useNavigate();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-
-  // Funções que o Header precisa
   const openAuthModal = () => setIsAuthModalOpen(true);
   const closeAuthModal = () => setIsAuthModalOpen(false);
   
-  // 👉 NOVO: Função que manda o usuário para a tela de editar perfil
   const openEditProfile = () => {
     navigate("/editar-perfil");
-    window.scrollTo({ top: 0, behavior: "smooth" }); // Rola pro topo por elegância
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handleLoginSuccess = (data) => {
@@ -57,21 +53,23 @@ const MainLayout = () => {
         handleLogout={handleLogout}
         openAuthModal={openAuthModal}
         handleAdminNavigation={handleAdminNavigation}
-        openEditProfile={openEditProfile} // 👈 PASSANDO A FUNÇÃO PRO HEADER AQUI!
+        openEditProfile={openEditProfile}
       />
-
       {/* Se o modal for aberto, ele aparece por cima de qualquer tela */}
       <Modal isOpen={isAuthModalOpen} onClose={closeAuthModal}>
         <AuthModal handleLoginSuccess={handleLoginSuccess} onClose={closeAuthModal} />
       </Modal>
 
       <main className="layout-main-content">
-        <Outlet /> 
+        <Outlet context={{ openAuthModal }} />
       </main>
-
       <Footer />
     </div>
+
   );
+
 };
+
+
 
 export default MainLayout;

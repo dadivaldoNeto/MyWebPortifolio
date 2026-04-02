@@ -1,9 +1,10 @@
 import React from "react";
 import { useAuth } from "../contexts/AuthContext";
-import Sidebar from "../components/Sidebar"; 
+import { useOutletContext } from "react-router-dom";
+import Sidebar from "../components/home/Sidebar"; 
 import About from "../components/home/About";
-import Skills from "../components/Skills";
-import Projects from "../components/Projects";
+import Skills from "../components/home/Skills";
+import Projects from "../components/home/Projects";
 import Contact from "../components/home/Contact";
 import Feedback from "../components/home/Feedback";
 import FeedbackList from "../components/home/FeedbackList";
@@ -13,9 +14,10 @@ import "../styles/home.css";
 
 const Home = () => {
   const { isAuthenticated, token, userName, userRole } = useAuth();
+  const context = useOutletContext();
+  const openAuthModal = context?.openAuthModal || (() => alert("Modal não conectado!"));
 
   return (
-    // 👉 RESTAURADO: Estrutura visual exata que você tinha
     <div className="content">
 
       {/* 1. Sidebar no cantinho dela */}
@@ -45,14 +47,15 @@ const Home = () => {
           <section className="section-contact" id="contact"><Contact /></section>
           <hr className="separator" />
 
-          <section className="section-feedback" id="feedback">
-            <Feedback isAuthenticated={isAuthenticated} token={token} />
-          </section>
-          <hr className="separator" />
-
           <section className="section-feedback-list" id="feedbackList">
             <FeedbackList userRole={userRole} token={token} currentUserName={userName} />
           </section>
+            <hr className="separator" />
+
+          <section className="section-feedback" id="feedback">
+            <Feedback isAuthenticated={isAuthenticated} token={token} openAuthModal={openAuthModal} />
+          </section>
+          
 
         </div>
       </main>
