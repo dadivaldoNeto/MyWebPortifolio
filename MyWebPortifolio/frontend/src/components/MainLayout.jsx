@@ -12,19 +12,19 @@ const MainLayout = () => {
   const { 
     isAuthenticated, userName, userPhoto, userRole, token, 
     handleLogin, handleLogout 
-  } = useAuth(); // "Abrindo a torneira"
+  } = useAuth(); 
 
-  const navigate = useNavigate(); // 👈 GPS ativado
+  const navigate = useNavigate(); 
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
-  // Funções que o Header precisa
+
   const openAuthModal = () => setIsAuthModalOpen(true);
   const closeAuthModal = () => setIsAuthModalOpen(false);
   
-  // 👉 NOVO: Função que manda o usuário para a tela de editar perfil
+ 
   const openEditProfile = () => {
     navigate("/editar-perfil");
-    window.scrollTo({ top: 0, behavior: "smooth" }); // Rola pro topo por elegância
+    window.scrollTo({ top: 0, behavior: "smooth" }); 
   };
 
   const handleLoginSuccess = (data) => {
@@ -57,7 +57,7 @@ const MainLayout = () => {
         handleLogout={handleLogout}
         openAuthModal={openAuthModal}
         handleAdminNavigation={handleAdminNavigation}
-        openEditProfile={openEditProfile} // 👈 PASSANDO A FUNÇÃO PRO HEADER AQUI!
+        openEditProfile={openEditProfile}
       />
 
       {/* Se o modal for aberto, ele aparece por cima de qualquer tela */}
@@ -66,7 +66,7 @@ const MainLayout = () => {
       </Modal>
 
       <main className="layout-main-content">
-        <Outlet /> 
+        <Outlet context={{ openAuthModal }}/> 
       </main>
 
       <Footer />

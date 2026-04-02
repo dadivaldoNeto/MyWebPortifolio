@@ -1,5 +1,6 @@
 import React from "react";
 import { useAuth } from "../contexts/AuthContext";
+import { useOutletContext } from "react-router-dom";
 import Sidebar from "../components/Sidebar"; 
 import About from "../components/home/About";
 import Skills from "../components/Skills";
@@ -13,9 +14,10 @@ import "../styles/home.css";
 
 const Home = () => {
   const { isAuthenticated, token, userName, userRole } = useAuth();
+  const context = useOutletContext();
+  const openAuthModal = context?.openAuthModal || (() => alert("Modal não conectado!"));
 
   return (
-    // 👉 RESTAURADO: Estrutura visual exata que você tinha
     <div className="content">
 
       {/* 1. Sidebar no cantinho dela */}
@@ -46,7 +48,7 @@ const Home = () => {
           <hr className="separator" />
 
           <section className="section-feedback" id="feedback">
-            <Feedback isAuthenticated={isAuthenticated} token={token} />
+            <Feedback isAuthenticated={isAuthenticated} token={token} openAuthModal={openAuthModal} />
           </section>
           <hr className="separator" />
 

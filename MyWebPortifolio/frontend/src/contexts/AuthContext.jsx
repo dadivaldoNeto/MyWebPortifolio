@@ -20,7 +20,7 @@ export const AuthProvider = ({ children }) => {
   const [userName, setUserName] = useState(null);
   const [userPhoto, setUserPhoto] = useState(null);
 
-  // Recupera a sessão ao abrir o app em QUALQUER tela
+  
   useEffect(() => {
     const savedToken = localStorage.getItem("token");
     const savedUser = JSON.parse(localStorage.getItem("user"));
@@ -32,7 +32,7 @@ export const AuthProvider = ({ children }) => {
       setUserName(savedUser.userName);
       setUserPhoto(savedUser.fotoPerfil);
     } else {
-      handleLogout(); // Limpa sujeira se expirou
+      handleLogout(); 
     }
   }, []);
 
