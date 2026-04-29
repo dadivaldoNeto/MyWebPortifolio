@@ -249,26 +249,93 @@
 
 /* ─── Responsividade ──────────────────────────────────────────────────────── */
 @media (max-width: 600px) {
-  .kc-viewport {
-    aspect-ratio: 4 / 3;
+  .kc-header {
+    font-size: 1.1rem;
+    margin-bottom: 12px;
   }
 
-  .kc-content {
-    max-width: 100%;
-    padding: 20px;
-    justify-content: flex-end;
-    padding-bottom: 56px;
+  .kc-viewport {
+    aspect-ratio: unset;
+    height: 380px;
+    border-radius: 10px;
+    cursor: grab;
   }
 
   .kc-overlay {
     background: linear-gradient(
       180deg,
-      rgba(0, 0, 0, 0.2) 0%,
-      rgba(0, 0, 0, 0.85) 60%
+      rgba(0, 0, 0, 0.05) 0%,
+      rgba(0, 0, 0, 0.55) 40%,
+      rgba(0, 0, 0, 0.93) 100%
     );
+  }
+
+  .kc-content {
+    max-width: 100%;
+    padding: 16px 16px 80px;
+    justify-content: flex-end;
+  }
+
+  .kc-tags {
+    margin-bottom: 8px;
+  }
+
+  .kc-tag {
+    font-size: 0.62rem;
+    padding: 2px 8px;
+  }
+
+  .kc-title {
+    font-size: 1.05rem;
+    margin-bottom: 6px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .kc-subtitle {
+    font-size: 0.8rem;
+    margin-bottom: 10px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .kc-meta {
+    margin-bottom: 12px;
+    gap: 8px;
+  }
+
+  .kc-btn {
+    width: 100%;
+    justify-content: center;
+    padding: 13px 16px;
+    font-size: 0.92rem;
   }
 
   .kc-arrow {
     display: none;
+  }
+
+  .kc-bars {
+    padding: 0 12px 12px;
+    gap: 6px;
+  }
+
+  .kc-bar-btn {
+    padding: 10px 0;
+  }
+
+  .kc-bar-track {
+    height: 4px;
+  }
+
+  .kc-counter {
+    font-size: 0.7rem;
+    top: 10px;
+    right: 10px;
+    padding: 3px 8px;
   }
 }

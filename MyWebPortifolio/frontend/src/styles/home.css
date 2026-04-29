@@ -51,11 +51,90 @@
   opacity: 0; 
 }
 
-/* Animação em cascata (opcional, mas muito chique) */
-.section-articles { animation-delay: 0.1s; width: 100% !important;  }
-.section-about { animation-delay: 0.2s; }
-.section-skills { animation-delay: 0.3s; }
-.section-projects { animation-delay: 0.4s; }
+/* Animação em cascata — ordem AIDA (projetos primeiro) */
+.section-projects      { animation-delay: 0.1s; }
+.section-about         { animation-delay: 0.2s; }
+.section-skills        { animation-delay: 0.3s; }
+.section-articles      { animation-delay: 0.4s; width: 100% !important; }
+.section-feedback-list { animation-delay: 0.5s; }
+.section-contact       { animation-delay: 0.6s; }
+.section-feedback      { animation-delay: 0.7s; }
+
+/* =========================================
+   HERO STRIP — só no mobile (sidebar some)
+   ========================================= */
+.mobile-hero-strip {
+  display: none;
+}
+
+@media (max-width: 1024px) {
+  .mobile-hero-strip {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 20px 0 32px;
+    flex-wrap: wrap;
+  }
+
+  .mhs-identity {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .mhs-avatar {
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    border: 2px solid rgba(76, 175, 80, 0.5);
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+
+  .mhs-name {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #fff;
+    margin: 0;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+  }
+
+  .mhs-title {
+    font-size: 0.75rem;
+    color: #4caf50;
+    margin: 3px 0 0;
+    font-family: 'Courier New', monospace;
+    letter-spacing: 0.03em;
+  }
+
+  .mhs-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #4caf50;
+    color: #051005;
+    font-weight: 700;
+    font-size: 0.82rem;
+    padding: 11px 18px;
+    border-radius: 8px;
+    text-decoration: none;
+    letter-spacing: 0.01em;
+    box-shadow: 0 4px 20px rgba(76, 175, 80, 0.35);
+    transition: background 0.2s, transform 0.15s;
+    flex-shrink: 0;
+  }
+
+  .mhs-cta:hover {
+    background: #66bb6a;
+    transform: translateY(-1px);
+  }
+
+  .mhs-cta:active {
+    transform: translateY(0);
+  }
+}
 
 /* =========================================
    5. A LINHA NEON (O SEPARADOR ELEGANTE)
