@@ -20,42 +20,61 @@ const Home = () => {
   return (
     <div className="content">
 
-      {/* 1. Sidebar no cantinho dela */}
+      {/* Sidebar fixa na esquerda (some no mobile via CSS) */}
       <div className="sidebar-wrapper">
         <Sidebar />
       </div>
 
-      {/* 2. Conteúdo Principal lado a lado com a Sidebar */}
       <main className="main-content">
         <div className="main-container">
 
-          <section className="section-articles" id="articles">
-            <ArticleCarousel />
-          </section>
-          <hr className="separator" />
-          <section className="section-about" id="about"><About /></section>
-          <hr className="separator" />
+          {/* Hero strip exclusiva do mobile — sidebar some, isso apresenta o dev */}
+          <div className="mobile-hero-strip">
+            <div className="mhs-identity">
+              <img src="/imgperfil.png" alt="Bruno Fraga" className="mhs-avatar" />
+              <div>
+                <h1 className="mhs-name">Bruno Fraga</h1>
+                <p className="mhs-title">&lt;Backend Developer /&gt;</p>
+              </div>
+            </div>
+            <a href="/curriculo_Bruno_Fraga.pdf" download className="mhs-cta">
+              ↓ Currículo PDF
+            </a>
+          </div>
 
-          <section className="section-skills" id="skills"><Skills /></section>
-          <hr className="separator" />
-
+          {/* 1. ATENÇÃO — projetos: hook visual imediato */}
           <section className="section-projects" id="projects">
             <Projects token={token} userName={userName} userRole={userRole} />
           </section>
           <hr className="separator" />
 
-          <section className="section-contact" id="contact"><Contact /></section>
+          {/* 2. INTERESSE — quem é você */}
+          <section className="section-about" id="about"><About /></section>
           <hr className="separator" />
 
+          {/* 3. INTERESSE — o que você domina */}
+          <section className="section-skills" id="skills"><Skills /></section>
+          <hr className="separator" />
+
+          {/* 4. DESEJO — liderança técnica via artigos */}
+          <section className="section-articles" id="articles">
+            <ArticleCarousel />
+          </section>
+          <hr className="separator" />
+
+          {/* 5. DESEJO — prova social */}
           <section className="section-feedback-list" id="feedbackList">
             <FeedbackList userRole={userRole} token={token} currentUserName={userName} />
           </section>
-            <hr className="separator" />
+          <hr className="separator" />
+
+          {/* 6. AÇÃO — contato e CTA */}
+          <section className="section-contact" id="contact"><Contact /></section>
+          <hr className="separator" />
 
           <section className="section-feedback" id="feedback">
             <Feedback isAuthenticated={isAuthenticated} token={token} openAuthModal={openAuthModal} />
           </section>
-          
 
         </div>
       </main>

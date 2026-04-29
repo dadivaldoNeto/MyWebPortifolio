@@ -136,20 +136,93 @@
 .skills-text::-webkit-scrollbar-thumb { background: #4caf50; border-radius: 10px; }
 
 /* =========================================
+   GRID MOBILE (oculto no desktop)
+   ========================================= */
+.skills-mobile-grid {
+  display: none;
+}
+
+/* =========================================
    RESPONSIVIDADE (MOBILE E TABLET)
    ========================================= */
 @media (max-width: 992px) {
   .skills-container {
-    grid-template-columns: 1fr; /* Quebra para apenas 1 coluna empilhada */
-    gap: 30px;
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .skills-section {
+    display: none;
+  }
+
+  .skills-mobile-grid {
+    display: block;
+  }
+
+  .smg-group {
+    margin-bottom: 20px;
+  }
+
+  .smg-group:last-child {
+    margin-bottom: 0;
+  }
+
+  .smg-title {
+    font-size: 0.78rem;
+    color: #4caf50;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+
+  .smg-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .smg-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 7px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(76, 175, 80, 0.2);
+    border-radius: 12px;
+    padding: 14px 10px 10px;
+    flex: 1 1 calc(25% - 8px);
+    min-width: 68px;
+    max-width: 96px;
+    transition: border-color 0.25s, background 0.25s;
+  }
+
+  .smg-item:active {
+    border-color: #4caf50;
+    background: rgba(76, 175, 80, 0.08);
+  }
+
+  .smg-icon {
+    width: 42px;
+    height: 42px;
+    object-fit: contain;
+  }
+
+  .smg-name {
+    font-size: 0.65rem;
+    color: rgba(255, 255, 255, 0.65);
+    text-align: center;
+    font-weight: 500;
+    line-height: 1.2;
   }
 
   .skills-divider {
-    display: none; /* Esconde o divisor vertical no celular */
+    display: none;
   }
 
   .skills-text {
     padding: 20px;
-    max-height: none; /* Deixa o texto crescer livremente no celular */
+    max-height: none;
+    font-size: 0.92rem;
   }
 }

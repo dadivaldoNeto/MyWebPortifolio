@@ -2,33 +2,32 @@ import React from "react";
 import "../../styles/skills.css";
 
 const Skills = () => {
-  const frontendImages = [
-    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRuHnJDLOcdm_0b6N6kNj-1OvO9KhKYgqIy0w&s", // React
-    "https://pbs.twimg.com/profile_images/1785867863191932928/EpOqfO6d_400x400.png", // Vue
-    "https://upload.wikimedia.org/wikipedia/commons/thumb/6/61/HTML5_logo_and_wordmark.svg/1200px-HTML5_logo_and_wordmark.svg.png", // HTML
-    "https://cdn.pixabay.com/photo/2016/11/19/23/00/css3-1841590_1280.png", // CSS
+  const frontendSkills = [
+    { src: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRuHnJDLOcdm_0b6N6kNj-1OvO9KhKYgqIy0w&s", name: "React" },
+    { src: "https://pbs.twimg.com/profile_images/1785867863191932928/EpOqfO6d_400x400.png", name: "Vue.js" },
+    { src: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/61/HTML5_logo_and_wordmark.svg/1200px-HTML5_logo_and_wordmark.svg.png", name: "HTML5" },
+    { src: "https://cdn.pixabay.com/photo/2016/11/19/23/00/css3-1841590_1280.png", name: "CSS3" },
   ];
 
-  const backendImages = [
-    "https://cdn-icons-png.flaticon.com/512/226/226777.png", // Java
-    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR9WYHLYIVN011VGVl1pkwPRrAGWPBbG25YrQ&s", // Spring
-    "https://images.sftcdn.net/images/t_app-icon-m/p/917c77e8-96d1-11e6-8453-00163ed833e7/3780880766/mysql-com-icon.png", // MySQL
-    "https://media.licdn.com/dms/image/v2/D4E12AQF64SYsV08fkA/article-cover_image-shrink_600_2000/article-cover_image-shrink_600_2000/0/1662093619580?e=2147483647&v=beta&t=uoidKIOEIH0ZlboxixU1Lfkg5rPnYoCizMrA7P-YVQ4", // Outro
+  const backendSkills = [
+    { src: "https://cdn-icons-png.flaticon.com/512/226/226777.png", name: "Java" },
+    { src: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR9WYHLYIVN011VGVl1pkwPRrAGWPBbG25YrQ&s", name: "Spring Boot" },
+    { src: "https://images.sftcdn.net/images/t_app-icon-m/p/917c77e8-96d1-11e6-8453-00163ed833e7/3780880766/mysql-com-icon.png", name: "MySQL" },
+    { src: "https://media.licdn.com/dms/image/v2/D4E12AQF64SYsV08fkA/article-cover_image-shrink_600_2000/article-cover_image-shrink_600_2000/0/1662093619580?e=2147483647&v=beta&t=uoidKIOEIH0ZlboxixU1Lfkg5rPnYoCizMrA7P-YVQ4", name: "PostgreSQL" },
   ];
 
   return (
     <div className="skills-wrapper">
       <div className="skills-container">
-        
-        {/* COLUNA 1: As Esteiras Animadas */}
+
+        {/* DESKTOP: Esteiras animadas */}
         <div className="skills-section">
           <div className="skill-track-box">
             <h3>🖥️ Frontend:</h3>
             <div className="skills-marquee">
               <div className="skills-marquee-content">
-                {frontendImages.map((src, index) => <img key={index} src={src} alt={`Frontend skill ${index}`} className="tech-badge" />)}
-                {/* Duplicação para o efeito infinito */}
-                {frontendImages.map((src, index) => <img key={`dup-${index}`} src={src} alt={`Frontend skill dup ${index}`} className="tech-badge" />)}
+                {frontendSkills.map((s, i) => <img key={i} src={s.src} alt={s.name} className="tech-badge" />)}
+                {frontendSkills.map((s, i) => <img key={`dup-${i}`} src={s.src} alt={s.name} className="tech-badge" />)}
               </div>
             </div>
           </div>
@@ -37,18 +36,43 @@ const Skills = () => {
             <h3>⚙️ Backend & Banco de Dados:</h3>
             <div className="skills-marquee">
               <div className="skills-marquee-content reverse">
-                {backendImages.map((src, index) => <img key={index} src={src} alt={`Backend skill ${index}`} className="tech-badge" />)}
-                {/* Duplicação para o efeito infinito */}
-                {backendImages.map((src, index) => <img key={`dup-${index}`} src={src} alt={`Backend skill dup ${index}`} className="tech-badge" />)}
+                {backendSkills.map((s, i) => <img key={i} src={s.src} alt={s.name} className="tech-badge" />)}
+                {backendSkills.map((s, i) => <img key={`dup-${i}`} src={s.src} alt={s.name} className="tech-badge" />)}
               </div>
             </div>
           </div>
         </div>
 
-        {/* COLUNA 2: O Divisor Neon (Some no celular) */}
+        {/* MOBILE: Grid estático com labels */}
+        <div className="skills-mobile-grid">
+          <div className="smg-group">
+            <h3 className="smg-title">Frontend</h3>
+            <div className="smg-row">
+              {frontendSkills.map((s, i) => (
+                <div key={i} className="smg-item">
+                  <img src={s.src} alt={s.name} className="smg-icon" />
+                  <span className="smg-name">{s.name}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="smg-group">
+            <h3 className="smg-title">Backend & DB</h3>
+            <div className="smg-row">
+              {backendSkills.map((s, i) => (
+                <div key={i} className="smg-item">
+                  <img src={s.src} alt={s.name} className="smg-icon" />
+                  <span className="smg-name">{s.name}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Divisor Neon (some no celular via CSS) */}
         <div className="skills-divider"></div>
 
-        {/* COLUNA 3: O Texto em Glassmorphism */}
+        {/* Texto em Glassmorphism */}
         <div className="skills-text">
           <p>
             No desenvolvimento <strong>Frontend</strong>, utilizo tecnologias modernas para criar

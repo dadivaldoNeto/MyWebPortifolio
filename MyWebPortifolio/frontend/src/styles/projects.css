@@ -1,63 +1,167 @@
-/* =========================================
-   BASE E TÍTULO
-   ========================================= */
-.projects {
-  background-color: transparent;
-  padding: 40px 20px;
-  color: #fff;
-  margin-top: 30px;
-  max-width: 1200px;
-  margin-left: auto;
-  margin-right: auto;
+/* ==========================================================================
+   projects.css
+   Arquitetura: Custom Properties → Reset local → Base → Layout →
+                Componentes → Estados → Animações → Responsivo
+   Metodologia: BEM implícito + utility-first para estados pontuais
+   Compatibilidade: Chrome 88+, Firefox 90+, Safari 14+
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. DESIGN TOKENS (Custom Properties)
+   Fonte única da verdade para cores, espaçamento, tipografia e animações.
+   Alterar aqui propaga para o componente inteiro.
+   -------------------------------------------------------------------------- */
+:root {
+  /* Paleta principal */
+  --clr-accent:         #4caf50;
+  --clr-accent-dim:     rgba(76, 175, 80, 0.18);
+  --clr-accent-glow:    rgba(76, 175, 80, 0.35);
+  --clr-danger:         #f50505;
+  --clr-danger-dim:     rgba(245, 5, 5, 0.08);
+  --clr-warn:           #ffc107;
+
+  /* Superfícies */
+  --clr-surface-0:      #050505;   /* fundo mais escuro (terminal) */
+  --clr-surface-1:      rgba(18, 18, 18, 0.72);   /* cards principais */
+  --clr-surface-2:      rgba(255, 255, 255, 0.05); /* seções internas */
+  --clr-surface-chat:   #202c33;   /* balões de chat estilo WhatsApp dark */
+
+  /* Bordas */
+  --clr-border-subtle:  rgba(255, 255, 255, 0.08);
+  --clr-border-accent:  rgba(76, 175, 80, 0.55);
+
+  /* Texto */
+  --clr-text-primary:   #e9edef;
+  --clr-text-secondary: #d1d5db;
+  --clr-text-muted:     #a0aec0;
+  --clr-text-hint:      rgba(255, 255, 255, 0.32);
+  --clr-text-chat-time: #8696a0;
+
+  /* Tipografia */
+  --font-display: "Syne", "Exo 2", sans-serif;
+  --font-body:    "DM Sans", "Rubik", system-ui, sans-serif;
+  --font-mono:    "JetBrains Mono", "Fira Code", monospace;
+
+  /* Espaçamento (escala 4pt) */
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-5:  20px;
+  --space-6:  24px;
+  --space-8:  32px;
+  --space-10: 40px;
+
+  /* Raios de borda */
+  --radius-sm:   8px;
+  --radius-md:   12px;
+  --radius-lg:   20px;
+  --radius-full: 9999px;
+
+  /* Sombras */
+  --shadow-card:  0 10px 30px rgba(0, 0, 0, 0.55);
+  --shadow-hover: 0 20px 40px var(--clr-accent-glow);
+  --shadow-modal: 0 15px 40px rgba(0, 0, 0, 0.7);
+
+  /* Transições */
+  --ease-out-back: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  --duration-fast: 200ms;
+  --duration-base: 400ms;
+  --duration-slow: 600ms;
 }
 
-.projects h2 {
-  color: #4caf50;
-  font-size: 2.5rem;
-  margin-bottom: 50px;
+/* --------------------------------------------------------------------------
+   2. BASE DO COMPONENTE
+   -------------------------------------------------------------------------- */
+.projects {
+  max-width: 1200px;
+  margin-inline: auto;
+  margin-top: var(--space-8);
+  padding: var(--space-10) var(--space-5);
+  background-color: transparent;
+  color: var(--clr-text-primary);
+  font-family: var(--font-body);
+}
+
+/* --------------------------------------------------------------------------
+   3. TÍTULO DA SEÇÃO
+   -------------------------------------------------------------------------- */
+.projects__title {
+  /* Mantém compatibilidade com o JSX: seletor via h2 dentro de .projects */
+  color: var(--clr-accent);
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 4vw, 2.5rem); /* fluid typography */
+  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 3px;
-  border-left: 5px solid #f50505;
-  padding-left: 20px;
+  margin-bottom: var(--space-10);
+  padding-left: var(--space-5);
   display: inline-block;
+  border-left: 5px solid var(--clr-danger);
+  text-shadow: 0 0 15px rgba(76, 175, 80, 0.4);
+  position: relative;
+}
+
+/* Compatibilidade: o JSX usa <h2> diretamente */
+.projects h2 {
+  color: var(--clr-accent);
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 4vw, 2.5rem);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  margin-bottom: var(--space-10);
+  padding-left: var(--space-5);
+  display: inline-block;
+  border-left: 5px solid var(--clr-danger);
   text-shadow: 0 0 15px rgba(76, 175, 80, 0.4);
   position: relative;
 }
 
 .projects h2::after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: -10px;
   left: 0;
   width: 100%;
   height: 2px;
-  background: linear-gradient(90deg, #4caf50, transparent);
+  background: linear-gradient(90deg, var(--clr-accent), transparent);
 }
 
-/* =========================================
-   O GRID DE PROJETOS (Cartazes Gigantes)
-   ========================================= */
+/* --------------------------------------------------------------------------
+   4. GRADE DE PROJETOS
+   -------------------------------------------------------------------------- */
 .projects-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 40px;
+  gap: var(--space-10);
   align-items: stretch;
 }
 
-/* =========================================
-   CARDS DOS PROJETOS (Moldura Glassmorphism)
-   ========================================= */
+/* --------------------------------------------------------------------------
+   5. CARD DE PROJETO
+   -------------------------------------------------------------------------- */
 .project-item {
   cursor: pointer;
   position: relative;
-  border-radius: 20px;
+  border-radius: var(--radius-lg);
   overflow: hidden;
-  background: rgba(18, 18, 18, 0.7);
+  background: var(--clr-surface-1);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
-  transition: transform 0.5s ease, box-shadow 0.5s ease, border-color 0.5s ease;
+  border: 1px solid var(--clr-border-subtle);
+  box-shadow: var(--shadow-card);
+  transition:
+    transform var(--duration-slow) ease,
+    box-shadow var(--duration-slow) ease,
+    border-color var(--duration-slow) ease;
+
+  /* Garante foco acessível via teclado */
+  outline-offset: 3px;
+}
+
+.project-item:focus-visible {
+  outline: 2px solid var(--clr-accent);
 }
 
 .project-item img {
@@ -65,111 +169,239 @@
   height: 350px;
   object-fit: cover;
   display: block;
-  animation: tvStatic 5s infinite alternate;
-  transition: transform 0.6s ease, filter 0.6s ease;
+  animation: tv-static 5s infinite alternate;
+  transition:
+    transform var(--duration-slow) ease,
+    filter var(--duration-slow) ease;
+
+  /* Previne reflow ao carregar */
+  aspect-ratio: 16 / 9;
 }
 
-/* =========================================
-   EFEITOS DE HOVER NOS CARDS
-   ========================================= */
-.project-item:hover {
+/* Estados de hover do card */
+.project-item:hover,
+.project-item:focus-visible {
   transform: translateY(-15px) scale(1.02);
-  border-color: rgba(76, 175, 80, 0.6);
-  box-shadow: 0 20px 40px rgba(76, 175, 80, 0.3);
+  border-color: var(--clr-border-accent);
+  box-shadow: var(--shadow-hover);
 }
 
-.project-item:hover img {
+.project-item:hover img,
+.project-item:focus-visible img {
   filter: brightness(1.1);
   transform: scale(1.1);
   animation: none;
 }
 
+/* Overlay com título do projeto */
 .project-title-overlay {
   position: absolute;
   bottom: -120px;
   left: 0;
   width: 100%;
-  padding: 50px 25px 25px;
-  background: linear-gradient(to top, rgba(0,0,0,0.98) 0%, rgba(0,0,0,0.75) 50%, transparent 100%);
+  padding: 50px var(--space-6) var(--space-6);
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.98) 0%,
+    rgba(0, 0, 0, 0.75) 50%,
+    transparent 100%
+  );
   color: #fff;
+  font-family: var(--font-display);
   font-size: 1.6rem;
   font-weight: 800;
   text-align: center;
-  transition: bottom 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+  transition: bottom var(--duration-base) var(--ease-out-back);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
 }
 
-.project-item:hover .project-title-overlay {
+.project-item:hover .project-title-overlay,
+.project-item:focus-visible .project-title-overlay {
   bottom: 0;
 }
 
-@keyframes tvStatic {
-  0%, 50% { filter: url(#static-noise); opacity: 0.9; }
-  55%, 80% { filter: none; opacity: 1; }
-  85%, 100% { filter: url(#static-noise); opacity: 0.9; }
+/* --------------------------------------------------------------------------
+   6. FEEDBACK DE CARREGAMENTO E ERRO
+   -------------------------------------------------------------------------- */
+.projects-loading,
+.projects-error {
+  text-align: center;
+  padding: var(--space-10);
+  font-size: 1.1rem;
+  color: var(--clr-text-muted);
+  font-family: var(--font-mono);
 }
 
-/* =========================================
-   ESTRUTURA INTERNA DO MODAL (Pop-up)
-   ========================================= */
+.projects-error {
+  color: var(--clr-danger);
+}
+
+/* --------------------------------------------------------------------------
+   7. MODAL — SHELL E BARRA DE NAVEGAÇÃO
+   -------------------------------------------------------------------------- */
+.modal-shell {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.modal-nav-bar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 13px var(--space-5);
+  background: rgba(10, 10, 10, 0.98);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(72, 187, 120, 0.13);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+}
+
+.modal-nav-btn {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.75);
+  padding: 7px 15px;
+  border-radius: var(--radius-sm);
+  font-size: 0.8rem;
+  font-weight: 600;
+  font-family: var(--font-body);
+  cursor: pointer;
+  transition:
+    background var(--duration-fast),
+    border-color var(--duration-fast),
+    color var(--duration-fast);
+  white-space: nowrap;
+  letter-spacing: 0.02em;
+}
+
+.modal-nav-btn:hover:not(:disabled) {
+  background: var(--clr-accent-dim);
+  border-color: var(--clr-border-accent);
+  color: var(--clr-accent);
+}
+
+.modal-nav-btn:disabled {
+  opacity: 0.22;
+  cursor: not-allowed;
+}
+
+.modal-nav-btn:focus-visible {
+  outline: 2px solid var(--clr-accent);
+  outline-offset: 2px;
+}
+
+.modal-nav-counter {
+  flex: 1;
+  text-align: center;
+  font-size: 0.72rem;
+  color: var(--clr-text-hint);
+  letter-spacing: 0.14em;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.modal-close-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.45);
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius-sm);
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  transition:
+    background var(--duration-fast),
+    border-color var(--duration-fast),
+    color var(--duration-fast);
+}
+
+.modal-close-btn:hover {
+  background: rgba(239, 68, 68, 0.12);
+  border-color: rgba(239, 68, 68, 0.4);
+  color: #ef4444;
+}
+
+.modal-close-btn:focus-visible {
+  outline: 2px solid #ef4444;
+  outline-offset: 2px;
+}
+
+/* --------------------------------------------------------------------------
+   8. MODAL — CONTEÚDO INTERNO
+   -------------------------------------------------------------------------- */
 .modal-content {
   display: flex;
   flex-direction: column;
   align-items: center;
   width: 100%;
-  max-width: 800px;
-  margin: 0 auto;
-  max-height: 70vh !important;
-  overflow-x: hidden;
-  padding: 20px;
-  backdrop-filter: blur(15px);
-  border-radius: 20px;
- 
+  padding: var(--space-6) var(--space-8) 36px;
 }
-
-.modal-content::-webkit-scrollbar { width: 8px; }
-.modal-content::-webkit-scrollbar-track { background: rgba(0,0,0,0.5); border-radius: 10px; }
-.modal-content::-webkit-scrollbar-thumb { background: #4caf50; border-radius: 10px; box-shadow: 0 0 10px rgba(76,175,80,0.5); }
 
 .modal-title {
-  font-size: 2.2rem;
-  color: #4caf50;
-  text-shadow: 0 0 20px rgba(76, 175, 80, 0.5);
-  margin: 0 0 20px 0;
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  color: var(--clr-accent);
+  text-shadow: 0 0 16px rgba(76, 175, 80, 0.4);
+  margin: 0 0 var(--space-5) 0;
   text-align: center;
-  font-weight: 900;
-  letter-spacing: 1px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  line-height: 1.2;
 }
 
-.modal-description { 
-  width: 100%; 
-  color: #d1d5db; 
-  font-size: 1.15rem; 
-  line-height: 1.8; 
+.modal-description {
+  width: 100%;
+  color: var(--clr-text-secondary);
+  font-size: 1.1rem;
+  line-height: 1.8;
   text-align: justify;
-  padding: 0 10px;
+  padding-inline: var(--space-2);
 }
 
-.main-desc { margin-bottom: 30px; }
+.modal-divider {
+  width: 100%;
+  border: none;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--clr-border-accent),
+    transparent
+  );
+  margin-block: var(--space-5);
+}
 
-/* =========================================
-   CARROSSEL DE IMAGENS NO MODAL (Otimizado)
-   ========================================= */
+/* --------------------------------------------------------------------------
+   9. CARROSSEL DE IMAGENS
+   -------------------------------------------------------------------------- */
 .carousel-container {
   position: relative;
   width: 100%;
   aspect-ratio: 16 / 9;
   min-height: 300px;
-  margin-bottom: 30px;
+  margin-bottom: var(--space-8);
   cursor: zoom-in;
-  border-radius: 15px;
+  border-radius: var(--radius-md);
   overflow: hidden;
-  background: rgba(0,0,0,0.5);
+  background: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  border: 1px solid var(--clr-border-subtle);
+  box-shadow: var(--shadow-modal);
+  outline-offset: 3px;
+}
+
+.carousel-container:focus-visible {
+  outline: 2px solid var(--clr-accent);
 }
 
 .carousel-main-image {
@@ -177,10 +409,11 @@
   height: 100%;
   object-fit: contain;
   display: block;
-  transition: opacity 0.4s ease, transform 0.4s ease;
+  transition:
+    opacity var(--duration-base) ease,
+    transform var(--duration-base) ease;
 }
 
-/* Botões de Navegação do Carrossel */
 .carousel-btn {
   position: absolute;
   top: 50%;
@@ -194,68 +427,83 @@
   height: 50px;
   font-size: 32px;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: grid;
+  place-items: center;
   z-index: 10;
-  transition: all 0.4s ease;
+  transition: all var(--duration-base) ease;
+
+  /* Melhora hit area em mobile */
+  padding: 0;
 }
 
 .carousel-btn:hover {
   background: rgba(76, 175, 80, 0.9);
-  border-color: #4caf50;
+  border-color: var(--clr-accent);
   transform: translateY(-50%) scale(1.2);
-  box-shadow: 0 0 20px rgba(76, 175, 80, 0.6);
+  box-shadow: 0 0 20px var(--clr-accent-glow);
 }
 
-.carousel-btn.prev { left: 20px; }
-.carousel-btn.next { right: 20px; }
+.carousel-btn:focus-visible {
+  outline: 2px solid var(--clr-accent);
+  outline-offset: 3px;
+}
 
-/* Contador do Carrossel */
+.carousel-btn.prev { left: var(--space-5); }
+.carousel-btn.next { right: var(--space-5); }
+
 .carousel-counter {
   position: absolute;
-  top: 20px;
-  right: 20px;
+  top: var(--space-5);
+  right: var(--space-5);
   background: rgba(0, 0, 0, 0.8);
   backdrop-filter: blur(6px);
   color: #fff;
-  padding: 8px 16px;
-  border-radius: 25px;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-full);
   font-size: 0.9rem;
-  border: 1px solid rgba(76, 175, 80, 0.5);
+  border: 1px solid var(--clr-border-accent);
   z-index: 10;
   letter-spacing: 1.5px;
+  pointer-events: none;
 }
 
-/* Legenda do Carrossel (Degradê) */
 .carousel-legend {
   position: absolute;
   bottom: 0;
   left: 0;
   width: 100%;
-  padding: 50px 25px 20px;
-  background: linear-gradient(to top, rgba(0,0,0,0.98) 0%, rgba(0,0,0,0.6) 60%, transparent 100%);
+  padding: 50px var(--space-6) var(--space-5);
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.98) 0%,
+    rgba(0, 0, 0, 0.6) 60%,
+    transparent 100%
+  );
   color: #e0e0e0;
   font-size: 1.1rem;
   text-align: center;
   pointer-events: none;
   text-shadow: 0 3px 6px rgba(0, 0, 0, 0.9);
   font-style: italic;
+  margin: 0;
 }
 
 .expand-hint {
   position: absolute;
-  top: 20px;
-  left: 20px;
+  top: var(--space-5);
+  left: var(--space-5);
   background: rgba(0, 0, 0, 0.8);
   backdrop-filter: blur(6px);
   color: #fff;
-  padding: 10px 20px;
-  border-radius: 25px;
+  padding: var(--space-2) var(--space-5);
+  border-radius: var(--radius-full);
   font-size: 0.9rem;
   font-weight: bold;
   opacity: 0;
-  transition: opacity 0.4s ease, transform 0.4s ease;
+  transform: translateY(0);
+  transition:
+    opacity var(--duration-base) ease,
+    transform var(--duration-base) ease;
   pointer-events: none;
   border: 1px solid rgba(255, 255, 255, 0.15);
 }
@@ -265,55 +513,231 @@
   transform: translateY(-8px);
 }
 
-/* =========================================
-   IFRAME DO VÍDEO NO MODAL
-   ========================================= */
+/* --------------------------------------------------------------------------
+   10. IFRAME DE VÍDEO
+   -------------------------------------------------------------------------- */
 .modal-content iframe {
   width: 100%;
   aspect-ratio: 16 / 9;
   height: auto;
-  border-radius: 15px;
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.7);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-modal);
+  border: 1px solid var(--clr-border-subtle);
+  margin-bottom: var(--space-8);
 }
 
-/* =========================================
-   FICHA TÉCNICA E LINKS
-   ========================================= */
+/* --------------------------------------------------------------------------
+   11. FICHA TÉCNICA (TechSpecs)
+   -------------------------------------------------------------------------- */
 .tech-specs {
   background: rgba(0, 0, 0, 0.4);
-  padding: 25px;
-  border-left: 5px solid #f50505;
-  border-radius: 10px;
-  margin: 25px 0;
+  padding: var(--space-6);
+  border-radius: var(--radius-sm);
+  margin: var(--space-6) 0;
   width: 100%;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+  border: 1px solid var(--clr-border-subtle);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
 }
 
-.tech-specs h4 { color: #4caf50; margin-top: 0; margin-bottom: 20px; font-size: 1.3rem; text-transform: uppercase; letter-spacing: 1px; }
-.tech-specs ul { list-style-type: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 12px; }
-.tech-specs li { color: #a0aec0; font-size: 1.05rem; }
-.tech-specs strong { color: #fff; font-weight: 700; }
+.tech-specs h4 {
+  color: var(--clr-accent);
+  margin: 0 0 var(--space-5) 0;
+  font-size: 1.3rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-family: var(--font-display);
+}
 
-.modal-links { list-style: none; padding: 0; margin: 25px 0 0 0; display: flex; gap: 25px; flex-wrap: wrap; justify-content: center; }
-.modal-links a { 
-  color: #4caf50; 
-  text-decoration: none; 
-  font-weight: bold; 
-  border-bottom: 3px solid transparent; 
-  padding-bottom: 5px;
-  transition: all 0.4s ease; 
+.tech-specs ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.tech-specs li {
+  color: var(--clr-text-muted);
+  font-size: 1.05rem;
+}
+
+.tech-specs strong {
+  color: #fff;
+  font-weight: 700;
+}
+
+/* --------------------------------------------------------------------------
+   12. TERMINAL DE SETUP
+   -------------------------------------------------------------------------- */
+.setup-section {
+  margin-top: var(--space-10);
+  width: 100%;
+  text-align: left;
+}
+
+.setup-section h4 {
+  color: var(--clr-accent);
+  font-size: 1.3rem;
+  margin-bottom: var(--space-2);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-family: var(--font-display);
+}
+
+.setup-obs {
+  color: var(--clr-danger);
+  font-size: 1rem;
+  font-weight: bold;
+  margin-bottom: var(--space-6);
+  background: var(--clr-danger-dim);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+}
+
+.terminal-box {
+  background-color: var(--clr-surface-0);
+  border: 1px solid #333;
+  border-left: 5px solid var(--clr-accent);
+  padding: var(--space-6);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  box-shadow: inset 0 0 25px rgba(0, 0, 0, 0.9);
+}
+
+.step-item { margin-bottom: var(--space-6); }
+.step-item:last-child { margin-bottom: 0; }
+
+.step-item p {
+  color: var(--clr-text-muted);
+  margin: 0 0 var(--space-2) 0;
+  font-size: 1.05rem;
+  font-family: var(--font-body);
+}
+
+/* <code> dentro do terminal: sobreescreve o estilo do markdown */
+.step-item code {
+  display: block;
+  background-color: #1a1a1a;
+  color: #19c9e8;
+  padding: var(--space-4);
+  border-radius: var(--radius-sm);
+  user-select: all; /* facilita copiar o comando */
+  word-break: break-all;
+  font-size: 1rem;
+  border: 1px solid var(--clr-border-subtle);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+  font-family: var(--font-mono);
+}
+
+/* --------------------------------------------------------------------------
+   13. LINKS DO PROJETO
+   -------------------------------------------------------------------------- */
+.modal-links {
+  list-style: none;
+  padding: 0;
+  margin: var(--space-6) 0 0;
+  display: flex;
+  gap: var(--space-6);
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.modal-links a {
+  color: var(--clr-accent);
+  text-decoration: none;
+  font-weight: bold;
+  border-bottom: 3px solid transparent;
+  padding-bottom: var(--space-1);
+  transition: all var(--duration-base) ease;
   font-size: 1.1rem;
 }
-.modal-links a:hover { color: #f50505; border-color: #f50505; transform: translateY(-3px); }
-/* =========================================
-   TABELAS MARKDOWN
-   ========================================= */
+
+.modal-links a:hover {
+  color: var(--clr-danger);
+  border-color: var(--clr-danger);
+  transform: translateY(-3px);
+}
+
+.modal-links a:focus-visible {
+  outline: 2px solid var(--clr-accent);
+  outline-offset: 4px;
+  border-radius: 2px;
+}
+
+/* --------------------------------------------------------------------------
+   14. MARKDOWN BODY (ReactMarkdown)
+   -------------------------------------------------------------------------- */
+.markdown-body {
+  color: #e0e0e0;
+  font-family: var(--font-body);
+  line-height: 1.6;
+  word-wrap: break-word;
+}
+
+.markdown-body :is(h1, h2, h3) {
+  color: #48bb78;
+  margin-top: var(--space-4);
+  margin-bottom: var(--space-4);
+  font-weight: 600;
+  font-family: var(--font-display);
+  line-height: 1.25;
+}
+
+.markdown-body h1 {
+  font-size: 1.75em;
+  border-bottom: 1px solid rgba(72, 187, 120, 0.2);
+  padding-bottom: var(--space-2);
+}
+
+.markdown-body h2 {
+  font-size: 1.5em;
+  border-bottom: 1px solid rgba(72, 187, 120, 0.2);
+  padding-bottom: 6px;
+}
+
+.markdown-body h3 { font-size: 1.25em; }
+
+.markdown-body p {
+  margin-top: 0;
+  margin-bottom: var(--space-4);
+  font-size: 1rem;
+}
+
+.markdown-body strong {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.markdown-body :is(ul, ol) {
+  padding-left: 2em;
+  margin-top: 0;
+  margin-bottom: var(--space-4);
+}
+
+.markdown-body li { margin-bottom: var(--space-1); }
+
+.markdown-body code {
+  background-color: rgba(255, 255, 255, 0.1);
+  padding: 0.2em 0.4em;
+  border-radius: 6px;
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  color: #86efac;
+}
+
+.markdown-body blockquote {
+  padding: 0 1em;
+  color: #9ca3af;
+  border-left: 0.25em solid #48bb78;
+  margin: 0 0 var(--space-4) 0;
+}
+
+/* Tabelas Markdown */
 .markdown-body table {
   width: 100%;
   border-collapse: collapse;
-  margin: 20px 0;
+  margin: var(--space-5) 0;
   font-size: 0.95rem;
 }
 
@@ -325,393 +749,123 @@
 .markdown-body th {
   color: #48bb78;
   font-weight: 600;
-  padding: 10px 14px;
+  padding: var(--space-2) var(--space-4);
   text-align: left;
 }
 
 .markdown-body td {
-  padding: 10px 14px;
-  color: #d1d5db;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  padding: var(--space-2) var(--space-4);
+  color: var(--clr-text-secondary);
+  border-bottom: 1px solid var(--clr-border-subtle);
 }
 
-.markdown-body tr:last-child td {
-  border-bottom: none;
-}
+.markdown-body tr:last-child td { border-bottom: none; }
 
 .markdown-body tr:hover td {
   background: rgba(76, 175, 80, 0.05);
 }
 
-/* =========================================
-   NAVEGAÇÃO DO MODAL (SETAS EXTERNAS)
-   ========================================= */
-.nav-arrow {
-  background-color: rgba(24, 24, 24, 0.95);
-  backdrop-filter: blur(6px);
-  color: #4caf50;
-  border: 2px solid #4caf50;
-  border-radius: 50%;
-  width: 60px;
-  height: 60px;
-  font-size: 28px;
-  cursor: pointer;
-  z-index: 9999;
-  transition: all 0.4s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 0 15px rgba(76,175,80,0.3);
-}
-
-.nav-arrow:disabled {
-  color: #555;
-  border-color: #333;
-  cursor: not-allowed;
-  opacity: 0.6;
-  animation: none;
-}
-/* ==========================================================================
-   ESTILO MARKDOWN (PREVIEW NO ADMIN)
-   ========================================================================== */
-.markdown-body {
-  color: #e0e0e0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-  line-height: 1.6;
-  word-wrap: break-word;
-}
-
-.markdown-body h1, 
-.markdown-body h2, 
-.markdown-body h3 {
-  color: #48bb78; 
-  margin-top: 16px;
-  margin-bottom: 16px;
-  font-weight: 600;
-  line-height: 1.25;
-}
-
-.markdown-body h1 { font-size: 1.75em; border-bottom: 1px solid rgba(72, 187, 120, 0.2); padding-bottom: 8px;}
-.markdown-body h2 { font-size: 1.5em; border-bottom: 1px solid rgba(72, 187, 120, 0.2); padding-bottom: 6px;}
-.markdown-body h3 { font-size: 1.25em; }
-
-.markdown-body p {
-  margin-top: 0;
-  margin-bottom: 16px;
-  font-size: 1rem;
-}
-
-.markdown-body strong {
-  color: #ffffff;
-  font-weight: 600;
-}
-
-.markdown-body ul, 
-.markdown-body ol {
-  padding-left: 2em;
-  margin-top: 0;
-  margin-bottom: 16px;
-}
-
-.markdown-body li {
-  margin-bottom: 4px;
-}
-
-.markdown-body code {
-  background-color: rgba(255, 255, 255, 0.1);
-  padding: 0.2em 0.4em;
-  border-radius: 6px;
-  font-family: "Courier New", Courier, monospace;
-  font-size: 0.9em;
-  color: #86efac;
-}
-
-.markdown-body blockquote {
-  padding: 0 1em;
-  color: #9ca3af;
-  border-left: 0.25em solid #48bb78;
-  margin: 0 0 16px 0;
-}
-
-@media (max-width: 768px) {
-  .nav-arrow { 
-    position: absolute; 
-    bottom: -50px; 
-    transform: none;
-    margin: 0;
-    width: 50px; 
-    height: 50px; 
-    font-size: 24px; 
-  }
-  .left-arrow { left: calc(50% - 60px); }
-  .right-arrow { right: calc(50% - 60px); }
-}
-
-@media (min-width: 769px) {
-  .nav-arrow {
-    position: fixed; top: 50%; transform: translateY(-50%);
-    animation: piscaAlerta 2s infinite;
-  }
-  .left-arrow { left: 5%; }
-  .right-arrow { right: 5%; }
-}
-
-@keyframes piscaAlerta {
-  0%, 100% { box-shadow: 0 0 25px rgba(76, 175, 80, 0.7); opacity: 1; }
-  50% { box-shadow: 0 0 10px rgba(76, 175, 80, 0.2); opacity: 0.7; }
-}
-
-.nav-arrow:hover:not(:disabled) {
-  background-color: #4caf50; color: #1a1a1a;
-  animation: none; transform: translateY(-50%) scale(1.15);
-  box-shadow: 0 0 30px rgba(76,175,80,0.6);
-}
-
-/* =========================================
-   TUTORIAL DE SETUP (CAIXA DE COMANDOS)
-   ========================================= */
-.setup-section { margin-top: 40px; width: 100%; text-align: left; padding: 0 10px; }
-.setup-section h4 { color: #4caf50; font-size: 1.3rem; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
-.setup-obs { color: #f50505; font-size: 1rem; font-weight: bold; margin-bottom: 25px; background: rgba(245,5,5,0.05); padding: 10px; border-radius: 5px; }
-
-.terminal-box {
-  background-color: #050505; 
-  border: 1px solid #333; 
-  border-left: 5px solid #4caf50;
-  padding: 25px; 
-  border-radius: 10px; 
-  font-family: 'Courier New', Courier, monospace;
-  box-shadow: inset 0 0 25px rgba(0,0,0,0.9);
-}
-.step-item { margin-bottom: 25px; }
-.step-item:last-child { margin-bottom: 0; }
-.step-item p { color: #a0aec0; margin: 0 0 10px 0; font-size: 1.05rem; }
-.step-item code {
-  display: block; 
-  background-color: #1a1a1a; 
-  color: #19c9e8; 
-  padding: 15px; 
-  border-radius: 8px; 
-  user-select: all; 
-  word-wrap: break-word;
-  font-size: 1rem;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 2px 10px rgba(0,0,0,0.5);
-}
-
-/* =========================================
-   SISTEMA DE LIGHTBOX (TELA CHEIA) E LEGENDA
-   ========================================= */
-.lightbox-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: rgba(0, 0, 0, 0.97);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  z-index: 999999 !important;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: zoom-out;
-  animation: fadeIn 0.4s ease-out forwards;
-}
-
-.lightbox-close {
-  position: absolute;
-  top: 30px;
-  right: 50px;
-  background: transparent;
-  border: none;
-  color: rgba(255,255,255,0.7);
-  font-size: 50px;
-  cursor: pointer;
-  transition: color 0.4s, transform 0.4s;
-  z-index: 20;
-}
-
-.lightbox-close:hover {
-  color: #f50505;
-  transform: scale(1.15);
-}
-
-/* Navegação Tela Cheia */
-.lightbox-nav {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  background: transparent;
-  border: none;
-  color: rgba(255, 255, 255, 0.4);
-  font-size: 80px;
-  cursor: pointer;
-  z-index: 20;
-  padding: 25px;
-  transition: all 0.4s ease;
-}
-
-.lightbox-nav:hover {
-  color: #4caf50;
-  transform: translateY(-50%) scale(1.15);
-  text-shadow: 0 0 25px rgba(76, 175, 80, 0.9);
-}
-
-.lightbox-nav.left { left: 4%; }
-.lightbox-nav.right { right: 4%; }
-
-/* Container da Foto + Legenda */
-.lightbox-content-wrapper {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  width: 90vw;
-  height: 95vh;
-  cursor: default;
-  animation: popImage 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-}
-
-.lightbox-image {
-  max-width: 100%;
-  max-height: 100%;
-  object-fit: contain;
-  border-radius: 10px;
-  box-shadow: 0 0 60px rgba(76, 175, 80, 0.2);
-}
-
-/* Legenda Flutuante (Pílula) */
-.lightbox-legend {
-  position: absolute;
-  bottom: 40px;
-  background: rgba(18, 18, 18, 0.9);
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
-  border: 1px solid rgba(76, 175, 80, 0.5);
-  color: #fff;
-  padding: 15px 35px;
-  border-radius: 35px;
-  font-size: 1.2rem;
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.9);
-  max-width: 85%;
-  text-align: center;
-  letter-spacing: 1px;
-  z-index: 15;
-  font-style: italic;
-}
-
-.lightbox-counter {
-  position: absolute;
-  top: -40px;
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 1.2rem;
-  letter-spacing: 3px;
-}
-
-/* =========================================
-   SISTEMA DE FEEDBACK (NOVO)
-   ========================================= */
-
-.modal-divider {
-  width: 100%;
-  border: none;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(76, 175, 80, 0.6), transparent);
- 
-}
-
+/* --------------------------------------------------------------------------
+   15. SEÇÃO DE FEEDBACK — FORMULÁRIO
+   -------------------------------------------------------------------------- */
 .project-feedback-section {
-  justify-items: center;
   width: 100%;
-  padding: 25px;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 15px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 5px 20px rgba(0,0,0,0.5);
-  margin-top: 20px;
+  padding: var(--space-6);
+  background: var(--clr-surface-2);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--clr-border-subtle);
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+  margin-top: var(--space-5);
 }
 
 .project-feedback-section h4 {
-  color: #4caf50;
+  color: var(--clr-accent);
   font-size: 1.4rem;
-  margin-bottom: 25px;
+  margin: 0 0 var(--space-6) 0;
   text-transform: uppercase;
   letter-spacing: 1.5px;
-  text-shadow: 0 0 10px rgba(76,175,80,0.3);
+  font-family: var(--font-display);
+  text-shadow: 0 0 10px rgba(76, 175, 80, 0.3);
 }
 
-/* Estrelas Interativas */
+/* Selector de estrelas */
 .star-rating-selector {
-  margin-bottom: 20px;
+  margin-bottom: var(--space-5);
   display: flex;
-  gap: 10px;
+  gap: var(--space-2);
   justify-content: center;
 }
 
 .star {
-  transition: transform 0.3s ease, color 0.3s ease;
-  user-select: none;
   font-size: 2rem;
   color: #ccc;
   cursor: pointer;
+  user-select: none;
+  transition:
+    transform 200ms ease,
+    color 200ms ease;
+  line-height: 1;
 }
 
 .star.selected {
-  color: #ffc107;
+  color: var(--clr-warn);
   text-shadow: 0 0 15px rgba(255, 193, 7, 0.7);
 }
 
 .star:hover {
   transform: scale(1.4);
-  color: #ffc107;
+  color: var(--clr-warn);
 }
 
-/* Área de Texto Estilizada */
+.star:focus-visible {
+  outline: 2px solid var(--clr-warn);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* Textarea de feedback */
 .feedback-textarea {
   width: 100%;
   background: rgba(10, 10, 10, 0.9);
-  border: 1px solid rgba(76, 175, 80, 0.4);
+  border: 1px solid var(--clr-border-accent);
   color: #e0e0e0;
-  font-family: inherit;
-  transition: all 0.4s ease;
+  font-family: var(--font-body);
+  transition: all var(--duration-base) ease;
   outline: none;
-  padding: 15px;
-  border-radius: 8px;
+  padding: var(--space-4);
+  border-radius: var(--radius-sm);
   resize: vertical;
   min-height: 120px;
   font-size: 1.05rem;
+  box-sizing: border-box;
 }
 
 .feedback-textarea:focus {
-  border-color: #4caf50;
-  box-shadow: 0 0 20px rgba(76, 175, 80, 0.3);
+  border-color: var(--clr-accent);
+  box-shadow: 0 0 20px var(--clr-accent-glow);
   background: rgba(0, 0, 0, 0.95);
 }
 
-/* Botão de Envio Cyber */
+/* Botão de enviar feedback */
 .submit-feedback-btn {
-  align-self: flex-start;
-  padding: 15px 30px;
+  padding: 15px var(--space-8);
   font-weight: bold;
   text-transform: uppercase;
   letter-spacing: 1.5px;
+  font-family: var(--font-body);
   background: transparent;
-  border: 1px solid #4caf50;
-  color: #4caf50;
-  transition: all 0.4s ease;
-  position: relative;
-  overflow: hidden;
-  border-radius: 8px;
+  border: 1px solid var(--clr-accent);
+  color: var(--clr-accent);
+  transition: all var(--duration-base) ease;
+  border-radius: var(--radius-sm);
   cursor: pointer;
-  margin-top: 15px;
+  margin-top: var(--space-4);
 }
 
 .submit-feedback-btn:not(:disabled):hover {
-  background: #4caf50;
+  background: var(--clr-accent);
   color: #000;
-  box-shadow: 0 0 25px rgba(76, 175, 80, 0.5);
+  box-shadow: 0 0 25px var(--clr-accent-glow);
   transform: translateY(-3px);
 }
 
@@ -722,167 +876,159 @@
   opacity: 0.6;
 }
 
-/* Mensagens de Status */
-.feedback-status-msg {
-  font-size: 1rem;
-  padding: 12px;
-  border-radius: 6px;
-  animation: fadeIn 0.5s ease;
-  margin-top: 15px;
-  text-align: center;
-  background: rgba(76,175,80,0.1);
-  color: #4caf50;
-  border: 1px solid rgba(76,175,80,0.3);
+.submit-feedback-btn:focus-visible {
+  outline: 2px solid var(--clr-accent);
+  outline-offset: 3px;
 }
 
+/* Mensagem de status do feedback */
+.feedback-status-msg {
+  font-size: 1rem;
+  padding: var(--space-3);
+  border-radius: var(--radius-sm);
+  animation: fade-in 0.5s ease;
+  margin-top: var(--space-4);
+  text-align: center;
+  background: var(--clr-accent-dim);
+  color: var(--clr-accent);
+  border: 1px solid rgba(76, 175, 80, 0.3);
+}
+
+/* Prompt de login */
 .login-prompt {
-  background: rgba(245, 5, 5, 0.08);
-  border-left: 4px solid #f50505;
-  padding: 20px;
-  color: #a0aec0;
+  background: var(--clr-danger-dim);
+  border-left: 4px solid var(--clr-danger);
+  padding: var(--space-5);
+  color: var(--clr-text-muted);
   font-style: italic;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   text-align: center;
   font-size: 1.05rem;
 }
 
-/* =========================================
-   LISTA DE FEEDBACKS
-   ========================================= */
-/* ==========================================================================
-   SISTEMA DE FEEDBACK (ESTILO WHATSAPP DARK MODE)
-   ===============================================
-   =========================== */
-
-  .projects-feedback-container{
-    display: flex;
-  width: 100%;
-  justify-content: end;
- }  
-/* 1. O Fundo do Chat (Container) */
+/* --------------------------------------------------------------------------
+   16. LISTA DE FEEDBACKS — ESTILO CHAT DARK
+   -------------------------------------------------------------------------- */
 .project-feedbacks-list {
   width: 100%;
-  padding: 25px 15px; 
-
-  margin-top: 20px;
+  padding: var(--space-6) var(--space-4);
+  margin-top: var(--space-5);
   display: flex;
   flex-direction: column;
 }
 
 .project-feedbacks-list h4 {
-  color: #4caf50;
+  color: var(--clr-accent);
   font-size: 1.2rem;
-  margin-bottom: 25px;
+  margin: 0 0 var(--space-6) 0;
   text-transform: uppercase;
   letter-spacing: 1px;
   text-align: center;
-  text-shadow: 0 0 10px rgba(76,175,80,0.3);
+  text-shadow: 0 0 10px rgba(76, 175, 80, 0.3);
+  font-family: var(--font-display);
 }
 
 .project-feedbacks-list ul {
-  list-style-type: none;
+  list-style: none;
   padding: 0;
   margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 16px; /* Espaço entre os balões de conversa */
+  gap: var(--space-4);
 }
 
-/* 2. A Linha da Mensagem */
+/* Linha da mensagem de chat */
 .feedback-item {
   display: flex;
   align-items: flex-start;
-  gap: 12px; /* Espaço entre a foto e o balão */
+  gap: var(--space-3);
   width: 100%;
 }
 
-/* 3. Avatar do Usuário (Fora do Balão) */
+/* Avatar */
 .feedback-user-photo {
-  width: 40px; /* Um pouco menor, padrão de chat */
+  width: 40px;
   height: 40px;
   border-radius: 50%;
   object-fit: cover;
   margin-top: 2px;
+  flex-shrink: 0;
 }
 
-/* 4. O Balão de Conversa (A Mágica acontece aqui) */
+/* Balão de conversa */
 .feedback-content2 {
-  background-color: #202c33; 
-  border-radius: 0px 8px 8px 8px; 
-  padding: 8px 12px 10px 12px;
-  flex: none; 
+  background-color: var(--clr-surface-chat);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) var(--radius-sm);
+  padding: var(--space-2) var(--space-3) var(--space-2) var(--space-3);
+  flex: none;
   width: 100%;
-  max-width: 85%; 
+  max-width: 85%;
   position: relative;
-  box-shadow: 0 1px 1px rgba(0,0,0,0.3);
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
   display: flex;
   flex-direction: column;
 }
 
-/* Criando a "Pontinha" (Tail) do Balão do WhatsApp */
+/* "Pontinha" do balão (tail) */
 .feedback-content2::before {
-  width: 100%;
   content: "";
   position: absolute;
   top: 0;
-  left: -8px; 
+  left: -8px;
   border-top: 0px solid transparent;
-  border-right: 8px solid #202c33; 
+  border-right: 8px solid var(--clr-surface-chat);
   border-bottom: 12px solid transparent;
 }
 
-/* 5. Cabeçalho dentro do Balão (Nome + Estrelas + Data) */
+/* Cabeçalho do balão: nome + estrelas + data */
 .project-feedbacklist-header {
   display: flex;
   align-items: baseline;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: var(--space-2);
   margin-bottom: 6px;
 }
 
-/* O "disse:" vai sumir para ficar mais limpo, mas o nome ganha cor de contato */
 .feedback-user-name {
-  color: #48bb78; /* O seu verde padrão (no WA seria cores sortidas) */
+  color: #48bb78;
   font-weight: 600;
   font-size: 0.95rem;
 }
 
-/* As estrelas ficam pequenininhas do lado do nome */
 .feedback-rating {
-  color: #ffc107;
+  color: var(--clr-warn);
   font-size: 0.8rem;
-  margin-left: 4px;
+  margin-left: var(--space-1);
 }
 
-/* A hora da mensagem colada na direita */
 .feedback-date {
-  color: #8696a0; /* Cinza clássico do horário do WA */
+  color: var(--clr-text-chat-time);
   font-size: 0.75rem;
-  margin-left: auto; /* Empurra a data e o botão pro canto direito do balão */
+  margin-left: auto;
 }
 
-/* 6. O Texto da Mensagem */
+/* Texto da mensagem */
 .feedback-comment2 {
-  width: 100%;
-  height: fit-content; /* Permite que o balão cresça verticalmente conforme o texto */
   margin: 0;
-  color: #e9edef; /* Texto quase branco do WA */
+  color: #e9edef;
   line-height: 1.4;
   font-size: 0.95rem;
-  word-wrap: break-word; /* Evita que palavras grandes quebrem o balão */
+  word-wrap: break-word;
 }
 
-/* 7. Botão de Excluir (Discreto dentro do chat) */
+/* Botão de deletar */
 .delete-feedback-btn {
   background: transparent;
   color: #ef4444;
   border: 1px solid rgba(239, 68, 68, 0.3);
-  padding: 2px 8px;
+  padding: 2px var(--space-2);
   border-radius: 6px;
   cursor: pointer;
   font-size: 0.7rem;
   transition: all 0.3s ease;
-  margin-top: 10px;
+  align-self: flex-start;
+  margin-top: var(--space-2);
+  font-family: var(--font-body);
 }
 
 .delete-feedback-btn:hover {
@@ -890,116 +1036,270 @@
   border-color: #ef4444;
 }
 
-/* Mensagem de Vazio */
+.delete-feedback-btn:focus-visible {
+  outline: 2px solid #ef4444;
+  outline-offset: 2px;
+}
+
+/* Mensagem de lista vazia */
 .no-feedbacks {
-  background-color: rgba(32, 44, 51, 0.6); /* Balão central do WA de "As mensagens são criptografadas..." */
+  background-color: rgba(32, 44, 51, 0.6);
   color: #ffd279;
-  padding: 8px 16px;
-  border-radius: 8px;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-sm);
   text-align: center;
   font-size: 0.9rem;
   align-self: center;
   width: fit-content;
   margin: 0 auto;
-  box-shadow: 0 1px 1px rgba(0,0,0,0.3);
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
 }
 
-/* Animações */
-@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-@keyframes popImage { from { transform: scale(0.85); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+/* --------------------------------------------------------------------------
+   17. LIGHTBOX — TELA CHEIA
+   -------------------------------------------------------------------------- */
+.lightbox-overlay {
+  position: fixed;
+  inset: 0; /* substitui top/left/width/height: 100% */
+  background-color: rgba(0, 0, 0, 0.97);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  z-index: 999999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: zoom-out;
+  animation: fade-in var(--duration-base) ease-out forwards;
+}
 
-/* Responsivo Geral */
+.lightbox-close {
+  position: absolute;
+  top: 30px;
+  right: 50px;
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 50px;
+  cursor: pointer;
+  transition:
+    color var(--duration-base),
+    transform var(--duration-base);
+  z-index: 20;
+  line-height: 1;
+  padding: 0;
+}
+
+.lightbox-close:hover {
+  color: var(--clr-danger);
+  transform: scale(1.15);
+}
+
+.lightbox-close:focus-visible {
+  outline: 2px solid var(--clr-danger);
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+
+/* Navegação do lightbox */
+.lightbox-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 80px;
+  cursor: pointer;
+  z-index: 20;
+  padding: var(--space-6);
+  transition: all var(--duration-base) ease;
+  line-height: 1;
+}
+
+.lightbox-nav:hover {
+  color: var(--clr-accent);
+  transform: translateY(-50%) scale(1.15);
+  text-shadow: 0 0 25px var(--clr-accent-glow);
+}
+
+.lightbox-nav:focus-visible {
+  outline: 2px solid var(--clr-accent);
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+
+.lightbox-nav.left { left: 4%; }
+.lightbox-nav.right { right: 4%; }
+
+/* Wrapper da imagem no lightbox */
+.lightbox-content-wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 90vw;
+  height: 95vh;
+  cursor: default;
+  animation: pop-image 0.5s var(--ease-out-back) forwards;
+}
+
+.lightbox-image {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: var(--space-2);
+  box-shadow: 0 0 60px rgba(76, 175, 80, 0.2);
+}
+
+/* Legenda do lightbox (pílula flutuante) */
+.lightbox-legend {
+  position: absolute;
+  bottom: 40px;
+  background: rgba(18, 18, 18, 0.9);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid var(--clr-border-accent);
+  color: #fff;
+  padding: 15px 35px;
+  border-radius: 35px;
+  font-size: 1.2rem;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.9);
+  max-width: 85%;
+  text-align: center;
+  letter-spacing: 1px;
+  z-index: 15;
+  font-style: italic;
+  margin: 0;
+}
+
+.lightbox-counter {
+  position: absolute;
+  top: -40px;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 1.2rem;
+  letter-spacing: 3px;
+}
+
+/* --------------------------------------------------------------------------
+   18. ANIMAÇÕES
+   @keyframes nomeados em kebab-case: mais legível e sem conflito global
+   -------------------------------------------------------------------------- */
+@keyframes tv-static {
+  0%, 50%   { filter: url(#static-noise); opacity: 0.9; }
+  55%, 80%  { filter: none; opacity: 1; }
+  85%, 100% { filter: url(#static-noise); opacity: 0.9; }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pop-image {
+  from { transform: scale(0.85); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
+
+/* --------------------------------------------------------------------------
+   19. RESPONSIVO
+   Estratégia: mobile-first onde possível; breakpoints em 480 / 768 / 1024
+   -------------------------------------------------------------------------- */
+
+/* ---- 1024px: tablets horizontais / laptops pequenos ---- */
 @media (max-width: 1024px) {
   .projects-grid {
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 30px;
+    gap: var(--space-8);
   }
-  .project-item img {
-    height: 300px;
-  }
-  .modal-content {
-    max-height: 85vh;
-    padding: 15px;
-  }
-  .carousel-container {
-    min-height: 250px;
-  }
+
+  .project-item img { height: 300px; }
 }
 
+/* ---- 768px: tablets verticais ---- */
 @media (max-width: 768px) {
-  .projects {
-    padding: 30px 15px;
-  }
-  .projects h2 {
-    font-size: 2rem;
-  }
+  .projects { padding: var(--space-8) var(--space-4); }
+
+  .projects h2 { font-size: 2rem; }
+
   .projects-grid {
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 25px;
+    gap: var(--space-6);
   }
-  .project-item img {
-    height: 280px;
+
+  .project-item img { height: 260px; }
+
+  /* Modal */
+  .modal-nav-bar {
+    padding: 11px var(--space-4);
+    gap: var(--space-2);
+    border-radius: var(--space-5) var(--space-5) 0 0;
   }
-  .modal-title {
-    font-size: 1.8rem;
+
+  .modal-nav-btn {
+    padding: var(--space-2) var(--space-2);
+    font-size: 0.73rem;
   }
-  .modal-description {
-    font-size: 1rem;
-  }
-  .carousel-btn {
-    width: 40px;
-    height: 40px;
-    font-size: 24px;
-  }
-  .carousel-counter, .expand-hint {
-    font-size: 0.8rem;
-    padding: 6px 12px;
-  }
-  .carousel-legend {
-    font-size: 0.95rem;
-    padding: 30px 15px 10px;
-  }
-  .tech-specs, .setup-section {
-    padding: 15px;
-  }
-  .modal-links {
-    flex-direction: column;
-    gap: 15px;
-  }
-  .project-feedback-section, .project-feedbacks-list {
-    padding: 20px;
-    justify-content: center;
-  }
-  .star {
-    font-size: 1.8rem;
-  }
-  .submit-feedback-btn {
-    width: 100%;
-    align-self: center;
-  }
-  .feedback-user-photo {
-    width: 40px;
-    height: 40px;
-  }
-  .lightbox-nav { font-size: 50px; padding: 15px; }
+
+  .modal-content { padding: var(--space-4) var(--space-4) var(--space-8); }
+
+  .modal-title { font-size: 1.35rem; }
+
+  .modal-description { font-size: 0.95rem; }
+
+  /* Carrossel */
+  .carousel-btn { width: 38px; height: 38px; font-size: 22px; }
+  .carousel-counter,
+  .expand-hint { font-size: 0.75rem; padding: 5px 10px; }
+  .carousel-legend { font-size: 0.9rem; padding: 28px var(--space-4) var(--space-2); }
+
+  /* Specs e setup */
+  .tech-specs { padding: var(--space-4); }
+  .setup-section { padding: 0; }
+
+  /* Links */
+  .modal-links { flex-direction: column; gap: var(--space-3); }
+
+  /* Feedback */
+  .project-feedback-section { padding: var(--space-4); }
+  .project-feedbacks-list { padding: var(--space-4) var(--space-3); }
+  .star { font-size: 1.7rem; }
+  .submit-feedback-btn { width: 100%; text-align: center; }
+
+  /* Lightbox */
+  .lightbox-nav { font-size: 50px; padding: var(--space-4); }
   .lightbox-nav.left { left: 0; }
   .lightbox-nav.right { right: 0; }
   .lightbox-content-wrapper { width: 100vw; height: 90vh; }
-  .lightbox-legend { bottom: 15px; font-size: 1rem; padding: 12px 25px; width: 95%; }
-  .lightbox-close { right: 30px; font-size: 40px; }
+  .lightbox-legend {
+    bottom: 15px;
+    font-size: 1rem;
+    padding: var(--space-3) var(--space-6);
+    width: 95%;
+  }
+  .lightbox-close { right: var(--space-5); top: var(--space-4); font-size: 36px; }
 }
 
+/* ---- 480px: smartphones ---- */
 @media (max-width: 480px) {
-  .projects-grid {
-    grid-template-columns: 1fr;
-  }
-  .project-item img {
-    height: 250px;
-  }
-  .modal-content {
-    padding: 10px;
-  }
-  .carousel-container {
-    min-height: 200px;
+  .projects-grid { grid-template-columns: 1fr; }
+  .project-item img { height: 230px; }
+  .modal-content { padding: var(--space-3) var(--space-3) var(--space-6); }
+
+  /* Balão de chat ocupa mais espaço em tela pequena */
+  .feedback-content2 { max-width: 100%; }
+}
+
+/* --------------------------------------------------------------------------
+   20. PREFERÊNCIAS DE ACESSIBILIDADE
+   Respeita a configuração do sistema operacional do usuário.
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }

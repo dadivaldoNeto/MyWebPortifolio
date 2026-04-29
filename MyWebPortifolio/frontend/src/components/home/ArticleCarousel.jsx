@@ -16,6 +16,8 @@ const ArticleCarousel = () => {
 
   const isHoveredRef = useRef(false);
   const intervalRef = useRef(null);
+  const touchStartX = useRef(null);
+  const touchStartY = useRef(null);
 
   useEffect(() => { isHoveredRef.current = isHovered; }, [isHovered]);
 
@@ -69,6 +71,24 @@ const ArticleCarousel = () => {
   const goPrev = () => goTo((currentIndex - 1 + articles.length) % articles.length);
   const goNext = () => goTo((currentIndex + 1) % articles.length);
 
+  const handleTouchStart = (e) => {
+    touchStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
+    setIsHovered(true);
+  };
+
+  const handleTouchEnd = (e) => {
+    setIsHovered(false);
+    if (touchStartX.current === null) return;
+    const dx = touchStartX.current - e.changedTouches[0].clientX;
+    const dy = touchStartY.current - e.changedTouches[0].clientY;
+    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40) {
+      dx > 0 ? goNext() : goPrev();
+    }
+    touchStartX.current = null;
+    touchStartY.current = null;
+  };
+
   const progress = Math.min((elapsed / SLIDE_DURATION) * 100, 100);
 
   const formatarData = (isoDate) => {
@@ -87,6 +107,8 @@ const ArticleCarousel = () => {
         className="kc-viewport"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
       >
         <div
           className="kc-track"
