@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /editar-perfil
+
+Sitemap: https://www.brunofragadev.com/sitemap.xml
