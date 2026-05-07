@@ -178,7 +178,6 @@ const ProjectCard = memo(({ project, onClick, index }) => {
   const shortDescription = useMemo(() => {
     if (!project.description) return "";
     const cleaned = project.description
-      .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1") 
       .replace(/[#*`_~>]/g, "")
       .replace(/\n+/g, " ")
       .trim();
@@ -247,7 +246,7 @@ const ProjectCard = memo(({ project, onClick, index }) => {
         )}
       </div>
 
-      {/* Footer com stack + CTA */}
+      {/* Footer com stack + CTAs */}
       <footer className="pcard__footer">
         {stackTags.length > 0 && (
           <div className="pcard__stack">
@@ -256,13 +255,33 @@ const ProjectCard = memo(({ project, onClick, index }) => {
             ))}
           </div>
         )}
-        <span className="pcard__cta" aria-hidden="true">
-          ver projeto
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <line x1="5" y1="12" x2="19" y2="12" />
-            <polyline points="12 5 19 12 12 19" />
-          </svg>
-        </span>
+
+        <div className="pcard__actions">
+          {isLive && (
+            <a
+              href={project.liveUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="pcard__live-btn"
+              aria-label={`Acessar ${project.title} em produção`}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                <polyline points="15 3 21 3 21 9"/>
+                <line x1="10" y1="14" x2="21" y2="3"/>
+              </svg>
+              live preview
+            </a>
+          )}
+          <span className="pcard__cta" aria-hidden="true">
+            ver detalhes
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12" />
+              <polyline points="12 5 19 12 12 19" />
+            </svg>
+          </span>
+        </div>
       </footer>
 
       {/* Glow no hover */}
@@ -562,21 +581,7 @@ const Projects = ({ token, userName, userRole }) => {
 
               <div className="modal-description">
                 <div className="markdown-body">
-                  <ReactMarkdown 
-                    remarkPlugins={[remarkGfm]}
-                    components={{
-                      a: ({node, ...props}) => (
-                        <a 
-                          {...props} 
-                          target="_blank" 
-                          rel="noopener noreferrer" 
-                          style={{ color: '#007bff', textDecoration: 'underline' }}
-                        >
-                          {props.children}
-                        </a>
-                      )
-                    }}
-                  >
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
                     {activeProject.description}
                   </ReactMarkdown>
                 </div>
