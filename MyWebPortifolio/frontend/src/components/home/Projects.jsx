@@ -178,6 +178,7 @@ const ProjectCard = memo(({ project, onClick, index }) => {
   const shortDescription = useMemo(() => {
     if (!project.description) return "";
     const cleaned = project.description
+      .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1") 
       .replace(/[#*`_~>]/g, "")
       .replace(/\n+/g, " ")
       .trim();
@@ -561,7 +562,21 @@ const Projects = ({ token, userName, userRole }) => {
 
               <div className="modal-description">
                 <div className="markdown-body">
-                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                  <ReactMarkdown 
+                    remarkPlugins={[remarkGfm]}
+                    components={{
+                      a: ({node, ...props}) => (
+                        <a 
+                          {...props} 
+                          target="_blank" 
+                          rel="noopener noreferrer" 
+                          style={{ color: '#007bff', textDecoration: 'underline' }}
+                        >
+                          {props.children}
+                        </a>
+                      )
+                    }}
+                  >
                     {activeProject.description}
                   </ReactMarkdown>
                 </div>
