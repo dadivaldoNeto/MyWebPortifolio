@@ -17,6 +17,7 @@ import ReactDOM from "react-dom";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import Modal from "../Modal";
+import LivePreviewModal from "../LivePreviewModal";
 import "../../styles/projects.css";
 
 // ============================================================
@@ -155,7 +156,7 @@ function useGallery(projectId) {
 // ============================================================
 // CARD MODERNO — Terminal aesthetic
 // ============================================================
-const ProjectCard = memo(({ project, onClick, index }) => {
+const ProjectCard = memo(({ project, onClick, onLivePreview, index }) => {
   const coverImage = useMemo(() => {
     const coverObj =
       project.galeria?.find((img) => img.isCapa) ?? project.galeria?.[0];
@@ -246,7 +247,7 @@ const ProjectCard = memo(({ project, onClick, index }) => {
         )}
       </div>
 
-      {/* Footer com stack + CTA */}
+      {/* Footer com stack + CTAs */}
       <footer className="pcard__footer">
         {stackTags.length > 0 && (
           <div className="pcard__stack">
@@ -255,13 +256,30 @@ const ProjectCard = memo(({ project, onClick, index }) => {
             ))}
           </div>
         )}
-        <span className="pcard__cta" aria-hidden="true">
-          ver projeto
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <line x1="5" y1="12" x2="19" y2="12" />
-            <polyline points="12 5 19 12 12 19" />
-          </svg>
-        </span>
+
+        <div className="pcard__actions">
+          {isLive && (
+            <button
+              className="pcard__live-btn"
+              aria-label={`Abrir live preview de ${project.title}`}
+              onClick={(e) => { e.stopPropagation(); onLivePreview(); }}
+            >
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                <polyline points="15 3 21 3 21 9"/>
+                <line x1="10" y1="14" x2="21" y2="3"/>
+              </svg>
+              live preview
+            </button>
+          )}
+          <span className="pcard__cta" aria-hidden="true">
+            ver detalhes
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12" />
+              <polyline points="12 5 19 12 12 19" />
+            </svg>
+          </span>
+        </div>
       </footer>
 
       {/* Glow no hover */}
@@ -473,6 +491,7 @@ const Projects = ({ token, userName, userRole }) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [currentProjectIndex, setCurrentProjectIndex] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [livePreviewOpen, setLivePreviewOpen] = useState(false);
 
   const activeProject = projects[currentProjectIndex] ?? null;
   const { currentImageIndex, navigate: navigateImage } = useGallery(activeProject?.id);
@@ -526,6 +545,7 @@ const Projects = ({ token, userName, userRole }) => {
             project={project}
             index={index}
             onClick={() => openModal(index)}
+            onLivePreview={() => { setCurrentProjectIndex(index); setLivePreviewOpen(true); }}
           />
         ))}
       </div>
@@ -622,6 +642,15 @@ const Projects = ({ token, userName, userRole }) => {
           currentIndex={currentImageIndex}
           onClose={() => setLightboxOpen(false)}
           onNavigate={navigateImage}
+        />
+      )}
+
+      {livePreviewOpen && activeProject?.liveUrl && (
+        <LivePreviewModal
+          url={activeProject.liveUrl}
+          title={activeProject.title}
+          isOpen={livePreviewOpen}
+          onClose={() => setLivePreviewOpen(false)}
         />
       )}
     </section>

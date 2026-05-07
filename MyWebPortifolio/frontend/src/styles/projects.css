@@ -362,8 +362,7 @@
 /* ========== FOOTER ========== */
 .pcard__footer {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  flex-direction: column;
   gap: 12px;
   padding: 14px 18px 16px;
   border-top: 1px solid rgba(255, 255, 255, 0.05);
@@ -374,8 +373,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  flex: 1;
-  min-width: 0;
+  width: 100%;
 }
 
 .pcard__chip {
@@ -397,6 +395,82 @@
   border-color: rgba(76, 175, 80, 0.42);
 }
 
+.pcard__actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 14px;
+  width: 100%;
+  padding-top: 4px;
+  border-top: 1px dashed rgba(255, 255, 255, 0.05);
+}
+
+/* Botão Live Preview */
+.pcard__live-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--clr-accent);
+  background: rgba(74, 222, 128, 0.08);
+  border: 1px solid rgba(74, 222, 128, 0.3);
+  border-radius: 6px;
+  padding: 5px 10px;
+  text-decoration: none;
+  flex-shrink: 0;
+  transition:
+    background 250ms ease,
+    border-color 250ms ease,
+    transform 200ms ease,
+    box-shadow 250ms ease;
+}
+
+.pcard__live-btn svg {
+  flex-shrink: 0;
+  transition: transform 250ms ease;
+}
+
+.pcard__live-btn:hover {
+  background: rgba(74, 222, 128, 0.18);
+  border-color: rgba(74, 222, 128, 0.65);
+  box-shadow: 0 0 14px rgba(74, 222, 128, 0.2);
+  transform: translateY(-1px);
+}
+
+.pcard__live-btn:hover svg {
+  transform: translate(1px, -1px);
+}
+
+.pcard__live-btn:active {
+  transform: translateY(0);
+}
+
+/* Separador visual entre live e ver detalhes */
+.pcard__actions .pcard__cta {
+  position: relative;
+  padding-left: 14px;
+}
+
+.pcard__actions .pcard__cta::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1px;
+  height: 14px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Quando não tem live, remove o separador */
+.pcard__actions:not(:has(.pcard__live-btn)) .pcard__cta::before {
+  display: none;
+}
+
 .pcard__cta {
   display: inline-flex;
   align-items: center;
@@ -406,9 +480,9 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: var(--clr-accent);
+  color: rgba(255,255,255,0.45);
   flex-shrink: 0;
-  transition: gap 250ms ease, transform 250ms ease;
+  transition: gap 250ms ease, color 250ms ease;
 }
 
 .pcard__cta svg {
@@ -416,7 +490,8 @@
 }
 
 .pcard:hover .pcard__cta {
-  gap: 10px;
+  gap: 9px;
+  color: rgba(255,255,255,0.7);
 }
 
 .pcard:hover .pcard__cta svg {
